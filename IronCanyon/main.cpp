@@ -338,7 +338,7 @@ int main(int argc, char **argv)
 	g_height = 480;
 	/* we will always need to load external shaders to set up where */
 
-	RESOURCE_DIR = string("C:/Jono/Documents/Programming/CPE476/IronCanyon/resources/");
+	RESOURCE_DIR = string("../resources/");
 
 	/* your main will always include a similar set up to establish your window
 	and GL context, etc. */
