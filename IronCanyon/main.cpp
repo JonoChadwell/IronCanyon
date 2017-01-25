@@ -2,8 +2,9 @@
 	CPE 471 Cal Poly Z. Wood + S. Sueda
 */
 #include <iostream>
-#define GLEW_STATIC
+#include <algorithm>
 #include <GL/glew.h>
+#include <GL/freeglut.h>
 #include <GLFW/glfw3.h>
 
 #include "GLSL.h"
@@ -18,10 +19,6 @@
 
 using namespace std;
 using namespace glm;
-
-/* to use glee */
-#define GLEE_OVERWRITE_GL_FUNCTIONS
-#include "glee.hpp"
 
 #define MATH_PI 3.14159
 #define LOOK_SENS (1 / 400.0)
@@ -144,7 +141,7 @@ static void init()
 {
 	GLSL::checkVersion();
 
-   srand(time(NULL));
+   srand(0);
     // creating heads
     float x, z;
     float toAdd1, toAdd2;
@@ -312,11 +309,7 @@ static void render()
 
 int main(int argc, char **argv)
 {
-	if(argc < 2) {
-		cout << "Please specify the resource directory." << endl;
-		return 0;
-	}
-	RESOURCE_DIR = argv[1] + string("/");
+	RESOURCE_DIR = argv[1] + string("../resources");
 
 	// Set error callback.
 	glfwSetErrorCallback(error_callback);

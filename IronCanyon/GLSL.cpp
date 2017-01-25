@@ -4,13 +4,19 @@
 //    Modified by sueda 10/15/15.
 //
 
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "GLSL.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <cstring>
 
+
+
 namespace GLSL {
+
 
 const char * errorString(GLenum err)
 {
