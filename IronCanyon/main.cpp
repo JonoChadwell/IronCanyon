@@ -309,7 +309,7 @@ static void render()
 
 int main(int argc, char **argv)
 {
-	RESOURCE_DIR = argv[1] + string("../resources");
+	RESOURCE_DIR = string("../resources/");
 
 	// Set error callback.
 	glfwSetErrorCallback(error_callback);
@@ -329,6 +329,7 @@ int main(int argc, char **argv)
 		glfwTerminate();
 		return -1;
 	}
+
 	// Make the window's context current.
 	glfwMakeContextCurrent(window);
 	// Initialize GLEW.
