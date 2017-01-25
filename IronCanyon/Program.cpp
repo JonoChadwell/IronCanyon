@@ -77,7 +77,8 @@ bool Program::init()
 		return false;
 	}
 	
-	GLSL::checkError(GET_FILE_LINE);
+	GLSL::printError();
+	assert(glGetError() == GL_NO_ERROR);
 	return true;
 }
 
@@ -93,12 +94,12 @@ void Program::unbind()
 
 void Program::addAttribute(const string &name)
 {
-	attributes[name] = glGetAttribLocation(pid, name.c_str());
+	attributes[name] = GLSL::getAttribLocation(pid, name.c_str(), isVerbose());
 }
 
 void Program::addUniform(const string &name)
 {
-	uniforms[name] = glGetUniformLocation(pid, name.c_str());
+	uniforms[name] = GLSL::getUniformLocation(pid, name.c_str(), isVerbose());
 }
 
 GLint Program::getAttribute(const string &name) const
@@ -108,7 +109,7 @@ GLint Program::getAttribute(const string &name) const
 		if(isVerbose()) {
 			cout << name << " is not an attribute variable" << endl;
 		}
-		return -1;
+		return 0;
 	}
 	return attribute->second;
 }
@@ -120,7 +121,7 @@ GLint Program::getUniform(const string &name) const
 		if(isVerbose()) {
 			cout << name << " is not a uniform variable" << endl;
 		}
-		return -1;
+		return 0;
 	}
 	return uniform->second;
 }

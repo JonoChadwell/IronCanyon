@@ -15,9 +15,8 @@ public:
 	virtual ~Shape();
 	void loadMesh(const std::string &meshName);
 	void init();
-	void draw(const std::shared_ptr<Program> prog) const;
-	void ComputeTex();
 	void resize();
+	void draw(Program *prog);
 	
 private:
 	std::vector<unsigned int> eleBuf;
@@ -28,6 +27,7 @@ private:
 	unsigned posBufID;
 	unsigned norBufID;
 	unsigned texBufID;
+   unsigned vaoID;
 };
 
 #endif

@@ -4,15 +4,11 @@
 //    Modified by sueda 10/15/15.
 //
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "GLSL.h"
-#include <GL\glew.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <cstring>
-#include <cassert>
 
 namespace GLSL {
 
@@ -51,20 +47,6 @@ int printError()
 		glErr = glGetError();
 	}
 	return retCode;
-}
-
-
-/*redundant - need to merge code at some point */
-void checkError(const char *str)
-{
-   GLenum glErr = glGetError();
-   if(glErr != GL_NO_ERROR) {
-      if(str) {
-         printf("%s: ", str);
-      }
-      printf("GL_ERROR = %s.\n", errorString(glErr));
-      assert(false);
-   }
 }
 
 void printShaderInfoLog(GLuint shader)
