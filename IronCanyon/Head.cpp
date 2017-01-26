@@ -27,8 +27,6 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
     MatrixStack *M = new MatrixStack();
     // drawing
     float rotate;
-    // divide by zero edge case
-    rotate = xdir != 0.0 ? atan2(zdir, xdir) : 0;
 
     //render shit
     prog->bind();
@@ -52,7 +50,9 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
     M->pushMatrix();
        M->loadIdentity();
        M->translate(vec3(xpos, 1, zpos));
-       M->rotate(-rotate + MATH_PI / 2, vec3(0, 1, 0));
+       //M->rotate(getXRot(), vec3(1, 0, 0));
+       //M->rotate(-getYRot() + MATH_PI / 2, vec3(0, 1, 0));
+       M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
       Head::model->draw(prog);
     M->popMatrix();
@@ -62,7 +62,7 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->loadIdentity();
        M->translate(vec3(xpos, .01, zpos));
        M->scale(vec3(1, 0.01, 1));
-       M->rotate(-rotate + MATH_PI / 2, vec3(0, 1, 0));
+       M->rotate(-getYRot() + MATH_PI / 2, vec3(0, 1, 0));
        //M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
