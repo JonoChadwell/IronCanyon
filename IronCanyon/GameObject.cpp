@@ -46,30 +46,36 @@ void GameObject::step (float dt) {
 
 // rotate functions
 void GameObject::rotateX (float theta) {
-    float y = ydir;
-    float z = zdir;
-    float angle = atan2(-z, y);
+    float angle = getXRot();
     angle += theta;
-    ydir = cos(angle);
-    zdir = sin(angle);
+    zdir = cos(angle);
+    ydir = sin(angle);
 }
 
 void GameObject::rotateY (float theta) {
-    float x = xdir;
-    float z = zdir;
-    float angle = atan2(z, x);
+    float angle = getYRot();
     angle += theta;
     xdir = cos(angle);
     zdir = sin(angle);
 }
 
 void GameObject::rotateZ (float theta) {
-    float x = xdir;
-    float y = ydir;
-    float angle = atan2(x, y);
+    float angle = getZRot();
     angle += theta;
-    ydir = cos(angle);
-    xdir = sin(angle);
+    xdir = cos(angle);
+    ydir = sin(angle);
+}
+
+float GameObject::getXRot() {
+    return zdir != 0.0 ? atan2(ydir, zdir) : 0;
+}
+
+float GameObject::getYRot() {
+    return xdir != 0.0 ? atan2(zdir, xdir) : 0;
+}
+
+float GameObject::getZRot() {
+    return xdir != 0.0 ? atan2(ydir, -xdir) : 0;
 }
 
 // draw function

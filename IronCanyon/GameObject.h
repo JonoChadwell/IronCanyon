@@ -25,4 +25,7 @@ public:
     void rotateX(float theta);
     void rotateY(float theta);
     void rotateZ(float theta);
+    float getXRot();
+    float getYRot();
+    float getZRot();
 };
