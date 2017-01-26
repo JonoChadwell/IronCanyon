@@ -30,7 +30,6 @@ Program *head;
     vector<Head*> heads;
 Program *ground;
 shared_ptr<Shape> shape;
-Shape *object;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
@@ -181,11 +180,6 @@ static void init()
 	shape->resize();
 	shape->init();
 
-	object = new Shape();
-	object->loadMesh(RESOURCE_DIR + "head.obj");
-	object->resize();
-	object->init();
-
 	// Initialize the GLSL program.
 	head = new Program();
 	head->setVerbose(true);
@@ -214,7 +208,7 @@ static void init()
 	ground->addAttribute("vertNor");
 
     // initialize head model
-    Head::setupModel(object);
+    Head::setupModel(RESOURCE_DIR + "head.obj");
 }
 
 static void renderHeads() {
@@ -382,7 +376,6 @@ int main(int argc, char **argv)
     // free memory
     delete head;
     delete ground;
-    delete object;
     for (unsigned int i = 0 ; i < heads.size(); i++) {
         delete heads[i];
     }

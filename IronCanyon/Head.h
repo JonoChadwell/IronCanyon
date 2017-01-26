@@ -17,5 +17,5 @@ public:
     // functions
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
     void step(float dt);
-    static void setupModel(Shape* s);
+    static void setupModel(std::string dir);
 };

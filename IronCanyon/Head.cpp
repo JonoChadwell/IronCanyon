@@ -81,6 +81,9 @@ void Head::step(float dt) {
     GameObject::step(dt);
 }
 
-void Head::setupModel(Shape* s) {
-    Head::model = s;
+void Head::setupModel(std::string dir) {
+	Head::model = new Shape();
+	Head::model->loadMesh(dir);
+	Head::model->resize();
+	Head::model->init();
 }
