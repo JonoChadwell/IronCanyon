@@ -30,5 +30,5 @@ public:
 	void rotateX(float theta);
 	void rotateY(float theta);
 	void rotateZ(float theta);
-	static void Player::setupModel(std::string dir);
+	static void setupModel(std::string dir);
 };
