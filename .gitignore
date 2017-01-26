@@ -71,7 +71,6 @@ artifacts/
 
 # CMake and build directory (onyl used in Linux build)
 build/*
-CMakeLists.txt
 
 # Chutzpah Test files
 _Chutzpah*
