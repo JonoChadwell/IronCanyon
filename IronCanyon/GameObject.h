@@ -1,3 +1,4 @@
+#pragma once
 #include "MatrixStack.h"
 #include <string>
 #include <vector>

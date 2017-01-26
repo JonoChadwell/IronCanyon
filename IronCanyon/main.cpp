@@ -12,8 +12,9 @@
 #include "MatrixStack.h"
 #include "Shape.h"
 #include "Head.h"
+#include "Camera.h"
+#include "Player.h"
 
-//test
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -29,6 +30,8 @@ string RESOURCE_DIR = ""; // Where the resources are loaded from
 Program *head;
     // declare vector for head objects
     vector<Head*> heads;
+Camera* camera;
+Player* player;
 Program *ground;
 shared_ptr<Shape> shape;
 
@@ -162,6 +165,8 @@ static void init()
         z = sin(rotate);
         heads.push_back(new Head(toAdd1, 0, toAdd2, x, 0, z, 10, 1));
    }
+   //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
+   player = new Player(0, 0, 0, 1, 0, 0, 0, 0, 0, 5);
    theta = MATH_PI;
    phi = 0;
    toward = 0;
@@ -210,6 +215,7 @@ static void init()
 
     // initialize head model
     Head::setupModel(RESOURCE_DIR + "head.obj");
+	Player::setupModel(RESOURCE_DIR + "head.obj");
 }
 
 static void renderHeads() {
@@ -232,6 +238,27 @@ static void renderHeads() {
 
    P->popMatrix();
     delete P;
+}
+
+static void renderPlayer() {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	float aspect = width / (float)height;
+	MatrixStack *P = new MatrixStack();
+	// Apply perspective projection.
+	P->pushMatrix();
+	P->perspective(45.0f, aspect, 0.01f, 100.0f);
+
+	glm::mat4 lookAt = glm::lookAt(eye, lookAtPt, glm::vec3(0, 1, 0));
+
+	// draw and time based movement
+	
+	player->draw(P, lookAt, eye, head);
+	//for (float cap = 0.0; cap < renderTime; cap += physDt)
+		//player->step(physDt);
+
+	P->popMatrix();
+	delete P;
 }
 
 static void renderFloor(){
@@ -293,6 +320,7 @@ static void render()
 
     // render things
     renderHeads();
+	renderPlayer();
     renderFloor();
     // collision detection
     checkHeadCollides();
