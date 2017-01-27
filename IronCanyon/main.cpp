@@ -142,10 +142,8 @@ static void checkHeadCollides() {
         for (unsigned int j = i+1; j < heads.size(); j++) {
             if (sqrt(pow(heads[j]->xpos - heads[i]->xpos, 2) + pow(heads[j]->zpos - heads[i]->zpos, 2))
               <= heads[i]->bound + heads[j]->bound) {
-                heads[i]->xdir *= -1;
-                heads[i]->zdir *= -1;
-                heads[j]->xdir *= -1;
-                heads[j]->zdir *= -1;
+                heads[i]->theta += MATH_PI;
+                heads[j]->theta += MATH_PI;
             }
         }
     }
@@ -175,7 +173,7 @@ static void init()
         rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
         x = cos(rotate);
         z = sin(rotate);
-        heads.push_back(new Head(toAdd1, 0, toAdd2, x, 0, z, 10, 1));
+        heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
    }
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5);
