@@ -85,7 +85,6 @@ void Head::step(float dt) {
     ypos += getYComp() * dt * vel; 
     zpos += getZComp() * dt * vel;
     if (sqrt(xpos*xpos + zpos*zpos) > 50) {
-        printf("FUCK\n");
         theta += MATH_PI;
     }
 }
