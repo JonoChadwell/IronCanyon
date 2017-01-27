@@ -215,11 +215,17 @@ static void init()
 
 	ground = new Program();
 	ground->setVerbose(true);
-	ground->setShaderNames(RESOURCE_DIR + "floor_vert.glsl", RESOURCE_DIR + "floor_frag.glsl");
+	ground->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
 	ground->init();
 	ground->addUniform("P");
 	ground->addUniform("M");
 	ground->addUniform("V");
+	ground->addUniform("lightPos");
+	ground->addUniform("eye");
+	ground->addUniform("MatAmb");
+	ground->addUniform("MatDif");
+	ground->addUniform("MatSpec");
+	ground->addUniform("shine");
 	ground->addAttribute("vertPos");
 	ground->addAttribute("vertNor");
 
@@ -299,14 +305,22 @@ static void renderFloor(){
    glm::mat4 lookAt = glm::lookAt( eye, lookAtPt, glm::vec3(0, 1, 0));
 
    ground->bind();
+   
+   glUniform3f(ground->getUniform("lightPos"), 100, 100, 100);
+   glUniform3f(ground->getUniform("eye"), eye.x, eye.y, eye.z);
+   glUniform3f(ground->getUniform("MatAmb"), .2, .6, .3);
+   glUniform3f(ground->getUniform("MatDif"), .7, .26, .3);
+   glUniform3f(ground->getUniform("MatSpec"), .31, .16, .08);
+   glUniform1f(ground->getUniform("shine"), 2.5);
+   
    glUniformMatrix4fv(ground->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
    glUniformMatrix4fv(ground->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
    M->pushMatrix();
      M->loadIdentity();
      /*play with these options */
-      M->translate(vec3(0, 5, 0));
-      M->scale(vec3(50, 50, 50));
+      M->translate(vec3(0, 15, 0));
+      M->scale(vec3(100, 100, 100));
       glUniformMatrix4fv(ground->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
      shape->draw(ground);
    M->popMatrix();
