@@ -65,6 +65,8 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->translate(vec3(xpos, .01, zpos));
        M->scale(vec3(1, 0.01, 1));
        M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+       M->rotate(roll, vec3(0, 0, 1));
+       M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
        glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
