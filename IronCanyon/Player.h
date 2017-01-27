@@ -18,14 +18,18 @@ public:
 	float vely;
 	float velz;
 	float bound;
+	float ctheta;
 	Player();
 	Player(float xp, float yp, float zp, float xr, float yr, float zr,
-		float vx, float vy, float vz, float bound);
+		float vx, float vy, float vz, float bound, float ct);
 	virtual ~Player();
-	static Shape* model;
+	static Shape* turret;
+	static Shape* chassis;
 
 	// functions
+	float Player::getXComp();
+	float Player::getZComp();
 	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
 	void step(float dt);
-	static void setupModel(std::string dir);
+	static void setupModel(std::string turret, std::string chassis);
 };

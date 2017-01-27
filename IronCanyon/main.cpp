@@ -23,6 +23,7 @@ using namespace std;
 using namespace glm;
 
 #define MATH_PI 3.14159
+#define ANGLE_45 0.70710678118
 #define LOOK_SENS (1 / 400.0)
 
 GLFWwindow *window; // Main application window
@@ -37,7 +38,7 @@ shared_ptr<Shape> shape;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
-float velz, velx;
+float forwards, sideways;
 float physDt = 0.005;
 float startRender = 0.0;
 float renderTime = 0.0;
@@ -59,32 +60,32 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 	if(key == GLFW_KEY_W && action == GLFW_PRESS) {
-		velz += .5;
+		forwards += 1;
 	}
 	else if(key == GLFW_KEY_S && action == GLFW_PRESS) {
-		velz += -.5;
+		forwards += -1;
 	}
 	if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-		velz += -.5;
+		forwards += -1;
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-		velz += .5;
+		forwards += 1;
 	}
 	if(key == GLFW_KEY_A && action == GLFW_PRESS) {
-      velx += -.5;
+      sideways += -1;
 	}
 	else if(key == GLFW_KEY_D && action == GLFW_PRESS) {
-      velx += .5;
+      sideways += 1;
 	}
 	if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
-		velx += .5;
+		sideways += 1;
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
-		velx += -.5;
+		sideways += -1;
 	}
 	if(action == GLFW_RELEASE) {
-      velx = 0;
-	  velz = 0;
+      sideways = 0;
+	  forwards = 0;
 	}
    
 }
@@ -111,12 +112,10 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
    double changex = x - lastx;
    double changey = y - lasty;
 
-   theta += changex * LOOK_SENS;
+   theta -= changex * LOOK_SENS;
    phi -= changey * LOOK_SENS;
-   //theta = (changex / g_width) * MATH_PI * 2 + MATH_PI / 2;
-   //phi = - ( (changey / g_height) * MATH_PI / 2 - MATH_PI / 4 );
-   phi = std::min(phi, (float)(MATH_PI / 2 - .2));
-   phi = std::max(phi, (float)(-MATH_PI / 2 + .2));
+   phi = std::min(phi, (float)(.3));
+   phi = std::max(phi, (float)(-.3));
    lastx = x;
    lasty = y;
 }   
@@ -176,11 +175,11 @@ static void init()
         heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
    }
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
-   player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5);
+   player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5, 0);
    theta = MATH_PI;
    phi = 0;
-   velz = 0;
-   velx = 0;
+   forwards = 0;
+   sideways = 0;
    u = glm::vec3(1, 0, 0);
    v = glm::vec3(0, 1, 0);
    w = glm::vec3(0, 0, -1);
@@ -231,10 +230,10 @@ static void init()
 
     // initialize head model
     Head::setupModel(RESOURCE_DIR + "head.obj");
-	Player::setupModel(RESOURCE_DIR + "head.obj");
+	Player::setupModel(RESOURCE_DIR + "head.obj", RESOURCE_DIR + "head.obj");
 
-	velz = 0;
-	velx = 0;
+	forwards = 0;
+	sideways = 0;
 }
 
 static void drawHeads() {
@@ -251,8 +250,6 @@ static void drawHeads() {
     // draw and time based movement
     for (unsigned int i = 0; i < heads.size(); i++) {
         heads[i]->draw(P, lookAt, eye, head);
-        for (float cap = 0.0; cap < renderTime; cap += physDt)
-            heads[i]->step(physDt);
     }
 
    P->popMatrix();
@@ -286,10 +283,31 @@ static void drawPlayer() {
 }
 
 static void stepPlayer() {
-	player->theta = -theta;
-	player->phi = -phi;
-	for (float cap = 0.0; cap < renderTime; cap += physDt)
+	player->theta = theta;
+	player->phi = phi;
+	float angle;
+	if (forwards > 0) {
+		angle = MATH_PI / 2 - sideways * MATH_PI / 4;
+	}
+	else if (forwards < 0) {
+		angle = 3 * MATH_PI / 2 + sideways * MATH_PI / 4;
+	}
+	else {
+		angle = MATH_PI / 2 - sideways * MATH_PI / 2;
+	}
+	printf("Angle: %f\n", angle);
+	angle += player->theta;
+	if (!forwards && !sideways) {
+		player->velx = 0;
+		player->velz = 0;
+	}
+	else {
+		player->velz = -cos(angle);
+		player->velx = -sin(angle);
+	}
+	for (float cap = 0.0; cap < renderTime; cap += physDt) {
 		player->step(physDt);
+	}
 }
 
 static void renderFloor(){
@@ -343,9 +361,9 @@ static void render()
 
 	//Use the matrix stack for Lab 6
    float aspect = width/(float)height;
-	eye.x = player->xpos + 10 * sin(player->theta) * cos(player->phi);
-	eye.y = player->ypos + 10 * sin(player->phi);
-	eye.z = player->zpos + 10 * cos(player->theta) * cos(player->phi);
+	eye.x = player->xpos + 10 * cos(-player->theta) * cos(-player->phi);
+	eye.y = player->ypos + 10 * sin(-player->phi);
+	eye.z = player->zpos + 10 * sin(-player->theta) * cos(-player->phi);
    lookAtPt = glm::vec3(player->xpos, player->ypos, player->zpos);
 
     // render things

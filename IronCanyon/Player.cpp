@@ -7,7 +7,9 @@
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-Shape* Player::model;
+Shape* Player::turret;
+Shape* Player::chassis;
+int time = 0;
 
 // default constructor
 Player::Player() :
@@ -20,12 +22,13 @@ Player::Player() :
 	velx(0),
 	vely(0),
 	velz(0),
-	bound(0)
+	bound(0),
+	ctheta(0)
 {}
 
 // regular constructor
 Player::Player(float xp, float yp, float zp, float xd, float yd, float zd,
-	float vx, float vy, float vz, float b) :
+	float vx, float vy, float vz, float b, float ct) :
 	xpos(xp),
 	ypos(yp),
 	zpos(zp),
@@ -35,7 +38,8 @@ Player::Player(float xp, float yp, float zp, float xd, float yd, float zd,
 	velx(vx),
 	vely(vy),
 	velz(vz),
-	bound(b)
+	bound(b),
+	ctheta(ct)
 {}
 
 // destructor
@@ -43,11 +47,26 @@ Player::~Player()
 {
 }
 
+
+// rotate functions (all in radians) for going straight
+float Player::getXComp() {
+	return cos(theta);
+}
+
+float Player::getZComp() {
+	return sin(theta);
+}
+
 // step function
 void Player::step(float dt) {
-	xpos += dt * velx * cos(theta);
-	ypos += dt * vely;
-	zpos += dt * velz * sin(theta);
+	/*
+	this->xpos += dt * velx * cos(theta) * 10;
+	this->ypos += dt * vely;
+	this->zpos += dt * velz * sin(theta) * 10;
+	*/
+	this->xpos += dt * velx * 10;
+	this->zpos += dt * velz * 10;
+	//printf("dt: %f, velx: %f, cos(theta): %f, xpos: %f\n", dt, velx, cos(theta), xpos);
 }
 
 // draw function
@@ -56,6 +75,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	MatrixStack *M = new MatrixStack();
 	// drawing
 
+	//printf("draw xpos: %f", xpos);
 	//render shit
 	prog->bind();
 	glUniform3f(prog->getUniform("lightPos"), 100, 100, 100);
@@ -67,38 +87,54 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
+	//turret
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(xpos, 1, zpos));
-	M->rotate(theta + MATH_PI, vec3(0, 1, 0));
+	M->translate(vec3(this->xpos, 1, this->zpos));
+	M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Player::model->draw(prog);
+	Player::turret->draw(prog);
 	M->popMatrix();
 
-
+	//chassis
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(xpos, .01, zpos));
+	M->translate(vec3(this->xpos, 1, this->zpos));
+	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+	//M->rotate(phi, vec3(1, 0, 0));
+	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	Player::turret->draw(prog);
+	M->popMatrix();
+
+	//turret shadow
+	M->pushMatrix();
+	M->loadIdentity();
+	//M->translate(vec3(this->xpos, .01, this->zpos));
 	M->scale(vec3(1, 0.01, 1));
-	M->rotate(theta + MATH_PI, vec3(0, 1, 0));
+	//M->rotate(theta + MATH_PI, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 	//M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
 	glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
 	glUniform3f(prog->getUniform("MatSpec"), 0, 0, 0);
-	Player::model->draw(prog);
+	Player::turret->draw(prog);
 	M->popMatrix();
+
 	// garbage collection
 	delete M;
 	prog->unbind();
 }
 
 
-void Player::setupModel(std::string dir) {
-	Player::model = new Shape();
-	Player::model->loadMesh(dir);
-	Player::model->resize();
-	Player::model->init();
+void Player::setupModel(std::string turret, std::string chassis) {
+	Player::turret = new Shape();
+	Player::turret->loadMesh(turret);
+	Player::turret->resize();
+	Player::turret->init();
+	Player::chassis = new Shape();
+	Player::chassis->loadMesh(chassis);
+	Player::chassis->resize();
+	Player::chassis->init();
 }
