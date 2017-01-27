@@ -53,7 +53,7 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->translate(vec3(xpos, 1, zpos));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
-       //M->rotate(roll, vec3(0, 0, 1));
+       M->rotate(roll, vec3(0, 0, 1));
        M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
       Head::model->draw(prog);
