@@ -10,23 +10,19 @@ public:
     float xpos;
     float ypos;
     float zpos;
-    float xdir;
-    float ydir;
-    float zdir;
-    float vel;
+    float phi;
+    float theta;
+    float roll;
     float bound;
     GameObject();
-    GameObject(float xp, float yp, float zp, float xd, float yd, float zd,
-      float v, float b);
+    GameObject(float xp, float yp, float zp, float ph, float th, float rl,
+      float b);
     virtual ~GameObject();
 
     // functions
     void draw();
     void step(float dt);
-    void rotateX(float theta);
-    void rotateY(float theta);
-    void rotateZ(float theta);
-    float getXRot();
-    float getYRot();
-    float getZRot();
+    float getXComp();
+    float getYComp();
+    float getZComp();
 };

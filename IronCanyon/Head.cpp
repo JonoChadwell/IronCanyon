@@ -10,9 +10,10 @@
 
 Shape* Head::model;
 
-Head::Head(float xp, float yp, float zp, float xd, float yd, float zd,
+Head::Head(float xp, float yp, float zp, float ph, float th, float rl,
   float v, float b) :
-    GameObject(xp, yp, zp, xd, yd, zd, v, b),
+    GameObject(xp, yp, zp, ph, th, rl, b),
+    vel(v),
     active(true)
 {}
 
@@ -50,8 +51,9 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
     M->pushMatrix();
        M->loadIdentity();
        M->translate(vec3(xpos, 1, zpos));
-       //M->rotate(getXRot(), vec3(1, 0, 0));
-       //M->rotate(-getYRot() + MATH_PI / 2, vec3(0, 1, 0));
+       M->rotate(phi, vec3(1, 0, 0));
+       M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+       //M->rotate(roll, vec3(0, 0, 1));
        M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
       Head::model->draw(prog);
@@ -62,8 +64,7 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->loadIdentity();
        M->translate(vec3(xpos, .01, zpos));
        M->scale(vec3(1, 0.01, 1));
-       M->rotate(-getYRot() + MATH_PI / 2, vec3(0, 1, 0));
-       //M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
+       M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
        glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
@@ -78,7 +79,13 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
 void Head::step(float dt) {
     // stop if collided with camera
     vel = active ? vel : 0;
-    GameObject::step(dt);
+    xpos += getXComp() * dt * vel; 
+    ypos += getYComp() * dt * vel; 
+    zpos += getZComp() * dt * vel;
+    if (sqrt(xpos*xpos + zpos*zpos) > 50) {
+        printf("FUCK\n");
+        theta += MATH_PI;
+    }
 }
 
 void Head::setupModel(std::string dir) {

@@ -9,6 +9,7 @@ class Head : public GameObject {
 
 public:
     bool active;
+    float vel;
     Head(float xp, float yp, float zp, float xd, float yd, float zd,
       float v, float b);
     virtual ~Head();
