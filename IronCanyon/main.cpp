@@ -192,7 +192,7 @@ static void init()
 
 	// Initialize mesh.
 	shape = make_shared<Shape>();
-	shape->loadMesh(RESOURCE_DIR + "sphere.obj");
+	shape->loadMesh(RESOURCE_DIR + "terrain.obj");
 	shape->resize();
 	shape->init();
 
@@ -305,8 +305,8 @@ static void renderFloor(){
    M->pushMatrix();
      M->loadIdentity();
      /*play with these options */
-     M->translate(vec3(0, 0, 0));
-     M->scale(vec3(50, 0.01, 50));
+      M->translate(vec3(0, 5, 0));
+      M->scale(vec3(50, 50, 50));
       glUniformMatrix4fv(ground->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
      shape->draw(ground);
    M->popMatrix();
