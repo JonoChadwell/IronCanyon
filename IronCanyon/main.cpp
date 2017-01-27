@@ -12,6 +12,7 @@
 #include "MatrixStack.h"
 #include "Shape.h"
 #include "Head.h"
+#include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
 
@@ -28,12 +29,18 @@ using namespace glm;
 GLFWwindow *window; // Main application window
 string RESOURCE_DIR = ""; // Where the resources are loaded from
 Program *head;
-    // declare vector for head objects
-    vector<Head*> heads;
+
 Camera* camera;
 Player* player;
-Program *ground;
+Program* ground;
+Terrain* terrain;
 shared_ptr<Shape> shape;
+
+// Vector holding all game objects
+vector<GameObject*> objects;
+
+// Vector holding all head objects
+vector<Head*> heads;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
@@ -86,7 +93,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
       velx = 0;
 	  velz = 0;
 	}
-   
 }
 
 
@@ -156,9 +162,9 @@ static void init()
 
    srand(0);
     // creating heads
-    float x, z;
+    // float x, z;
     float toAdd1, toAdd2;
-    float rotate;
+    // float rotate;
    for (int i = 0; i < 20; i++ ) {
       toAdd1 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
       toAdd2 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
@@ -170,9 +176,9 @@ static void init()
             j = -1;
          }
       }
-        rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
-        x = cos(rotate);
-        z = sin(rotate);
+        // rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
+        // x = cos(rotate);
+        // z = sin(rotate);
         heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
    }
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
@@ -213,24 +219,9 @@ static void init()
 	head->addAttribute("vertPos");
 	head->addAttribute("vertNor");
 
-	ground = new Program();
-	ground->setVerbose(true);
-	ground->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
-	ground->init();
-	ground->addUniform("P");
-	ground->addUniform("M");
-	ground->addUniform("V");
-	ground->addUniform("lightPos");
-	ground->addUniform("eye");
-	ground->addUniform("MatAmb");
-	ground->addUniform("MatDif");
-	ground->addUniform("MatSpec");
-	ground->addUniform("shine");
-	ground->addAttribute("vertPos");
-	ground->addAttribute("vertNor");
-
     // initialize head model
-    Head::setupModel(RESOURCE_DIR + "head.obj");
+    Head::setup();
+    Terrain::setup();
 	Player::setupModel(RESOURCE_DIR + "head.obj");
 
 	velz = 0;
@@ -296,38 +287,18 @@ static void renderFloor(){
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
    float aspect = width/(float)height;
-   auto P = make_shared<MatrixStack>();
-   auto M = make_shared<MatrixStack>();
+   MatrixStack *P = new MatrixStack();
+
    // Apply perspective projection.
    P->pushMatrix();
    P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-   glm::mat4 lookAt = glm::lookAt( eye, lookAtPt, glm::vec3(0, 1, 0));
+   glm::mat4 lookAt = glm::lookAt(eye, lookAtPt, glm::vec3(0, 1, 0));
 
-   ground->bind();
+   terrain->draw(P, lookAt, eye);
    
-   glUniform3f(ground->getUniform("lightPos"), 100, 100, 100);
-   glUniform3f(ground->getUniform("eye"), eye.x, eye.y, eye.z);
-   glUniform3f(ground->getUniform("MatAmb"), .2, .6, .3);
-   glUniform3f(ground->getUniform("MatDif"), .7, .26, .3);
-   glUniform3f(ground->getUniform("MatSpec"), .31, .16, .08);
-   glUniform1f(ground->getUniform("shine"), 2.5);
-   
-   glUniformMatrix4fv(ground->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-   glUniformMatrix4fv(ground->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
-
-   M->pushMatrix();
-     M->loadIdentity();
-     /*play with these options */
-      M->translate(vec3(0, 15, 0));
-      M->scale(vec3(100, 100, 100));
-      glUniformMatrix4fv(ground->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-     shape->draw(ground);
-   M->popMatrix();
-
-
    P->popMatrix();
-   ground->unbind();
+   delete P;
 }
 
 static void render()
@@ -342,7 +313,7 @@ static void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Use the matrix stack for Lab 6
-   float aspect = width/(float)height;
+   // float aspect = width/(float)height;
 	eye.x = player->xpos + 10 * sin(player->theta) * cos(player->phi);
 	eye.y = player->ypos + 10 * sin(player->phi);
 	eye.z = player->zpos + 10 * cos(player->theta) * cos(player->phi);

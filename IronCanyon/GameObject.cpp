@@ -51,3 +51,7 @@ float GameObject::getZComp() {
 void GameObject::draw () {
     
 }
+
+void GameObject::setup() {
+
+}

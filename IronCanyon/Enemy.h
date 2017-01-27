@@ -5,19 +5,17 @@
 #include <vector>
 #include <memory>
 
-class Head : public GameObject {
+class Enemy : public GameObject {
 
 public:
     bool active;
     float vel;
-    Head(float xp, float yp, float zp, float xd, float yd, float zd, float v, float b);
-    virtual ~Head();
+    Enemy(float xp, float yp, float zp, float xd, float yd, float zd, float v, float b);
+    virtual ~Enemy();
+    static Shape* model;
 
     // functions
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
     void step(float dt);
-    static void setup();
-    
-private:
-    static Shape* model;
+    static void setupModel(std::string dir);
 };

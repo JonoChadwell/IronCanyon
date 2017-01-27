@@ -15,8 +15,7 @@ public:
     float roll;
     float bound;
     GameObject();
-    GameObject(float xp, float yp, float zp, float ph, float th, float rl,
-      float b);
+    GameObject(float xp, float yp, float zp, float ph, float th, float rl, float b);
     virtual ~GameObject();
 
     // functions
@@ -25,4 +24,5 @@ public:
     float getXComp();
     float getYComp();
     float getZComp();
+    static void setup();
 };

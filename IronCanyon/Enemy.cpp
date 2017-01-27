@@ -1,4 +1,4 @@
-#include "Head.h"
+#include "Enemy.h"
 #include "Program.h"
 #include "math.h"
 
@@ -8,9 +8,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Shape* Head::model;
+Shape* Enemy::model;
 
-Head::Head(float xp, float yp, float zp, float ph, float th, float rl,
+Enemy::Enemy(float xp, float yp, float zp, float ph, float th, float rl,
   float v, float b) :
     GameObject(xp, yp, zp, ph, th, rl, b),
     vel(v),
@@ -18,16 +18,14 @@ Head::Head(float xp, float yp, float zp, float ph, float th, float rl,
 {}
 
 // destructor
-Head::~Head()
+Enemy::~Enemy()
 {
 }
 
 // functions
-void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) {
+void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
-    // drawing
-    float rotate;
 
     //render shit
     prog->bind();
@@ -56,7 +54,7 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->rotate(roll, vec3(0, 0, 1));
        M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Head::model->draw(prog);
+      Enemy::model->draw(prog);
     M->popMatrix();
 
 
@@ -71,14 +69,14 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
        glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
        glUniform3f(prog->getUniform("MatSpec"), 0, 0, 0);
-       Head::model->draw(prog);
+      Enemy::model->draw(prog);
     M->popMatrix();
     // garbage collection
     delete M;
     prog->unbind();
 }
 
-void Head::step(float dt) {
+void Enemy::step(float dt) {
     // stop if collided with camera
     vel = active ? vel : 0;
     xpos += getXComp() * dt * vel; 
@@ -89,9 +87,9 @@ void Head::step(float dt) {
     }
 }
 
-void Head::setup() {
-	Head::model = new Shape();
-	Head::model->loadMesh(std::string("../resources/head.obj"));
-	Head::model->resize();
-	Head::model->init();
+void Enemy::setupModel(std::string dir) {
+	Enemy::model = new Shape();
+	Enemy::model->loadMesh(dir);
+	Enemy::model->resize();
+	Enemy::model->init();
 }
