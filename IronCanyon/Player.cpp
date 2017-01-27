@@ -70,7 +70,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	M->pushMatrix();
 	M->loadIdentity();
 	M->translate(vec3(xpos, 1, zpos));
-	M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+	M->rotate(theta + MATH_PI, vec3(0, 1, 0));
+	M->rotate(phi, vec3(1, 0, 0));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::model->draw(prog);
 	M->popMatrix();
@@ -80,7 +81,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	M->loadIdentity();
 	M->translate(vec3(xpos, .01, zpos));
 	M->scale(vec3(1, 0.01, 1));
-	M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+	M->rotate(theta + MATH_PI, vec3(0, 1, 0));
+	M->rotate(phi, vec3(1, 0, 0));
 	//M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);

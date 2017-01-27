@@ -282,8 +282,8 @@ static void drawPlayer() {
 }
 
 static void stepPlayer() {
-	player->theta = theta;
-	player->phi = phi;
+	player->theta = -theta;
+	player->phi = -phi;
 	for (float cap = 0.0; cap < renderTime; cap += physDt)
 		player->step(physDt);
 }
@@ -331,21 +331,9 @@ static void render()
 
 	//Use the matrix stack for Lab 6
    float aspect = width/(float)height;
-   glm::vec3 up = glm::vec3(0, 1, 0);
-
-   float radius = 1;
-   float lookX = radius * cos(phi) * cos(theta);
-   float lookY = radius * sin(phi);
-   float lookZ = radius * cos(phi) * cos(MATH_PI / 2 - theta);
-   lookAtPt = glm::vec3(lookX, lookY, lookZ);
-   w = normalize(lookAtPt);
-   u = cross(lookAtPt, glm::vec3(0, 1, 0));
-   eye += lookAtPt * velz;
-   eye += velx * u;
-	eye.x = player->zpos - 10 * cos(player->theta) * cos(player->phi);
-	eye.y = player->ypos - 10 * sin(player->phi);
-	eye.z = player->xpos - 10 * sin(player->theta) * sin(player->phi);
-	//eye.z = 0;
+	eye.x = player->xpos + 10 * sin(player->theta) * cos(player->phi);
+	eye.y = player->ypos + 10 * sin(player->phi);
+	eye.z = player->zpos + 10 * cos(player->theta) * cos(player->phi);
    lookAtPt = glm::vec3(player->xpos, player->ypos, player->zpos);
 
     // render things
