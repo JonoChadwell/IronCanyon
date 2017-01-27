@@ -11,15 +11,15 @@ public:
 	float xpos;
 	float ypos;
 	float zpos;
-	float xdir;
-	float ydir;
-	float zdir;
+	float phi;
+	float theta;
+	float roll;
 	float velx;
 	float vely;
 	float velz;
 	float bound;
 	Player();
-	Player(float xp, float yp, float zp, float xd, float yd, float zd,
+	Player(float xp, float yp, float zp, float xr, float yr, float zr,
 		float vx, float vy, float vz, float bound);
 	virtual ~Player();
 	static Shape* model;
@@ -27,8 +27,5 @@ public:
 	// functions
 	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
 	void step(float dt);
-	void rotateX(float theta);
-	void rotateY(float theta);
-	void rotateZ(float theta);
 	static void setupModel(std::string dir);
 };

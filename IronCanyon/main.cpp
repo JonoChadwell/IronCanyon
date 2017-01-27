@@ -37,7 +37,7 @@ shared_ptr<Shape> shape;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
-float toward, sideway;
+float velz, velx;
 float physDt = 0.005;
 float startRender = 0.0;
 float renderTime = 0.0;
@@ -58,21 +58,33 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if(key == GLFW_KEY_W) {
-      toward = .5;
+	if(key == GLFW_KEY_W && action == GLFW_PRESS) {
+		velz += .5;
 	}
-	else if(key == GLFW_KEY_S) {
-      toward = -.5;
+	else if(key == GLFW_KEY_S && action == GLFW_PRESS) {
+		velz += -.5;
 	}
-	if(key == GLFW_KEY_A) {
-      sideway = -.5;
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
+		velz += -.5;
 	}
-	else if(key == GLFW_KEY_D) {
-      sideway = .5;
+	else if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
+		velz += .5;
+	}
+	if(key == GLFW_KEY_A && action == GLFW_PRESS) {
+      velx += -.5;
+	}
+	else if(key == GLFW_KEY_D && action == GLFW_PRESS) {
+      velx += .5;
+	}
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
+		velx += .5;
+	}
+	else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
+		velx += -.5;
 	}
 	if(action == GLFW_RELEASE) {
-      sideway = 0;
-      toward = 0;
+      velx = 0;
+	  velz = 0;
 	}
    
 }
@@ -166,11 +178,11 @@ static void init()
         heads.push_back(new Head(toAdd1, 0, toAdd2, x, 0, z, 10, 1));
    }
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
-   player = new Player(0, 0, 0, 1, 0, 0, 0, 0, 0, 5);
+   player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5);
    theta = MATH_PI;
    phi = 0;
-   toward = 0;
-   sideway = 0;
+   velz = 0;
+   velx = 0;
    u = glm::vec3(1, 0, 0);
    v = glm::vec3(0, 1, 0);
    w = glm::vec3(0, 0, -1);
@@ -216,9 +228,12 @@ static void init()
     // initialize head model
     Head::setupModel(RESOURCE_DIR + "head.obj");
 	Player::setupModel(RESOURCE_DIR + "head.obj");
+
+	velz = 0;
+	velx = 0;
 }
 
-static void renderHeads() {
+static void drawHeads() {
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
    float aspect = width/(float)height;
@@ -240,7 +255,14 @@ static void renderHeads() {
     delete P;
 }
 
-static void renderPlayer() {
+static void stepHeads() {
+	for (unsigned int i = 0; i < heads.size(); i++) {
+		for (float cap = 0.0; cap < renderTime; cap += physDt)
+			heads[i]->step(physDt);
+	}
+}
+
+static void drawPlayer() {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	float aspect = width / (float)height;
@@ -254,11 +276,16 @@ static void renderPlayer() {
 	// draw and time based movement
 	
 	player->draw(P, lookAt, eye, head);
-	//for (float cap = 0.0; cap < renderTime; cap += physDt)
-		//player->step(physDt);
 
 	P->popMatrix();
 	delete P;
+}
+
+static void stepPlayer() {
+	player->theta = theta;
+	player->phi = phi;
+	for (float cap = 0.0; cap < renderTime; cap += physDt)
+		player->step(physDt);
 }
 
 static void renderFloor(){
@@ -313,14 +340,19 @@ static void render()
    lookAtPt = glm::vec3(lookX, lookY, lookZ);
    w = normalize(lookAtPt);
    u = cross(lookAtPt, glm::vec3(0, 1, 0));
-   eye += lookAtPt * toward;
-   eye += sideway * u;
-    eye.y = eye.y < 0.5 ? 0.5 : eye.y;
-   lookAtPt += eye;
+   eye += lookAtPt * velz;
+   eye += velx * u;
+	eye.x = player->zpos - 10 * cos(player->theta) * cos(player->phi);
+	eye.y = player->ypos - 10 * sin(player->phi);
+	eye.z = player->xpos - 10 * sin(player->theta) * sin(player->phi);
+	//eye.z = 0;
+   lookAtPt = glm::vec3(player->xpos, player->ypos, player->zpos);
 
     // render things
-    renderHeads();
-	renderPlayer();
+    drawHeads();
+	drawPlayer();
+	stepHeads();
+	stepPlayer();
     renderFloor();
     // collision detection
     checkHeadCollides();
