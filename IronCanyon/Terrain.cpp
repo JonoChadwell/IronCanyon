@@ -40,7 +40,7 @@ void Terrain::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
       M->loadIdentity();
       /*play with these options */
       M->translate(vec3(0, 0, 0));
-      M->scale(vec3(5, 5, 5));
+      M->scale(vec3(1, 1, 1));
       glUniformMatrix4fv(Terrain::program->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
       Terrain::model->draw(Terrain::program);
    M->popMatrix();
@@ -56,7 +56,7 @@ void Terrain::setup() {
 	
 	Terrain::program = new Program();
 	Terrain::program->setVerbose(true);
-	Terrain::program->setShaderNames(std::string("../resources/phong_vert.glsl"), std::string("../resources/phong_frag.glsl"));
+	Terrain::program->setShaderNames(std::string("../resources/terrain_vert.glsl"), std::string("../resources/terrain_frag.glsl"));
 	Terrain::program->init();
 	Terrain::program->addUniform("P");
 	Terrain::program->addUniform("M");

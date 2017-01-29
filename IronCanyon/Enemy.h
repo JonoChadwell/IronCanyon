@@ -1,6 +1,8 @@
+#pragma once
 #include "GameObject.h"
 #include "Shape.h"
 #include "MatrixStack.h"
+#include "Grid.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -10,12 +12,17 @@ class Enemy : public GameObject {
 public:
     bool active;
     float vel;
-    Enemy(float xp, float yp, float zp, float xd, float yd, float zd, float v, float b);
+    Enemy(float xp, float yp, float zp, float ph, float th, float rl, float v, float b, Grid* grid);
     virtual ~Enemy();
-    static Shape* model;
 
     // functions
-    void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
+    void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
-    static void setupModel(std::string dir);
+    static void setup();
+
+private:
+	Grid* grid;
+	float animtime;
+	static Shape* model;
+	static Program* shader;
 };
