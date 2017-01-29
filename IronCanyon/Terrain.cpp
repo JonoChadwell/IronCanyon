@@ -1,6 +1,7 @@
 #include "Terrain.h"
 #include "Program.h"
 #include "math.h"
+#include "Constants.h"
 
 #define MATH_PI 3.1416
 
@@ -65,7 +66,7 @@ void Terrain::step(float dt) {
 
 void Terrain::setup() {
 	Terrain::model = new Shape();
-	Terrain::model->loadMesh(std::string("../resources/terrain.obj"));
+	Terrain::model->loadMesh(RESOURCE_DIR + std::string("terrain.obj"));
 	Terrain::model->init();
 	
 	Terrain::program = new Program();

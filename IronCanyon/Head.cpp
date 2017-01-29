@@ -1,6 +1,7 @@
 #include "Head.h"
 #include "Program.h"
 #include "math.h"
+#include "Constants.h"
 
 #define MATH_PI 3.1416
 
@@ -91,7 +92,7 @@ void Head::step(float dt) {
 
 void Head::setup() {
 	Head::model = new Shape();
-	Head::model->loadMesh(std::string("../resources/head.obj"));
+	Head::model->loadMesh(RESOURCE_DIR + std::string("head.obj"));
 	Head::model->resize();
 	Head::model->init();
 }

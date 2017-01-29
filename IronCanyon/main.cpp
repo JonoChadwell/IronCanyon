@@ -15,6 +15,7 @@
 #include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Constants.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -27,7 +28,6 @@ using namespace glm;
 #define LOOK_SENS (1 / 400.0)
 
 GLFWwindow *window; // Main application window
-string RESOURCE_DIR = ""; // Where the resources are loaded from
 Program *head;
 
 Camera* camera;
@@ -335,8 +335,6 @@ static void render()
 
 int main(int argc, char **argv)
 {
-	RESOURCE_DIR = string("../resources/");
-
 	// Set error callback.
 	glfwSetErrorCallback(error_callback);
 	// Initialize the library.
