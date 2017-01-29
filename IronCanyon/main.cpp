@@ -32,7 +32,6 @@ Camera* camera;
 Player* player;
 
 Terrain* terrain;
-shared_ptr<Shape> shape;
 
 // Vector holding all game objects
 vector<GameObject*> objects;
@@ -159,6 +158,7 @@ static void init()
 	GLSL::checkVersion();
 
    srand(0);
+   /*
     // creating heads
     // float x, z;
     float toAdd1, toAdd2;
@@ -179,6 +179,7 @@ static void init()
         // z = sin(rotate);
         heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
    }
+   */
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5);
    theta = MATH_PI;
@@ -193,12 +194,6 @@ static void init()
 	glClearColor(.5f, .7f, .9f, 1.0f);
 	// Enable z-buffer test.
 	glEnable(GL_DEPTH_TEST);
-
-	// Initialize mesh.
-	shape = make_shared<Shape>();
-	shape->loadMesh(RESOURCE_DIR + "terrain.obj");
-	shape->resize();
-	shape->init();
 
 	// Initialize the GLSL program.
 
