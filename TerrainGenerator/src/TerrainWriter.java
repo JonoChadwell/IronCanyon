@@ -51,11 +51,11 @@ public class TerrainWriter {
          normal = new Vector();
       }
 
-      public Vertex(Vector v) {
-         this.x = v.x;
-         this.y = v.y;
-         this.z = v.z;
-      }
+//      public Vertex(Vector v) {
+//         this.x = v.x;
+//         this.y = v.y;
+//         this.z = v.z;
+//      }
 
       public String toString() {
          return "v " + x + " " + y + " " + z;
@@ -73,24 +73,23 @@ public class TerrainWriter {
    public static void write(String file, Terrain terrain, int xpoints, int ypoints) throws Exception {
       List<Vertex> verticies = new ArrayList<>();
       List<Triangle> faces = new ArrayList<>();
-      int[][] pts = new int[xpoints + 1][ypoints + 1];
+      int[][] pts = new int[xpoints][ypoints];
       double minx = terrain.getMinX();
       double maxx = terrain.getMaxX();
       double miny = terrain.getMinY();
       double maxy = terrain.getMaxY();
-      for (int x = 0; x <= xpoints; x++) {
-         for (int y = 0; y <= ypoints; y++) {
-            double xval = (x * minx + (xpoints - x) * maxx) / xpoints;
-            double yval = (y * miny + (ypoints - y) * maxy) / ypoints;
+      for (int x = 0; x <= xpoints - 1; x++) {
+         for (int y = 0; y <= ypoints - 1; y++) {
+            double xval = (x * minx + (xpoints - x - 1) * maxx) / (xpoints - 1);
+            double yval = (y * miny + (ypoints - y - 1) * maxy) / (ypoints - 1);
             double zval = terrain.sample(xval, yval);
             Vertex vert = new Vertex(xval, zval, yval);
             verticies.add(vert);
             pts[x][y] = verticies.size();
          }
       }
-      int id = 1;
-      for (int x = 0; x < xpoints; x++) {
-         for (int y = 0; y < ypoints; y++) {
+      for (int x = 0; x < xpoints - 1; x++) {
+         for (int y = 0; y < ypoints - 1; y++) {
             if (Math.random() < 0.5) {
                faces.add(new Triangle(pts[x][y], pts[x + 1][y], pts[x + 1][y + 1], verticies));
                faces.add(new Triangle(pts[x][y], pts[x + 1][y + 1], pts[x][y + 1], verticies));

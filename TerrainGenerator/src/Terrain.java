@@ -21,6 +21,10 @@ public class Terrain {
       return Math.min(Math.max(0, Math.sqrt(Math.abs(x * y)) * 2 - 8), 3.0);
    }
    
+   public boolean isPassable(double x, double y) {
+      return Math.sqrt(Math.abs(x * y)) * 2 - 8 < 0.5;
+   }
+   
    public static void main(String[] args) {
       Terrain t = new Terrain();
       System.out.println(t.sample(10,0));
