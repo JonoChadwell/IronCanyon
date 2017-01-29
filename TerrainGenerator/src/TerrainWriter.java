@@ -120,9 +120,4 @@ public class TerrainWriter {
       writer.flush();
       writer.close();
    }
-
-   public static void main(String[] args) throws Exception {
-      write("../resources/terrain.obj", new Terrain(), 40, 40);
-   }
-
 }

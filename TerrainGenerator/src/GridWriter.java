@@ -31,9 +31,4 @@ public class GridWriter {
       writer.flush();
       writer.close();
    }
-
-   public static void main(String[] args) throws Exception {
-      write("../resources/terrain.grid", new Terrain(), 40, 40);
-   }
-
 }

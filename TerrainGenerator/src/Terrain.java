@@ -2,31 +2,26 @@
 public class Terrain {
    
    public int getMinX() {
-      return -10;
+      return -60;
    }
    
    public int getMaxX() {
-      return 10;
+      return 60;
    }
    
    public int getMinY() {
-      return -10;
+      return -60;
    }
    
    public int getMaxY() {
-      return 10;
+      return 60;
    }
    
    public double sample(double x, double y) {
-      return Math.min(Math.max(0, Math.sqrt(Math.abs(x * y)) * 2 - 8), 3.0);
+      return Math.min(Math.max(0, Math.sqrt(Math.abs(x * y)) * 2 - 50), 15.0);
    }
    
    public boolean isPassable(double x, double y) {
-      return Math.sqrt(Math.abs(x * y)) * 2 - 8 < 0.5;
-   }
-   
-   public static void main(String[] args) {
-      Terrain t = new Terrain();
-      System.out.println(t.sample(10,0));
+      return sample(x,y) < 0.5;
    }
 }
