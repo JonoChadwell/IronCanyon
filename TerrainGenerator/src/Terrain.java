@@ -18,7 +18,7 @@ public class Terrain {
    }
    
    public double sample(double x, double y) {
-      return Math.min(Math.max(0, Math.sqrt(Math.abs(x * y)) * 2 - 50), 15.0);
+      return Math.min(Math.max(Math.sqrt(x * x + y * y) / 30.0 - 1.0, Math.sqrt(Math.abs(x * y)) * 2 - 50), 15.0);
    }
    
    public boolean isPassable(double x, double y) {
