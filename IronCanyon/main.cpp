@@ -16,6 +16,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Constants.h"
+#include "Grid.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -30,7 +31,7 @@ GLFWwindow *window; // Main application window
 
 Camera* camera;
 Player* player;
-
+Grid* grid;
 Terrain* terrain;
 
 // Vector holding all game objects
@@ -181,6 +182,8 @@ static void init()
    }
    */
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
+   terrain = new Terrain();
+   grid = new Grid();
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5);
    theta = MATH_PI;
    phi = 0;

@@ -118,6 +118,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GLSL.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Head.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixStack.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLSL.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="Head.h" />
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="Player.h" />

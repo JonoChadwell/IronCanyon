@@ -5,13 +5,11 @@
 #include <vector>
 #include <memory>
 
-class Terrain : public GameObject {
+class Terrain {
 
 public:
-    bool active;
-    float vel;
-    Terrain(float xp, float yp, float zp, float xd, float yd, float zd, float v, float b);
-    virtual ~Terrain();
+    Terrain();
+    ~Terrain();
 
     // functions
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);

@@ -12,11 +12,7 @@
 Shape* Terrain::model;
 Program* Terrain::program;
 
-Terrain::Terrain(float xp, float yp, float zp, float ph, float th, float rl,
-  float v, float b) :
-    GameObject(xp, yp, zp, ph, th, rl, b),
-    vel(v),
-    active(true)
+Terrain::Terrain()
 {}
 
 // destructor
@@ -51,17 +47,6 @@ void Terrain::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
    Terrain::program->unbind();
    delete M;
-}
-
-void Terrain::step(float dt) {
-    // stop if collided with camera
-    vel = active ? vel : 0;
-    xpos += getXComp() * dt * vel; 
-    ypos += getYComp() * dt * vel; 
-    zpos += getZComp() * dt * vel;
-    if (sqrt(xpos*xpos + zpos*zpos) > 50) {
-        theta += MATH_PI;
-    }
 }
 
 void Terrain::setup() {
