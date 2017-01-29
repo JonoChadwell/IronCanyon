@@ -22,10 +22,15 @@ public:
 	Player(float xp, float yp, float zp, float xr, float yr, float zr,
 		float vx, float vy, float vz, float bound);
 	virtual ~Player();
-	static Shape* model;
 
 	// functions
-	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
+	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
 	void step(float dt);
-	static void setupModel(std::string dir);
+
+	static void setup();
+
+private:
+	static Shape* model;
+	static Program* shader;
+
 };

@@ -24,15 +24,13 @@
 using namespace std;
 using namespace glm;
 
-#define MATH_PI 3.14159
 #define LOOK_SENS (1 / 400.0)
 
 GLFWwindow *window; // Main application window
-Program *head;
 
 Camera* camera;
 Player* player;
-Program* ground;
+
 Terrain* terrain;
 shared_ptr<Shape> shape;
 
@@ -203,26 +201,12 @@ static void init()
 	shape->init();
 
 	// Initialize the GLSL program.
-	head = new Program();
-	head->setVerbose(true);
-	head->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
-	head->init();
-	head->addUniform("P");
-	head->addUniform("M");
-	head->addUniform("V");
-	head->addUniform("lightPos");
-	head->addUniform("eye");
-	head->addUniform("MatAmb");
-	head->addUniform("MatDif");
-	head->addUniform("MatSpec");
-	head->addUniform("shine");
-	head->addAttribute("vertPos");
-	head->addAttribute("vertNor");
+
 
     // initialize head model
     Head::setup();
     Terrain::setup();
-	Player::setupModel(RESOURCE_DIR + "head.obj");
+	Player::setup();
 
 	velz = 0;
 	velx = 0;
@@ -241,7 +225,7 @@ static void drawHeads() {
 
     // draw and time based movement
     for (unsigned int i = 0; i < heads.size(); i++) {
-        heads[i]->draw(P, lookAt, eye, head);
+        heads[i]->draw(P, lookAt, eye);
         for (float cap = 0.0; cap < renderTime; cap += physDt)
             heads[i]->step(physDt);
     }
@@ -270,7 +254,7 @@ static void drawPlayer() {
 
 	// draw and time based movement
 	
-	player->draw(P, lookAt, eye, head);
+	player->draw(P, lookAt, eye);
 
 	P->popMatrix();
 	delete P;
@@ -403,9 +387,7 @@ int main(int argc, char **argv)
 	// Quit program.
 	glfwDestroyWindow(window);
 	glfwTerminate();
-    // free memory
-    delete head;
-    delete ground;
+
     for (unsigned int i = 0 ; i < heads.size(); i++) {
         delete heads[i];
     }

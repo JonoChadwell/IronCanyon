@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Shape* Head::model;
+Program* Head::shader;
 
 Head::Head(float xp, float yp, float zp, float ph, float th, float rl,
   float v, float b) :
@@ -24,30 +25,30 @@ Head::~Head()
 }
 
 // functions
-void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) {
+void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
     // drawing
     float rotate;
 
     //render shit
-    prog->bind();
-    glUniform3f(prog->getUniform("lightPos"), 100, 100, 100);
-    glUniform3f(prog->getUniform("eye"), eye.x, eye.y, eye.z);
+	Head::shader->bind();
+    glUniform3f(Head::shader->getUniform("lightPos"), 100, 100, 100);
+    glUniform3f(Head::shader->getUniform("eye"), eye.x, eye.y, eye.z);
     if (active) {
-        glUniform3f(prog->getUniform("MatAmb"), .2, .6, .3);
-        glUniform3f(prog->getUniform("MatDif"), .7, .26, .3);
-        glUniform3f(prog->getUniform("MatSpec"), .31, .16, .08);
-        glUniform1f(prog->getUniform("shine"), 2.5);
+        glUniform3f(Head::shader->getUniform("MatAmb"), .2, .6, .3);
+        glUniform3f(Head::shader->getUniform("MatDif"), .7, .26, .3);
+        glUniform3f(Head::shader->getUniform("MatSpec"), .31, .16, .08);
+        glUniform1f(Head::shader->getUniform("shine"), 2.5);
     }
     else {
-        glUniform3f(prog->getUniform("MatAmb"), 0, .8, 1);
-        glUniform3f(prog->getUniform("MatDif"), .1, .5, .7);
-        glUniform3f(prog->getUniform("MatSpec"), .31, .16, .08);
-        glUniform1f(prog->getUniform("shine"), 3.5);
+        glUniform3f(Head::shader->getUniform("MatAmb"), 0, .8, 1);
+        glUniform3f(Head::shader->getUniform("MatDif"), .1, .5, .7);
+        glUniform3f(Head::shader->getUniform("MatSpec"), .31, .16, .08);
+        glUniform1f(Head::shader->getUniform("shine"), 3.5);
     }
-   glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-   glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+   glUniformMatrix4fv(Head::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+   glUniformMatrix4fv(Head::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
     M->pushMatrix();
        M->loadIdentity();
@@ -56,8 +57,8 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
        M->rotate(roll, vec3(0, 0, 1));
        M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
-       glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Head::model->draw(prog);
+       glUniformMatrix4fv(Head::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+       Head::model->draw(Head::shader);
     M->popMatrix();
 
 
@@ -68,15 +69,15 @@ void Head::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) 
        M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
        M->rotate(roll, vec3(0, 0, 1));
        M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
-       glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
-       glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
-       glUniform3f(prog->getUniform("MatSpec"), 0, 0, 0);
-       Head::model->draw(prog);
+       glUniformMatrix4fv(Head::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+       glUniform3f(Head::shader->getUniform("MatAmb"), 0, 0, 0);
+       glUniform3f(Head::shader->getUniform("MatDif"), 0, 0, 0);
+       glUniform3f(Head::shader->getUniform("MatSpec"), 0, 0, 0);
+       Head::model->draw(Head::shader);
     M->popMatrix();
     // garbage collection
     delete M;
-    prog->unbind();
+	Head::shader->unbind();
 }
 
 void Head::step(float dt) {
@@ -95,4 +96,20 @@ void Head::setup() {
 	Head::model->loadMesh(RESOURCE_DIR + std::string("head.obj"));
 	Head::model->resize();
 	Head::model->init();
+
+	Head::shader = new Program();
+	Head::shader->setVerbose(true);
+	Head::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Head::shader->init();
+	Head::shader->addUniform("P");
+	Head::shader->addUniform("M");
+	Head::shader->addUniform("V");
+	Head::shader->addUniform("lightPos");
+	Head::shader->addUniform("eye");
+	Head::shader->addUniform("MatAmb");
+	Head::shader->addUniform("MatDif");
+	Head::shader->addUniform("MatSpec");
+	Head::shader->addUniform("shine");
+	Head::shader->addAttribute("vertPos");
+	Head::shader->addAttribute("vertNor");
 }
