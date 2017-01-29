@@ -12,8 +12,12 @@
 #include "MatrixStack.h"
 #include "Shape.h"
 #include "Head.h"
+#include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Constants.h"
+#include "Grid.h"
+#include "Enemy.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -22,19 +26,17 @@
 using namespace std;
 using namespace glm;
 
-#define MATH_PI 3.14159
-#define ANGLE_45 0.70710678118
 #define LOOK_SENS (1 / 400.0)
 
 GLFWwindow *window; // Main application window
-string RESOURCE_DIR = ""; // Where the resources are loaded from
-Program *head;
-    // declare vector for head objects
-    vector<Head*> heads;
+
 Camera* camera;
 Player* player;
-Program *ground;
-shared_ptr<Shape> shape;
+Grid* grid;
+Terrain* terrain;
+
+// Vector holding all game objects
+vector<GameObject*> objects;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
@@ -49,6 +51,8 @@ bool mouseInitialized = false;
 double lastx;
 double lasty;
 
+bool spawnEnemy = false;
+
 static void error_callback(int error, const char *description)
 {
 	cerr << description << endl;
@@ -56,6 +60,9 @@ static void error_callback(int error, const char *description)
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+		spawnEnemy = true;
+	}
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
@@ -87,7 +94,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
       sideways = 0;
 	  forwards = 0;
 	}
-   
 }
 
 
@@ -96,7 +102,7 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
    double posX, posY;
    if (action == GLFW_PRESS) {
       glfwGetCursorPos(window, &posX, &posY);
-      cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+      // cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
 	}
    
 }
@@ -126,38 +132,17 @@ static void resize_callback(GLFWwindow *window, int width, int height) {
    glViewport(0, 0, width, height);
 }
 
-
-static void checkPlayerCollides() {
-    for (unsigned int i = 0; i < heads.size(); i++) {
-        if (sqrt(pow(eye.x - heads[i]->xpos, 2) + pow(eye.y - heads[i]->ypos, 2) +
-          pow(eye.z - heads[i]->zpos, 2)) < heads[i]->bound) {
-            heads[i]->active = false;
-        }
-    }
-}
-
-static void checkHeadCollides() {
-    for (unsigned int i = 0; i < heads.size(); i++) {
-        for (unsigned int j = i+1; j < heads.size(); j++) {
-            if (sqrt(pow(heads[j]->xpos - heads[i]->xpos, 2) + pow(heads[j]->zpos - heads[i]->zpos, 2))
-              <= heads[i]->bound + heads[j]->bound) {
-                heads[i]->theta += MATH_PI;
-                heads[j]->theta += MATH_PI;
-            }
-        }
-    }
-}
-
-
 static void init()
 {
 	GLSL::checkVersion();
 
    srand(0);
+
+   /*
     // creating heads
-    float x, z;
+    // float x, z;
     float toAdd1, toAdd2;
-    float rotate;
+    // float rotate;
    for (int i = 0; i < 20; i++ ) {
       toAdd1 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
       toAdd2 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
@@ -169,13 +154,19 @@ static void init()
             j = -1;
          }
       }
-        rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
-        x = cos(rotate);
-        z = sin(rotate);
+        // rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
+        // x = cos(rotate);
+        // z = sin(rotate);
         heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
    }
+   */
+
    //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
+
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5, 0);
+   terrain = new Terrain();
+   grid = new Grid();
+
    theta = MATH_PI;
    phi = 0;
    forwards = 0;
@@ -189,54 +180,17 @@ static void init()
 	// Enable z-buffer test.
 	glEnable(GL_DEPTH_TEST);
 
-	// Initialize mesh.
-	shape = make_shared<Shape>();
-	shape->loadMesh(RESOURCE_DIR + "terrain.obj");
-	shape->resize();
-	shape->init();
-
-	// Initialize the GLSL program.
-	head = new Program();
-	head->setVerbose(true);
-	head->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
-	head->init();
-	head->addUniform("P");
-	head->addUniform("M");
-	head->addUniform("V");
-	head->addUniform("lightPos");
-	head->addUniform("eye");
-	head->addUniform("MatAmb");
-	head->addUniform("MatDif");
-	head->addUniform("MatSpec");
-	head->addUniform("shine");
-	head->addAttribute("vertPos");
-	head->addAttribute("vertNor");
-
-	ground = new Program();
-	ground->setVerbose(true);
-	ground->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
-	ground->init();
-	ground->addUniform("P");
-	ground->addUniform("M");
-	ground->addUniform("V");
-	ground->addUniform("lightPos");
-	ground->addUniform("eye");
-	ground->addUniform("MatAmb");
-	ground->addUniform("MatDif");
-	ground->addUniform("MatSpec");
-	ground->addUniform("shine");
-	ground->addAttribute("vertPos");
-	ground->addAttribute("vertNor");
-
-    // initialize head model
-    Head::setupModel(RESOURCE_DIR + "head.obj");
-	Player::setupModel(RESOURCE_DIR + "head.obj", RESOURCE_DIR + "head.obj");
+    // initialize models and shaders
+    Head::setup();
+    Terrain::setup();
+	Player::setup();
+	Enemy::setup();
 
 	forwards = 0;
 	sideways = 0;
 }
 
-static void drawHeads() {
+static void drawGameObjects() {
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
    float aspect = width/(float)height;
@@ -248,18 +202,31 @@ static void drawHeads() {
    glm::mat4 lookAt = glm::lookAt( eye, lookAtPt, glm::vec3(0, 1, 0));
 
     // draw and time based movement
-    for (unsigned int i = 0; i < heads.size(); i++) {
-        heads[i]->draw(P, lookAt, eye, head);
+    for (unsigned int i = 0; i < objects.size(); i++) {
+		objects[i]->draw(P, lookAt, eye);
     }
 
-   P->popMatrix();
+    P->popMatrix();
     delete P;
 }
 
-static void stepHeads() {
-	for (unsigned int i = 0; i < heads.size(); i++) {
-		for (float cap = 0.0; cap < renderTime; cap += physDt)
-			heads[i]->step(physDt);
+static float randf() {
+	return (rand() * 1.0) / (RAND_MAX);
+}
+
+static void stepGameObjects() {
+	if (spawnEnemy) {
+		spawnEnemy = false;
+		float x = randf() * 100 - 50;
+		float z = randf() * 100 - 50;
+		while (!grid->inBounds(x,z)) {
+			x = randf() * 100 - 50;
+			z = randf() * 100 - 50;
+		}
+		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 20, 1, grid));
+	}
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		objects[i]->step(physDt);
 	}
 }
 
@@ -276,7 +243,7 @@ static void drawPlayer() {
 
 	// draw and time based movement
 	
-	player->draw(P, lookAt, eye, head);
+	player->draw(P, lookAt, eye);
 
 	P->popMatrix();
 	delete P;
@@ -310,42 +277,22 @@ static void stepPlayer() {
 	}
 }
 
-static void renderFloor(){
+static void drawTerrain(){
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
    float aspect = width/(float)height;
-   auto P = make_shared<MatrixStack>();
-   auto M = make_shared<MatrixStack>();
+   MatrixStack *P = new MatrixStack();
+
    // Apply perspective projection.
    P->pushMatrix();
    P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-   glm::mat4 lookAt = glm::lookAt( eye, lookAtPt, glm::vec3(0, 1, 0));
+   glm::mat4 lookAt = glm::lookAt(eye, lookAtPt, glm::vec3(0, 1, 0));
 
-   ground->bind();
+   terrain->draw(P, lookAt, eye);
    
-   glUniform3f(ground->getUniform("lightPos"), 100, 100, 100);
-   glUniform3f(ground->getUniform("eye"), eye.x, eye.y, eye.z);
-   glUniform3f(ground->getUniform("MatAmb"), .2, .6, .3);
-   glUniform3f(ground->getUniform("MatDif"), .7, .26, .3);
-   glUniform3f(ground->getUniform("MatSpec"), .31, .16, .08);
-   glUniform1f(ground->getUniform("shine"), 2.5);
-   
-   glUniformMatrix4fv(ground->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-   glUniformMatrix4fv(ground->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
-
-   M->pushMatrix();
-     M->loadIdentity();
-     /*play with these options */
-      M->translate(vec3(0, 15, 0));
-      M->scale(vec3(100, 100, 100));
-      glUniformMatrix4fv(ground->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-     shape->draw(ground);
-   M->popMatrix();
-
-
    P->popMatrix();
-   ground->unbind();
+   delete P;
 }
 
 static void render()
@@ -359,22 +306,21 @@ static void render()
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Use the matrix stack for Lab 6
-   float aspect = width/(float)height;
+    // float aspect = width/(float)height;
 	eye.x = player->xpos + 10 * cos(-player->theta) * cos(-player->phi);
 	eye.y = player->ypos + 10 * sin(-player->phi);
 	eye.z = player->zpos + 10 * sin(-player->theta) * cos(-player->phi);
+
    lookAtPt = glm::vec3(player->xpos, player->ypos, player->zpos);
 
     // render things
-    drawHeads();
+    drawGameObjects();
 	drawPlayer();
-	stepHeads();
+	drawTerrain();
+
+	stepGameObjects();
 	stepPlayer();
-    renderFloor();
-    // collision detection
-    checkHeadCollides();
-    checkPlayerCollides();
+
     renderTime = glfwGetTime() - startRender;
     //printf("FPS: %f\n", 1/renderTime);
     cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
@@ -382,8 +328,6 @@ static void render()
 
 int main(int argc, char **argv)
 {
-	RESOURCE_DIR = string("../resources/");
-
 	// Set error callback.
 	glfwSetErrorCallback(error_callback);
 	// Initialize the library.
@@ -397,7 +341,7 @@ int main(int argc, char **argv)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	// Create a windowed mode window and its OpenGL context.
-	window = glfwCreateWindow(g_width, g_height, "YOUR NAME", NULL, NULL);
+	window = glfwCreateWindow(g_width, g_height, "Iron Canyon", NULL, NULL);
 	if(!window) {
 		glfwTerminate();
 		return -1;
@@ -443,20 +387,13 @@ int main(int argc, char **argv)
 		// Poll for and process events.
 		glfwPollEvents();
 	}
-    // print game over information
-    int headsTaken = 0;
-    for (unsigned int i = 0; i < heads.size(); i++) {
-        headsTaken += heads[i]->active ? 0 : 1;
-    }
-    printf("\nHeads hit: %d\n", headsTaken);
+
 	// Quit program.
 	glfwDestroyWindow(window);
 	glfwTerminate();
-    // free memory
-    delete head;
-    delete ground;
-    for (unsigned int i = 0 ; i < heads.size(); i++) {
-        delete heads[i];
+
+    for (unsigned int i = 0 ; i < objects.size(); i++) {
+        delete objects[i];
     }
 	return 0;
 }

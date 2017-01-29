@@ -23,13 +23,20 @@ public:
 	Player(float xp, float yp, float zp, float xr, float yr, float zr,
 		float vx, float vy, float vz, float bound, float ct);
 	virtual ~Player();
-	static Shape* turret;
-	static Shape* chassis;
 
 	// functions
 	float Player::getXComp();
 	float Player::getZComp();
-	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog);
+
+	// functions
+	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
 	void step(float dt);
-	static void setupModel(std::string turret, std::string chassis);
+
+	static void setup();
+
+private:
+	static Shape* turret;
+	static Shape* chassis;
+	static Program* shader;
+
 };

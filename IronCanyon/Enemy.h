@@ -1,24 +1,28 @@
+#pragma once
 #include "GameObject.h"
 #include "Shape.h"
 #include "MatrixStack.h"
+#include "Grid.h"
 #include <string>
 #include <vector>
 #include <memory>
 
-class Head : public GameObject {
+class Enemy : public GameObject {
 
 public:
     bool active;
     float vel;
-    Head(float xp, float yp, float zp, float xd, float yd, float zd, float v, float b);
-    virtual ~Head();
+    Enemy(float xp, float yp, float zp, float ph, float th, float rl, float v, float b, Grid* grid);
+    virtual ~Enemy();
 
     // functions
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
     static void setup();
-    
+
 private:
-    static Shape* model;
+	Grid* grid;
+	float animtime;
+	static Shape* model;
 	static Program* shader;
 };

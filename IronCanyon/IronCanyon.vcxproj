@@ -115,26 +115,33 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GLSL.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Head.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixStack.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLSL.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="Head.h" />
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>

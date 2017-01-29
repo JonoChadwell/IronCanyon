@@ -2,14 +2,18 @@
 #include "Program.h"
 #include <GL/glew.h>
 #include "math.h"
-#define MATH_PI 3.1416
+#include "Constants.h"
+
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+int time = 0;
+
 Shape* Player::turret;
 Shape* Player::chassis;
-int time = 0;
+Program* Player::shader;
 
 // default constructor
 Player::Player() :
@@ -70,22 +74,22 @@ void Player::step(float dt) {
 }
 
 // draw function
-void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog) {
+void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	// variable declaration
 	MatrixStack *M = new MatrixStack();
 	// drawing
 
 	//printf("draw xpos: %f", xpos);
 	//render shit
-	prog->bind();
-	glUniform3f(prog->getUniform("lightPos"), 100, 100, 100);
-	glUniform3f(prog->getUniform("eye"), eye.x, eye.y, eye.z);
-	glUniform3f(prog->getUniform("MatAmb"), 0, .8, 1);
-	glUniform3f(prog->getUniform("MatDif"), .5, .5, .1);
-	glUniform3f(prog->getUniform("MatSpec"), .31, .16, .08);
-	glUniform1f(prog->getUniform("shine"), 3.5);
-	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+	Player::shader->bind();
+	glUniform3f(Player::shader->getUniform("lightPos"), 100, 100, 100);
+	glUniform3f(Player::shader->getUniform("eye"), eye.x, eye.y, eye.z);
+	glUniform3f(Player::shader->getUniform("MatAmb"), 0, .8, 1);
+	glUniform3f(Player::shader->getUniform("MatDif"), .5, .5, .1);
+	glUniform3f(Player::shader->getUniform("MatSpec"), .31, .16, .08);
+	glUniform1f(Player::shader->getUniform("shine"), 3.5);
+	glUniformMatrix4fv(Player::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+	glUniformMatrix4fv(Player::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
 	//turret
 	M->pushMatrix();
@@ -93,8 +97,10 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	M->translate(vec3(this->xpos, 1, this->zpos));
 	M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Player::turret->draw(prog);
+
+	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	Player::turret->draw(Player::shader);
+
 	M->popMatrix();
 
 	//chassis
@@ -103,8 +109,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	M->translate(vec3(this->xpos, 1, this->zpos));
 	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
 	//M->rotate(phi, vec3(1, 0, 0));
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Player::turret->draw(prog);
+	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	Player::turret->draw(Player::shader);
 	M->popMatrix();
 
 	//turret shadow
@@ -115,26 +121,44 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye, Program *prog
 	//M->rotate(theta + MATH_PI, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 	//M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	glUniform3f(prog->getUniform("MatAmb"), 0, 0, 0);
-	glUniform3f(prog->getUniform("MatDif"), 0, 0, 0);
-	glUniform3f(prog->getUniform("MatSpec"), 0, 0, 0);
-	Player::turret->draw(prog);
+
+	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);
+	glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+	glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+	Player::turret->draw(Player::shader);
+
 	M->popMatrix();
 
 	// garbage collection
 	delete M;
-	prog->unbind();
+	Player::shader->unbind();
 }
 
 
-void Player::setupModel(std::string turret, std::string chassis) {
+void Player::setup() {
 	Player::turret = new Shape();
-	Player::turret->loadMesh(turret);
+	Player::turret->loadMesh(RESOURCE_DIR + "head.obj");
 	Player::turret->resize();
 	Player::turret->init();
 	Player::chassis = new Shape();
-	Player::chassis->loadMesh(chassis);
+	Player::chassis->loadMesh(RESOURCE_DIR + "head.obj");
 	Player::chassis->resize();
 	Player::chassis->init();
+
+	Player::shader = new Program();
+	Player::shader->setVerbose(true);
+	Player::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Player::shader->init();
+	Player::shader->addUniform("P");
+	Player::shader->addUniform("M");
+	Player::shader->addUniform("V");
+	Player::shader->addUniform("lightPos");
+	Player::shader->addUniform("eye");
+	Player::shader->addUniform("MatAmb");
+	Player::shader->addUniform("MatDif");
+	Player::shader->addUniform("MatSpec");
+	Player::shader->addUniform("shine");
+	Player::shader->addAttribute("vertPos");
+	Player::shader->addAttribute("vertNor");
 }

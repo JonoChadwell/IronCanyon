@@ -30,10 +30,6 @@ GameObject::~GameObject()
 {
 }
 
-// step function
-void GameObject::step (float dt) {
-}
-
 // rotate functions (all in radians)
 float GameObject::getXComp() {
     return cos(theta) * cos(phi);
@@ -47,7 +43,6 @@ float GameObject::getZComp() {
     return sin(theta) * cos(phi);
 }
 
-// draw function
-void GameObject::draw () {
-    
+void GameObject::setup() {
+
 }
