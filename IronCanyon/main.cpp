@@ -113,7 +113,7 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
 
    theta -= changex * LOOK_SENS;
    phi -= changey * LOOK_SENS;
-   phi = std::min(phi, (float)(.3));
+   phi = std::min(phi, (float)(.15));
    phi = std::max(phi, (float)(-.3));
    lastx = x;
    lasty = y;
@@ -229,7 +229,6 @@ static void stepPlayer() {
 	else {
 		angle = MATH_PI / 2 - sideways * MATH_PI / 2;
 	}
-	printf("Angle: %f\n", angle);
 	angle += player->theta;
 	if (!forwards && !sideways) {
 		player->velx = 0;
