@@ -44,9 +44,6 @@ float forwards, sideways;
 float physDt = 0.005;
 float startRender = 0.0;
 float renderTime = 0.0;
-glm::vec3 u, v, w;
-glm::vec3 eye;
-glm::vec3 lookAtPt;
 bool mouseInitialized = false;
 double lastx;
 double lasty;
@@ -135,7 +132,7 @@ static void init()
    srand(0);
 
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5, 0);
-   //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
+   camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
    terrain = new Terrain();
    grid = new Grid();
 
@@ -143,10 +140,6 @@ static void init()
    phi = 0;
    forwards = 0;
    sideways = 0;
-   u = glm::vec3(1, 0, 0);
-   v = glm::vec3(0, 1, 0);
-   w = glm::vec3(0, 0, -1);
-   eye = glm::vec3(0, 3, 0);
 	// Set background color.
 	glClearColor(.5f, .7f, .9f, 1.0f);
 	// Enable z-buffer test.
@@ -171,11 +164,12 @@ static void drawGameObjects() {
    P->pushMatrix();
    P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-   glm::mat4 lookAt = glm::lookAt( eye, lookAtPt, glm::vec3(0, 1, 0));
+   glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
+     camera->lookAtPt(), glm::vec3(0, 1, 0));
 
     // draw and time based movement
     for (unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->draw(P, lookAt, eye);
+		objects[i]->draw(P, lookAt, camera->eyeVector());
     }
 
     P->popMatrix();
@@ -211,11 +205,12 @@ static void drawPlayer() {
 	P->pushMatrix();
 	P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-	glm::mat4 lookAt = glm::lookAt(eye, lookAtPt, glm::vec3(0, 1, 0));
+	glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
+      camera->lookAtPt(), glm::vec3(0, 1, 0));
 
 	// draw and time based movement
 	
-	player->draw(P, lookAt, eye);
+	player->draw(P, lookAt, camera->eyeVector());
 
 	P->popMatrix();
 	delete P;
@@ -259,9 +254,10 @@ static void drawTerrain(){
    P->pushMatrix();
    P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-   glm::mat4 lookAt = glm::lookAt(eye, lookAtPt, glm::vec3(0, 1, 0));
+   glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
+     camera->lookAtPt(), glm::vec3(0, 1, 0));
 
-   terrain->draw(P, lookAt, eye);
+   terrain->draw(P, lookAt, camera->eyeVector());
    
    P->popMatrix();
    delete P;
@@ -278,12 +274,8 @@ static void render()
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // float aspect = width/(float)height;
-	eye.x = player->xpos + 10 * cos(-player->theta) * cos(-player->phi);
-	eye.y = player->ypos + 10 * sin(-player->phi);
-	eye.z = player->zpos + 10 * sin(-player->theta) * cos(-player->phi);
-
-   lookAtPt = glm::vec3(player->xpos, player->ypos, player->zpos);
+    // update camera to track player
+    camera->trackToPlayer(player);
 
     // render things
     drawGameObjects();
