@@ -134,32 +134,8 @@ static void init()
 
    srand(0);
 
-   /*
-    // creating heads
-    // float x, z;
-    float toAdd1, toAdd2;
-    // float rotate;
-   for (int i = 0; i < 20; i++ ) {
-      toAdd1 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
-      toAdd2 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
-      // not spawn on the user
-      for ( int j = 0; j < i; j++ ) {
-         if ( distance(glm::vec2(heads[j]->xpos, heads[j]->zpos), glm::vec2(toAdd1, toAdd2) ) < 5 ) {
-            toAdd1 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
-            toAdd2 = -25 + ( ( rand() * 1.0 ) / (RAND_MAX / 50.0) );
-            j = -1;
-         }
-      }
-        // rotate = -MATH_PI + ( ( rand() * 1.0 ) / (RAND_MAX / (2.0 * MATH_PI ) ) );
-        // x = cos(rotate);
-        // z = sin(rotate);
-        heads.push_back(new Head(toAdd1, 0, toAdd2, 0, i*20, 0, 10, 1));
-   }
-   */
-
-   //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
-
    player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5, 0);
+   //camera = new Camera(0, 3, 0, 1, 0, 0, 0, 5);
    terrain = new Terrain();
    grid = new Grid();
 
