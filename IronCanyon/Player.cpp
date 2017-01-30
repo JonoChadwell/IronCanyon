@@ -61,14 +61,8 @@ float Player::getZComp() {
 
 // step function
 void Player::step(float dt) {
-	/*
-	this->xpos += dt * velx * cos(theta) * 10;
-	this->ypos += dt * vely;
-	this->zpos += dt * velz * sin(theta) * 10;
-	*/
 	this->xpos += dt * velx * 10;
 	this->zpos += dt * velz * 10;
-	//printf("dt: %f, velx: %f, cos(theta): %f, xpos: %f\n", dt, velx, cos(theta), xpos);
 }
 
 // draw function
@@ -106,7 +100,6 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, 1, this->zpos));
 	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
-	//M->rotate(phi, vec3(1, 0, 0));
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::turret->draw(Player::shader);
 	M->popMatrix();
@@ -114,11 +107,10 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//turret shadow
 	M->pushMatrix();
 	M->loadIdentity();
-	//M->translate(vec3(this->xpos, .01, this->zpos));
+	M->translate(vec3(this->xpos, .01, this->zpos));
 	M->scale(vec3(1, 0.01, 1));
-	//M->rotate(theta + MATH_PI, vec3(0, 1, 0));
+	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
-	//M->rotate(- MATH_PI / 2, vec3(1, 0, 0));
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);

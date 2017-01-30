@@ -90,10 +90,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
 		sideways += -1;
 	}
-	if(action == GLFW_RELEASE) {
-      sideways = 0;
-	  forwards = 0;
-	}
 }
 
 
