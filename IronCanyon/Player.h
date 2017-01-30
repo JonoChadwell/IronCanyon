@@ -25,8 +25,8 @@ public:
 	virtual ~Player();
 
 	// functions
-	float Player::getXComp();
-	float Player::getZComp();
+	float getXComp();
+	float getZComp();
 
 	// functions
 	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);

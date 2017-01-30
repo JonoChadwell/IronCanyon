@@ -9,8 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-int time = 0;
-
 Shape* Player::turret;
 Shape* Player::chassis;
 Program* Player::shader;
