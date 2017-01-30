@@ -131,7 +131,7 @@ static void init()
 
    srand(0);
 
-   player = new Player(0, 2, 0, 1, 0, 0, 0, 0, 0, 5, 0);
+   player = new Player(0, 2, 0, 1, 0, 0, 5);
    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
    terrain = new Terrain();
    grid = new Grid();
@@ -220,6 +220,7 @@ static void stepPlayer() {
 	player->theta = theta;
 	player->phi = phi;
 	float angle;
+    // calculate direct angle from WASD
 	if (forwards > 0) {
 		angle = MATH_PI / 2 - sideways * MATH_PI / 4;
 	}
@@ -229,14 +230,15 @@ static void stepPlayer() {
 	else {
 		angle = MATH_PI / 2 - sideways * MATH_PI / 2;
 	}
+    // calculate relative angle in relation to the vehicle
 	angle += player->theta;
 	if (!forwards && !sideways) {
-		player->velx = 0;
-		player->velz = 0;
+		player->xacc = 0;
+		player->zacc = 0;
 	}
 	else {
-		player->velz = -cos(angle);
-		player->velx = -sin(angle);
+		player->xacc = -sin(angle) * 5;
+		player->zacc = -cos(angle) * 5;
 	}
 	for (float cap = 0.0; cap < renderTime; cap += physDt) {
 		player->step(physDt);

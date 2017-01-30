@@ -8,20 +8,16 @@
 class Player {
 
 public:
-	float xpos;
-	float ypos;
-	float zpos;
+	float xpos, ypos, zpos;
+    float xacc, yacc, zacc;
 	float phi;
 	float theta;
 	float roll;
-	float velx;
-	float vely;
-	float velz;
+	float velx, vely, velz;
 	float bound;
 	float ctheta;
 	Player();
-	Player(float xp, float yp, float zp, float xr, float yr, float zr,
-		float vx, float vy, float vz, float bound, float ct);
+	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound);
 	virtual ~Player();
 
 	// functions
