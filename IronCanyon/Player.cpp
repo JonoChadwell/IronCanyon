@@ -63,6 +63,22 @@ float Player::getZComp() {
 void Player::step(float dt) {
 	this->xpos += dt * velx * 10;
 	this->zpos += dt * velz * 10;
+	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
+	float tAngle = fmod(fmod(theta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
+	if (!velx && !velz) {
+		return;
+	}
+	float cRot;
+	if (tAngle == cAngle) {
+		cRot = 0;
+	}
+	else if (tAngle > cAngle) {
+		cRot = (tAngle - cAngle > MATH_PI) ? -2 : 2;
+	}
+	else {
+		cRot = (cAngle - tAngle > MATH_PI) ? 2 : -2;
+	}
+	this->ctheta += cRot * dt;
 }
 
 // draw function
@@ -109,7 +125,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, .01, this->zpos));
 	M->scale(vec3(1, 0.01, 1));
-	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+	M->rotate(ctheta, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
