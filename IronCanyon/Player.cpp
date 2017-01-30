@@ -9,6 +9,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// constants
+#define DRAG 5.0
+#define TOP_SPEED 3.0
+
 Shape* Player::turret;
 Shape* Player::chassis;
 Program* Player::shader;
@@ -25,23 +29,25 @@ Player::Player() :
 	vely(0),
 	velz(0),
 	bound(0),
-	ctheta(0)
+	ctheta(MATH_PI)
 {}
 
 // regular constructor
-Player::Player(float xp, float yp, float zp, float xd, float yd, float zd,
-	float vx, float vy, float vz, float b, float ct) :
+Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float b) :
 	xpos(xp),
 	ypos(yp),
 	zpos(zp),
-	phi(xd),
-	theta(yd),
-	roll(zd),
-	velx(vx),
-	vely(vy),
-	velz(vz),
+	phi(ph),
+	theta(th),
+	roll(rl),
+    xacc(0),
+    yacc(0),
+    zacc(0),
+	velx(0),
+	vely(0),
+	velz(0),
 	bound(b),
-	ctheta(ct)
+	ctheta(MATH_PI)
 {}
 
 // destructor
@@ -61,6 +67,14 @@ float Player::getZComp() {
 
 // step function
 void Player::step(float dt) {
+    // apply acceleration
+    velx += dt * xacc;
+    velz += dt * zacc;
+    velx = abs(velx) > TOP_SPEED ? (velx < 0 ? -TOP_SPEED : TOP_SPEED) : velx;
+    velz = abs(velz) > TOP_SPEED ? (velz < 0 ? -TOP_SPEED : TOP_SPEED) : velz;
+    velx += xacc == 0.0 ? (velx < 0 ? dt * DRAG : dt * -DRAG) : 0;
+    velz += zacc == 0.0 ? (velz < 0 ? dt * DRAG : dt * -DRAG) : 0;
+    // apply velocity to position
 	this->xpos += dt * velx * 10;
 	this->zpos += dt * velz * 10;
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
