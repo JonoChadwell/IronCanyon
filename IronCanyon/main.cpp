@@ -2,6 +2,7 @@
 	CPE 471 Cal Poly Z. Wood + S. Sueda
 */
 #include <iostream>
+#include <cmath>
 #include <algorithm>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -92,11 +93,27 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
 {
-   double posX, posY;
-   if (action == GLFW_PRESS) {
-      glfwGetCursorPos(window, &posX, &posY);
-      // cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
-	}
+    double posX, posY;
+    if (action == GLFW_PRESS) {
+        glfwGetCursorPos(window, &posX, &posY);
+        // cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+        player->firing = 0.03;
+        vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
+        vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
+        
+        cout << "Direction: " << laserDirection.x << " " << laserDirection.y << " " << laserDirection.z << "\n";
+        
+        for (unsigned int i = 0; i < objects.size(); i++) {
+            float radius = objects[i]->bound;
+            vec3 objectPosition = vec3(objects[i]->xpos, objects[i]->ypos, objects[i]->zpos);
+            float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
+            if (det > 0) {
+                objects.erase(objects.begin() + i);
+                i--;
+            }
+        }
+
+    }
    
 }
 
@@ -129,17 +146,17 @@ static void init()
 {
 	GLSL::checkVersion();
 
-   srand(0);
+    srand(0);
 
-   grid = new Grid();
-   player = new Player(0, 2, 0, 1, 0, 0, 5, grid);
-   camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
-   terrain = new Terrain();
+    grid = new Grid();
+    player = new Player(0, 2, 0, 1, 0, 0, 5, grid);
+    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
+    terrain = new Terrain();
 
-   theta = MATH_PI;
-   phi = 0;
-   forwards = 0;
-   sideways = 0;
+    theta = MATH_PI;
+    phi = 0;
+    forwards = 0;
+    sideways = 0;
 	// Set background color.
 	glClearColor(.5f, .7f, .9f, 1.0f);
 	// Enable z-buffer test.
@@ -189,7 +206,7 @@ static void stepGameObjects() {
 			x = randf() * 100 - 50;
 			z = randf() * 100 - 50;
 		}
-		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 20, 1, grid));
+		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 20, 2, grid));
 	}
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(physDt);
@@ -288,7 +305,7 @@ static void render()
 
     renderTime = glfwGetTime() - startRender;
     //printf("FPS: %f\n", 1/renderTime);
-    cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
+    // cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
 }
 
 int main(int argc, char **argv)
@@ -321,24 +338,24 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	//weird bootstrap of glGetError
-   glGetError();
+    glGetError();
 	cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
-   cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+    cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
 
 	// Set vsync.
 	glfwSwapInterval(1);
 	// Set keyboard callback.
 	glfwSetKeyCallback(window, key_callback);
-   //set the mouse call back
-   glfwSetMouseButtonCallback(window, mouse_callback);
-   //set the scroll call back
-   glfwSetCursorPosCallback(window, cursor_callback);
-   //set the window resize call back
-   glfwSetFramebufferSizeCallback(window, resize_callback);
-   //set cursor
-   glfwSetCursorPos(window, (double)g_width/2, (double)g_height/2);
-   //lock cursor
-   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //set the mouse call back
+    glfwSetMouseButtonCallback(window, mouse_callback);
+    //set the scroll call back
+    glfwSetCursorPosCallback(window, cursor_callback);
+    //set the window resize call back
+    glfwSetFramebufferSizeCallback(window, resize_callback);
+    //set cursor
+    glfwSetCursorPos(window, (double)g_width/2, (double)g_height/2);
+    //lock cursor
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Initialize scene. Note geometry initialized in init now
 	init();
@@ -360,5 +377,6 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < objects.size(); i++) {
         delete objects[i];
     }
+    cout << "\ngame exited\n";
 	return 0;
 }

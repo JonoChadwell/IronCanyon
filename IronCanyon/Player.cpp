@@ -4,7 +4,7 @@
 #include "math.h"
 #include "Constants.h"
 #include "Grid.h"
-
+#include <iostream>
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -16,6 +16,7 @@
 
 Shape* Player::turret;
 Shape* Player::chassis;
+Shape* Player::laser;
 Program* Player::shader;
 
 // default constructor
@@ -31,7 +32,9 @@ Player::Player() :
 	velz(0),
 	bound(0),
 	ctheta(MATH_PI)
-{}
+{
+    firing = 0;
+}
 
 // regular constructor
 Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float b, Grid* grid) :
@@ -50,7 +53,9 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
 	bound(b),
 	ctheta(MATH_PI),
     grid(grid)
-{}
+{
+    firing = 0;
+}
 
 // destructor
 Player::~Player()
@@ -69,6 +74,14 @@ float Player::getZComp() {
 
 // step function
 void Player::step(float dt) {
+    // reduce firing time
+    if (firing > 0) {
+        firing -= dt;
+        if (firing < 0) {
+            firing = 0;
+        }
+    }
+
     // apply acceleration
     velx += dt * xacc;
     velz += dt * zacc;
@@ -132,39 +145,71 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, this->ypos, this->zpos));
 	M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
-	M->rotate(phi, vec3(1, 0, 0));
+	M->rotate(phi + .2, vec3(1, 0, 0));
+    M->scale(vec3(0.2, 0.2, 1.5));
+    M->translate(vec3(0, 0, -0.75));
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::turret->draw(Player::shader);
 
 	M->popMatrix();
+
 
 	//chassis
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(this->xpos, this->ypos, this->zpos));
+	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
 	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+    M->scale(vec3(1, 0.3, 0.5));
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Player::turret->draw(Player::shader);
+	Player::chassis->draw(Player::shader);
 	M->popMatrix();
 
-	//turret shadow
+    //laser
+    if (firing > 0) {
+	    M->pushMatrix();
+	    M->loadIdentity();
+	    M->translate(vec3(this->xpos, this->ypos, this->zpos));
+	    M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
+	    M->rotate(phi + 1.8, vec3(1, 0, 0));
+        M->scale(vec3(0.5, 20, 0.5));
+        M->translate(vec3(0, -1, 0));
+
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+	    Player::laser->draw(Player::shader);
+    }
+
+	// shadow
     if (grid->inBounds(xpos, zpos)) {
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+
 	    M->pushMatrix();
 	    M->loadIdentity();
 	    M->translate(vec3(this->xpos, grid->height(xpos, zpos) + 0.1, this->zpos));
 	    M->scale(vec3(1, 0.01, 1));
-	    M->rotate(ctheta, vec3(0, 1, 0));
-	    M->rotate(phi, vec3(1, 0, 0));
+	    M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
+	    M->rotate(phi + .2, vec3(1, 0, 0));
+        M->scale(vec3(0.2, 0.2, 1.5));
+        M->translate(vec3(0, 0, -0.75));
+
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    Player::turret->draw(Player::shader);
+	    M->popMatrix();
+
+	    M->pushMatrix();
+	    M->loadIdentity();
+	    M->translate(vec3(this->xpos, grid->height(xpos, zpos) + 0.1, this->zpos));
+	    M->scale(vec3(1, 0.01, 1));
+	    M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+        M->scale(vec3(1, 0.3, 0.5));
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    Player::chassis->draw(Player::shader);
     }
-
-	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);
-	glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
-	glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
-	Player::turret->draw(Player::shader);
-
-	M->popMatrix();
 
 	// garbage collection
 	delete M;
@@ -174,13 +219,17 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 void Player::setup() {
 	Player::turret = new Shape();
-	Player::turret->loadMesh(RESOURCE_DIR + "head.obj");
+	Player::turret->loadMesh(RESOURCE_DIR + "cube.obj");
 	Player::turret->resize();
 	Player::turret->init();
 	Player::chassis = new Shape();
-	Player::chassis->loadMesh(RESOURCE_DIR + "head.obj");
+	Player::chassis->loadMesh(RESOURCE_DIR + "cube.obj");
 	Player::chassis->resize();
 	Player::chassis->init();
+	Player::laser = new Shape();
+	Player::laser->loadMesh(RESOURCE_DIR + "cube.obj");
+	Player::laser->resize();
+	Player::laser->init();
 
 	Player::shader = new Program();
 	Player::shader->setVerbose(true);
