@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include "math.h"
 #include "Constants.h"
+#include "Grid.h"
 
 
 // value_ptr for glm
@@ -33,7 +34,7 @@ Player::Player() :
 {}
 
 // regular constructor
-Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float b) :
+Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float b, Grid* grid) :
 	xpos(xp),
 	ypos(yp),
 	zpos(zp),
@@ -47,7 +48,8 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
 	vely(0),
 	velz(0),
 	bound(b),
-	ctheta(MATH_PI)
+	ctheta(MATH_PI),
+    grid(grid)
 {}
 
 // destructor
@@ -75,8 +77,20 @@ void Player::step(float dt) {
     velx += xacc == 0.0 ? (velx < 0 ? dt * DRAG : dt * -DRAG) : 0;
     velz += zacc == 0.0 ? (velz < 0 ? dt * DRAG : dt * -DRAG) : 0;
     // apply velocity to position
+    float oldx = xpos;
+    float oldz = zpos;
 	this->xpos += dt * velx * 10;
 	this->zpos += dt * velz * 10;
+    if (!grid->inBounds(xpos, zpos)) {
+        xpos = oldx;
+        zpos = oldz;
+    }
+    if (grid->inBounds(xpos, zpos)) {
+        ypos = grid->height(xpos, zpos) + 1.5;
+    } else {
+
+        ypos = -0.5;
+    }
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
 	float tAngle = fmod(fmod(theta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
 	if (!velx && !velz) {
@@ -116,7 +130,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//turret
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(this->xpos, 1, this->zpos));
+	M->translate(vec3(this->xpos, this->ypos, this->zpos));
 	M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 
@@ -128,19 +142,21 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//chassis
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(this->xpos, 1, this->zpos));
+	M->translate(vec3(this->xpos, this->ypos, this->zpos));
 	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::turret->draw(Player::shader);
 	M->popMatrix();
 
 	//turret shadow
-	M->pushMatrix();
-	M->loadIdentity();
-	M->translate(vec3(this->xpos, .01, this->zpos));
-	M->scale(vec3(1, 0.01, 1));
-	M->rotate(ctheta, vec3(0, 1, 0));
-	M->rotate(phi, vec3(1, 0, 0));
+    if (grid->inBounds(xpos, zpos)) {
+	    M->pushMatrix();
+	    M->loadIdentity();
+	    M->translate(vec3(this->xpos, grid->height(xpos, zpos) + 0.1, this->zpos));
+	    M->scale(vec3(1, 0.01, 1));
+	    M->rotate(ctheta, vec3(0, 1, 0));
+	    M->rotate(phi, vec3(1, 0, 0));
+    }
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);

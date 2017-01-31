@@ -131,10 +131,10 @@ static void init()
 
    srand(0);
 
-   player = new Player(0, 2, 0, 1, 0, 0, 5);
+   grid = new Grid();
+   player = new Player(0, 2, 0, 1, 0, 0, 5, grid);
    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
    terrain = new Terrain();
-   grid = new Grid();
 
    theta = MATH_PI;
    phi = 0;

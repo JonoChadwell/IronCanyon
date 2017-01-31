@@ -1,6 +1,7 @@
 #pragma once
 #include "MatrixStack.h"
 #include "Shape.h"
+#include "Grid.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -17,7 +18,7 @@ public:
 	float bound;
 	float ctheta;
 	Player();
-	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound);
+	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
 
 	// functions
@@ -31,6 +32,7 @@ public:
 	static void setup();
 
 private:
+    Grid* grid;
 	static Shape* turret;
 	static Shape* chassis;
 	static Program* shader;
