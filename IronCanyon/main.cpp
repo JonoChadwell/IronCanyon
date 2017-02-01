@@ -130,7 +130,7 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
 
    theta -= changex * LOOK_SENS;
    phi -= changey * LOOK_SENS;
-   phi = std::min(phi, (float)(.15));
+   phi = std::min(phi, (float)(.1));
    phi = std::max(phi, (float)(-.3));
    lastx = x;
    lasty = y;
@@ -206,7 +206,7 @@ static void stepGameObjects() {
 			x = randf() * 100 - 50;
 			z = randf() * 100 - 50;
 		}
-		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 20, 2, grid));
+		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 10, 2, grid));
 	}
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(physDt);
@@ -245,6 +245,8 @@ static void stepPlayer() {
 		angle = 3 * MATH_PI / 2 + sideways * MATH_PI / 4;
 	}
 	else {
+
+
 		angle = MATH_PI / 2 - sideways * MATH_PI / 2;
 	}
     // calculate relative angle in relation to the vehicle

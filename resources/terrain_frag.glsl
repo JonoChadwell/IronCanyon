@@ -22,5 +22,5 @@ void main(){
          max(0,sin(fragWorld.x)), 
 		 max(0,sin(fragWorld.y)), 
 		 max(0,sin(fragWorld.z))) * 0.1;
-   color = vec4(ambShade + diffShade + specShade + positionShade, 1.0);
+   color = vec4(ambShade + diffShade + specShade + positionShade, 1.0) + vec3(.2, .2, .2);
 }
