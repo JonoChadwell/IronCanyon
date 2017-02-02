@@ -24,6 +24,7 @@ Grid::Grid() {
 			gridfile >> token;
 			if (token[0] == '*') {
 				bounds[x][z] = false;
+                heights[x][z] = 1.0f;
 			}
 			else {
 				bounds[x][z] = true;
@@ -54,29 +55,25 @@ bool Grid::inBounds(float x, float z) {
 
 float Grid::height(float x, float z) {
 
-	int gridx = (x - minx) * (GRID_SIZE - 1) / (maxx - minx);
-	int gridz = (z - minz) * (GRID_SIZE - 1) / (maxz - minz);
+    // convert to grid array coordinates
+	x = ((x - minx) * (GRID_SIZE - 1)) / (maxx - minx);
+	z = ((z - minz) * (GRID_SIZE - 1)) / (maxz - minz);
 
-	int corners = 0;
+    // calculate grid indicies
+    int gridx = (int) x;
+    int gridz = (int) z;
+
+    // retain fractional part
+    x = x - gridx;
+    z = z - gridz;
+
 	float height = 0;
 
-	if (bounds[gridx][gridz]) {
-		corners++;
-		height += heights[gridx][gridz];
-	}
-	if (bounds[gridx + 1][gridz]) {
-		corners++;
-		height += heights[gridx + 1][gridz];
-	}
-	if (bounds[gridx][gridz + 1]) {
-		corners++;
-		height += heights[gridx][gridz + 1];
-	}
-	if (bounds[gridx + 1][gridz + 1]) {
-		corners++;
-		height += heights[gridx + 1][gridz + 1];
-	}
+    height += heights[gridx][gridz] * (1 - x) * (1 - z);
+	height += heights[gridx + 1][gridz] * x * (1 - z);
+	height += heights[gridx][gridz + 1] * (1 - x) * z;
+	height += heights[gridx + 1][gridz + 1] * x * z;
 
-	return height / corners;
+	return height;
 }
 

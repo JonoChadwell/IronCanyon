@@ -2,7 +2,7 @@
 
 #include <string>
 
-#define GRID_SIZE 40
+#define GRID_SIZE 200
 
 class Grid {
 
