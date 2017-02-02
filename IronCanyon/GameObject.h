@@ -7,15 +7,13 @@
 class GameObject {
 
 public:
-    float xpos;
-    float ypos;
-    float zpos;
+    glm::vec3 pos;
     float phi;
     float theta;
     float roll;
     float bound;
     GameObject();
-    GameObject(float xp, float yp, float zp, float ph, float th, float rl, float b);
+    GameObject(glm::vec3 p, float ph, float th, float rl, float b);
     virtual ~GameObject();
 
     // virtual functions (must be overriden by any subclass)

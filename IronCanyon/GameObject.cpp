@@ -4,9 +4,7 @@
 
 // default constructor
 GameObject::GameObject() :
-    xpos(0),
-    ypos(0),
-    zpos(0),
+    pos(glm::vec3(0, 0, 0)),
     phi(0), 
     theta(0), 
     roll(0), 
@@ -14,11 +12,9 @@ GameObject::GameObject() :
 {}
 
 // regular constructor
-GameObject::GameObject(float xp, float yp, float zp, float ph, float th, float rl,
+GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
   float b) :
-    xpos(xp),
-    ypos(yp),
-    zpos(zp),
+    pos(p),
     phi(ph),
     theta(th),
     roll(rl),

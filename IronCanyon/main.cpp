@@ -12,7 +12,6 @@
 #include "Program.h"
 #include "MatrixStack.h"
 #include "Shape.h"
-#include "Head.h"
 #include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
@@ -117,9 +116,10 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
         
         for (unsigned int i = 0; i < objects.size(); i++) {
             float radius = objects[i]->bound;
-            vec3 objectPosition = vec3(objects[i]->xpos, objects[i]->ypos, objects[i]->zpos);
+            vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
             float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
             if (det > 0) {
+                delete objects[i];
                 objects.erase(objects.begin() + i);
                 i--;
             }
@@ -178,7 +178,6 @@ static void init()
 	glEnable(GL_DEPTH_TEST);
 
     // initialize models and shaders
-    Head::setup();
     Terrain::setup();
 	Player::setup();
 	Enemy::setup();
@@ -221,7 +220,7 @@ static void stepGameObjects(float dt) {
 			x = randf() * 100 - 50;
 			z = randf() * 100 - 50;
 		}
-		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+		objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
 	}
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
