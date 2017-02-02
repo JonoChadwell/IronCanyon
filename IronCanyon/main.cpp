@@ -45,6 +45,7 @@ int g_width = 640*2, g_height = 480*2;
 float theta, phi;
 float forwards, sideways;
 bool mouseInitialized = false;
+bool mouseCaptured = true;
 double lastx;
 double lasty;
 
@@ -63,6 +64,10 @@ static void error_callback(int error, const char *description)
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) && action == GLFW_PRESS) {
+        mouseCaptured = false;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
 		spawnEnemy = true;
 	}
@@ -100,6 +105,10 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
 {
     double posX, posY;
     if (action == GLFW_PRESS) {
+        if (!mouseCaptured) {
+            mouseCaptured = true;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
         glfwGetCursorPos(window, &posX, &posY);
         // cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
         player->firing = 0.03;
@@ -127,16 +136,19 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
         lasty = y;
         mouseInitialized = true;
         return;
-   }
-   double changex = x - lastx;
-   double changey = y - lasty;
+    }
+    if (!mouseCaptured) {
+        return;
+    }
+    double changex = x - lastx;
+    double changey = y - lasty;
 
-   theta -= changex * LOOK_SENS;
-   phi -= changey * LOOK_SENS;
-   phi = std::min(phi, (float)(.1));
-   phi = std::max(phi, (float)(-.3));
-   lastx = x;
-   lasty = y;
+    theta -= changex * LOOK_SENS;
+    phi -= changey * LOOK_SENS;
+    phi = std::min(phi, (float)(.1));
+    phi = std::max(phi, (float)(-.3));
+    lastx = x;
+    lasty = y;
 }   
 
 static void resize_callback(GLFWwindow *window, int width, int height) {
@@ -357,8 +369,6 @@ int main(int argc, char **argv)
     glfwSetCursorPosCallback(window, cursor_callback);
     //set the window resize call back
     glfwSetFramebufferSizeCallback(window, resize_callback);
-    //set cursor
-    glfwSetCursorPos(window, (double)g_width/2, (double)g_height/2);
     //lock cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
