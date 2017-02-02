@@ -86,8 +86,8 @@ void Player::step(float dt) {
 	velx = velx * (1 - dt * DRAG) + xacc * dt;
 	velz = velz * (1 - dt * DRAG) + zacc * dt;
 
-	velx = abs(velx) > TOP_SPEED ? (velx < 0 ? -TOP_SPEED : TOP_SPEED) : velx;
-	velz = abs(velz) > TOP_SPEED ? (velz < 0 ? -TOP_SPEED : TOP_SPEED) : velz;
+	//velx = abs(velx) > TOP_SPEED ? (velx < 0 ? -TOP_SPEED : TOP_SPEED) : velx;
+	//velz = abs(velz) > TOP_SPEED ? (velz < 0 ? -TOP_SPEED : TOP_SPEED) : velz;
 	
     // apply velocity to position
     float oldx = xpos;
