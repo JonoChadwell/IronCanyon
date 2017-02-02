@@ -17,6 +17,7 @@ public:
 	float velx, vely, velz;
 	float bound;
 	float ctheta;
+    float firing; // positive when displaying laser
 	Player();
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
@@ -35,6 +36,7 @@ private:
     Grid* grid;
 	static Shape* turret;
 	static Shape* chassis;
+	static Shape* laser;
 	static Program* shader;
 
 };

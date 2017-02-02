@@ -78,7 +78,6 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Enemy::step(float dt) {
-	std::cout << animtime;
 	animtime += dt;
 	// do bob animation
 	if (grid->inBounds(xpos, zpos)) {
