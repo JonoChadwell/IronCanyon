@@ -1,3 +1,5 @@
+package IronCanyon.terrain;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -50,12 +52,6 @@ public class TerrainWriter {
          this.z = z;
          normal = new Vector();
       }
-
-//      public Vertex(Vector v) {
-//         this.x = v.x;
-//         this.y = v.y;
-//         this.z = v.z;
-//      }
 
       public String toString() {
          return "v " + x + " " + y + " " + z;
