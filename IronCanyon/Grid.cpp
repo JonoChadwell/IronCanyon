@@ -19,12 +19,12 @@ Grid::Grid() {
 	gridfile >> width >> height;
 	assert(width == GRID_SIZE && height == GRID_SIZE);
 
-	for (int x = 0; x < GRID_SIZE; x++) {
-		for (int z = 0; z < GRID_SIZE; z++) {
+    for (int z = 0; z < GRID_SIZE; z++) {
+	    for (int x = 0; x < GRID_SIZE; x++) {
 			gridfile >> token;
 			if (token[0] == '*') {
 				bounds[x][z] = false;
-                heights[x][z] = 1.0f;
+                heights[x][z] = 0.0f;
 			}
 			else {
 				bounds[x][z] = true;
@@ -54,9 +54,6 @@ bool Grid::inBounds(float x, float z) {
 }
 
 float Grid::height(float x, float z) {
-    float temp = x;
-    x = -z;
-    z = -temp;
     // convert to grid array coordinates
 	x = ((x - minx) * (GRID_SIZE - 1)) / (maxx - minx);
 	z = ((z - minz) * (GRID_SIZE - 1)) / (maxz - minz);
