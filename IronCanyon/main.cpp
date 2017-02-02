@@ -28,6 +28,7 @@ using namespace std;
 using namespace glm;
 
 #define LOOK_SENS (1 / 400.0)
+#define PLAYER_SPEED 20
 
 GLFWwindow *window; // Main application window
 
@@ -245,8 +246,6 @@ static void stepPlayer() {
 		angle = 3 * MATH_PI / 2 + sideways * MATH_PI / 4;
 	}
 	else {
-
-
 		angle = MATH_PI / 2 - sideways * MATH_PI / 2;
 	}
     // calculate relative angle in relation to the vehicle
@@ -256,8 +255,8 @@ static void stepPlayer() {
 		player->zacc = 0;
 	}
 	else {
-		player->xacc = -sin(angle) * 5;
-		player->zacc = -cos(angle) * 5;
+		player->xacc = -sin(angle) * PLAYER_SPEED;
+		player->zacc = -cos(angle) * PLAYER_SPEED;
 	}
 	for (float cap = 0.0; cap < renderTime; cap += physDt) {
 		player->step(physDt);
@@ -272,7 +271,7 @@ static void drawTerrain(){
 
    // Apply perspective projection.
    P->pushMatrix();
-   P->perspective(45.0f, aspect, 0.01f, 100.0f);
+   P->perspective(45.0f, aspect, 0.01f, 500.0f);
 
    glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
      camera->lookAtPt(), glm::vec3(0, 1, 0));
