@@ -11,8 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 // constants
-#define DRAG 2
-#define TOP_SPEED 2.0
+#define DRAG 2.0
 
 Shape* Player::turret;
 Shape* Player::chassis;
@@ -82,18 +81,15 @@ void Player::step(float dt) {
         }
     }
 
-    // apply acceleratio
+    // apply acceleration
 	velx = velx * (1 - dt * DRAG) + xacc * dt;
 	velz = velz * (1 - dt * DRAG) + zacc * dt;
 
-	//velx = abs(velx) > TOP_SPEED ? (velx < 0 ? -TOP_SPEED : TOP_SPEED) : velx;
-	//velz = abs(velz) > TOP_SPEED ? (velz < 0 ? -TOP_SPEED : TOP_SPEED) : velz;
-	
     // apply velocity to position
     float oldx = xpos;
     float oldz = zpos;
-	this->xpos += dt * velx * 10;
-	this->zpos += dt * velz * 10;
+	this->xpos += dt * velx;
+	this->zpos += dt * velz;
     if (!grid->inBounds(xpos, zpos)) {
         xpos = oldx;
         zpos = oldz;

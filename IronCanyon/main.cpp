@@ -28,7 +28,8 @@ using namespace std;
 using namespace glm;
 
 #define LOOK_SENS (1 / 400.0)
-#define PLAYER_SPEED 20
+#define PLAYER_ACCELERATION 50
+#define ENEMY_SPEED 6
 
 GLFWwindow *window; // Main application window
 
@@ -43,12 +44,15 @@ vector<GameObject*> objects;
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
 float forwards, sideways;
-float physDt = 0.005;
-float startRender = 0.0;
-float renderTime = 0.0;
 bool mouseInitialized = false;
 double lastx;
 double lasty;
+
+// The time the last frame began rendering
+double lastFrameStartTime;
+// The time the current frame began rendering
+double thisFrameStartTime;
+double maxPhysicsStepLength = 0.005;
 
 bool spawnEnemy = false;
 
@@ -196,7 +200,7 @@ static float randf() {
 	return (rand() * 1.0) / (RAND_MAX);
 }
 
-static void stepGameObjects() {
+static void stepGameObjects(float dt) {
 	if (spawnEnemy) {
 		spawnEnemy = false;
 		float x = randf() * 100 - 50;
@@ -205,10 +209,10 @@ static void stepGameObjects() {
 			x = randf() * 100 - 50;
 			z = randf() * 100 - 50;
 		}
-		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, 10, 2, grid));
+		objects.push_back(new Enemy(x, 0, z, 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
 	}
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->step(physDt);
+		objects[i]->step(dt);
 	}
 }
 
@@ -232,7 +236,7 @@ static void drawPlayer() {
 	delete P;
 }
 
-static void stepPlayer() {
+static void stepPlayer(float dt) {
 	player->theta = theta;
 	player->phi = phi;
 	float angle;
@@ -253,12 +257,10 @@ static void stepPlayer() {
 		player->zacc = 0;
 	}
 	else {
-		player->xacc = -sin(angle) * PLAYER_SPEED;
-		player->zacc = -cos(angle) * PLAYER_SPEED;
-	}
-	for (float cap = 0.0; cap < renderTime; cap += physDt) {
-		player->step(physDt);
-	}
+        player->xacc = -sin(angle) * PLAYER_ACCELERATION;
+        player->zacc = -cos(angle) * PLAYER_ACCELERATION;
+    }
+    player->step(dt);
 }
 
 static void drawTerrain(){
@@ -282,7 +284,6 @@ static void drawTerrain(){
 
 static void render()
 {
-    startRender = glfwGetTime();
 	// Get current frame buffer size.
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -298,13 +299,18 @@ static void render()
     drawGameObjects();
 	drawPlayer();
 	drawTerrain();
+}
 
-	stepGameObjects();
-	stepPlayer();
-
-    renderTime = glfwGetTime() - startRender;
-    //printf("FPS: %f\n", 1/renderTime);
-    cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
+static void updateWorld()
+{
+    double timePassed = thisFrameStartTime - lastFrameStartTime;
+    while (timePassed > maxPhysicsStepLength) {
+        timePassed -= maxPhysicsStepLength;
+        stepGameObjects(maxPhysicsStepLength);
+        stepPlayer(maxPhysicsStepLength);
+    }
+	stepGameObjects(timePassed);
+	stepPlayer(timePassed);
 }
 
 int main(int argc, char **argv)
@@ -316,10 +322,10 @@ int main(int argc, char **argv)
 		return -1;
 	}
    //request the highest possible version of OGL - important for mac
-   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	// Create a windowed mode window and its OpenGL context.
 	window = glfwCreateWindow(g_width, g_height, "Iron Canyon", NULL, NULL);
@@ -359,8 +365,14 @@ int main(int argc, char **argv)
 	// Initialize scene. Note geometry initialized in init now
 	init();
 
+    lastFrameStartTime = glfwGetTime();
+
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
+        lastFrameStartTime = thisFrameStartTime;
+        thisFrameStartTime = glfwGetTime();
+        // Update game state
+        updateWorld();
 		// Render scene.
 		render();
 		// Swap front and back buffers.
