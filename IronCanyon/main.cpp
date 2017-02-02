@@ -102,8 +102,6 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
         vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
         vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
         
-        cout << "Direction: " << laserDirection.x << " " << laserDirection.y << " " << laserDirection.z << "\n";
-        
         for (unsigned int i = 0; i < objects.size(); i++) {
             float radius = objects[i]->bound;
             vec3 objectPosition = vec3(objects[i]->xpos, objects[i]->ypos, objects[i]->zpos);
@@ -180,7 +178,7 @@ static void drawGameObjects() {
    MatrixStack *P = new MatrixStack();
    // Apply perspective projection.
    P->pushMatrix();
-   P->perspective(45.0f, aspect, 0.01f, 100.0f);
+   P->perspective(45.0f, aspect, 0.01f, 500.0f);
 
    glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
      camera->lookAtPt(), glm::vec3(0, 1, 0));
@@ -221,7 +219,7 @@ static void drawPlayer() {
 	MatrixStack *P = new MatrixStack();
 	// Apply perspective projection.
 	P->pushMatrix();
-	P->perspective(45.0f, aspect, 0.01f, 100.0f);
+	P->perspective(45.0f, aspect, 0.01f, 500.0f);
 
 	glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
       camera->lookAtPt(), glm::vec3(0, 1, 0));
@@ -306,7 +304,7 @@ static void render()
 
     renderTime = glfwGetTime() - startRender;
     //printf("FPS: %f\n", 1/renderTime);
-    // cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
+    cout << "\rFPS: " << (int)(1/renderTime) << "     " << flush;
 }
 
 int main(int argc, char **argv)

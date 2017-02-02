@@ -54,7 +54,9 @@ bool Grid::inBounds(float x, float z) {
 }
 
 float Grid::height(float x, float z) {
-
+    float temp = x;
+    x = -z;
+    z = -temp;
     // convert to grid array coordinates
 	x = ((x - minx) * (GRID_SIZE - 1)) / (maxx - minx);
 	z = ((z - minz) * (GRID_SIZE - 1)) / (maxz - minz);
