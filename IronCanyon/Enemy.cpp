@@ -12,9 +12,9 @@
 Shape* Enemy::model;
 Program* Enemy::shader;
 
-Enemy::Enemy(float xp, float yp, float zp, float ph, float th, float rl,
+Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
   float v, float b, Grid* grid) :
-    GameObject(xp, yp, zp, ph, th, rl, b),
+    GameObject(p, ph, th, rl, b),
     vel(v),
     active(true),
 	grid(grid)
@@ -47,7 +47,7 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     M->pushMatrix();
        M->loadIdentity();
-       M->translate(vec3(xpos, ypos, zpos));
+       M->translate(vec3(pos.x, pos.y, pos.z));
 	   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
@@ -56,10 +56,10 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
        Enemy::model->draw(Enemy::shader);
     M->popMatrix();
 	
-	if (grid->inBounds(xpos, zpos)) {
+	if (grid->inBounds(pos.x, pos.z)) {
 		M->pushMatrix();
 			M->loadIdentity();
-			M->translate(vec3(xpos, grid->height(xpos, zpos) + .1, zpos));
+			M->translate(vec3(pos.x, grid->height(pos.x, pos.z) + .1, pos.z));
 			M->scale(vec3(1, 0.01, 1));
 			M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
 			M->rotate(phi, vec3(1, 0, 0));
@@ -80,24 +80,24 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 void Enemy::step(float dt) {
 	animtime += dt;
 	// do bob animation
-	if (grid->inBounds(xpos, zpos)) {
-		ypos = grid->height(xpos, zpos) + 1.6 + 0.4 * sin(animtime * 2.0);
+	if (grid->inBounds(pos.x, pos.z)) {
+	    pos.y = grid->height(pos.x, pos.z) + 1.6 + 0.4 * sin(animtime * 2.0);
 		phi = -cos(animtime * 2.0) / 12.0;
 	}
 	else {
-		ypos = -0.5;
+		pos.y = -0.5;
 	}
 
-	float oldx = xpos;
-	float oldz = zpos;
+	float oldx = pos.x;
+	float oldz = pos.z;
 
-    xpos += getXComp() * dt * vel; 
-    zpos += getZComp() * dt * vel;
+    pos.x += getXComp() * dt * vel; 
+    pos.z += getZComp() * dt * vel;
 
 
-    if (!grid->inBounds(xpos, zpos)) {
-		xpos = oldx;
-		zpos = oldz;
+    if (!grid->inBounds(pos.x, pos.z)) {
+		pos.x = oldx;
+		pos.z = oldz;
         theta += MATH_PI;
     }
 }

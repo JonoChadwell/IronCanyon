@@ -12,7 +12,7 @@ class Enemy : public GameObject {
 public:
     bool active;
     float vel;
-    Enemy(float xp, float yp, float zp, float ph, float th, float rl, float v, float b, Grid* grid);
+    Enemy(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid);
     virtual ~Enemy();
 
     // functions
