@@ -98,6 +98,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
 		sideways += -1;
 	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS && player->jumping == 0) {
+		player->jumping = 1;
+	}
 }
 
 
@@ -146,7 +149,7 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
     theta -= changex * LOOK_SENS;
     phi -= changey * LOOK_SENS;
     phi = std::min(phi, (float)(.1));
-    phi = std::max(phi, (float)(-.3));
+    phi = std::max(phi, (float)(-.5));
     lastx = x;
     lasty = y;
 }   

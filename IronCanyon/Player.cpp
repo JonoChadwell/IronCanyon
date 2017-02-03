@@ -54,6 +54,7 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     grid(grid)
 {
     firing = 0;
+	jumping = 0;
 }
 
 // destructor
@@ -80,15 +81,27 @@ void Player::step(float dt) {
             firing = 0;
         }
     }
+	if (jumping == 1) {
+		yacc = 20;
+		vely = 10;
+		// state of jumping
+		jumping = 2;
+	}
+	yacc -= 60 * dt;
+	if (yacc < -200) {
+		yacc = -200;
+	}
 
     // apply acceleration
 	velx = velx * (1 - dt * DRAG) + xacc * dt;
+	vely = vely * (1 - dt * DRAG) + yacc * dt;
 	velz = velz * (1 - dt * DRAG) + zacc * dt;
 
     // apply velocity to position
     float oldx = xpos;
     float oldz = zpos;
 	this->xpos += dt * velx;
+	this->ypos += dt * vely;
 	this->zpos += dt * velz;
     if (!grid->inBounds(xpos, zpos)) {
         xpos = oldx;
@@ -96,11 +109,9 @@ void Player::step(float dt) {
 		velx = 0;
 		velz = 0;
     }
-    if (grid->inBounds(xpos, zpos)) {
+    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.5) {
         ypos = grid->height(xpos, zpos) + 1.5;
-    } else {
-
-        ypos = -0.5;
+		jumping = 0;
     }
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
 	float tAngle = fmod(fmod(theta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
@@ -108,7 +119,7 @@ void Player::step(float dt) {
 		return;
 	}
 	float cRot;
-	if (tAngle == cAngle) {
+	if (abs(tAngle - cAngle) < .01) {
 		cRot = 0;
 	}
 	else if (tAngle > cAngle) {
