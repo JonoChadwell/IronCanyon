@@ -223,7 +223,7 @@ static void stepGameObjects(float dt) {
 			x = randf() * 100 - 50;
 			z = randf() * 100 - 50;
 		}
-		objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+        objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
 	}
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
