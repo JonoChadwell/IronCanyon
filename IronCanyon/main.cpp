@@ -105,30 +105,18 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
 {
-    double posX, posY;
-    if (action == GLFW_PRESS) {
-        if (!mouseCaptured) {
-            mouseCaptured = true;
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-        glfwGetCursorPos(window, &posX, &posY);
-        // cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
-        player->firing = 0.03;
-        vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
-        vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
-        
-        for (unsigned int i = 0; i < objects.size(); i++) {
-            float radius = objects[i]->bound;
-            vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
-            float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
-            if (det > 0) {
-                delete objects[i];
-                objects.erase(objects.begin() + i);
-                i--;
-            }
-        }
-
-    }
+   double posX, posY;
+   if (action == GLFW_PRESS) {
+      if (!mouseCaptured) {
+         mouseCaptured = true;
+         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      }
+      glfwGetCursorPos(window, &posX, &posY);
+      player->firing = 0.01;
+   }
+   else if (action == GLFW_RELEASE) {
+      player->firing = 0;
+   }
    
 }
 
@@ -189,6 +177,23 @@ static void init()
 	sideways = 0;
 }
 
+static void laserFire()
+{
+   vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
+   vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
+   for (unsigned int i = 0; i < objects.size(); i++) {
+      float radius = objects[i]->bound;
+      vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
+      float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
+      if (det > 0) {
+         delete objects[i];
+         objects.erase(objects.begin() + i);
+         i--;
+      }
+   }
+}
+
+
 static void drawGameObjects() {
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
@@ -245,6 +250,11 @@ static void drawPlayer() {
 	// draw and time based movement
 	
 	player->draw(P, lookAt, camera->eyeVector());
+
+   // check laser collision
+   if (player->firing >= .5) {
+      laserFire();
+   }
 
 	P->popMatrix();
 	delete P;
