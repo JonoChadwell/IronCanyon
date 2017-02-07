@@ -18,6 +18,7 @@
 #include "Constants.h"
 #include "Grid.h"
 #include "Enemy.h"
+#include "Walker.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -55,6 +56,7 @@ double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 
 bool spawnEnemy = false;
+bool spawnWalker = false;
 
 static void error_callback(int error, const char *description)
 {
@@ -69,6 +71,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
 		spawnEnemy = true;
+        spawnWalker = true;
 	}
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -172,6 +175,7 @@ static void init()
     Terrain::setup();
 	Player::setup();
 	Enemy::setup();
+    Walker::setup();
 
 	forwards = 0;
 	sideways = 0;
@@ -230,6 +234,16 @@ static void stepGameObjects(float dt) {
 		}
         objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
 	}
+    if (spawnWalker) {
+        spawnWalker = false;
+		float x = randf() * 100 - 50;
+		float z = randf() * 100 - 50;
+		while (!grid->inBounds(x,z)) {
+			x = randf() * 100 - 50;
+			z = randf() * 100 - 50;
+		}
+		objects.push_back(new Walker(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+    }
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
 	}

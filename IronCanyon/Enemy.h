@@ -20,9 +20,11 @@ public:
     void step(float dt);
     static void setup();
 
-private:
-	Grid* grid;
+protected:
+    Grid* grid;
 	float animtime;
+
+private:
 	static Shape* model;
 	static Program* shader;
 };
