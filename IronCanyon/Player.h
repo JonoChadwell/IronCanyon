@@ -19,6 +19,7 @@ public:
 	float ctheta;
     float firing; // positive when displaying laser
 	float jumping; // positive when jumping
+	float boosting; // positive when jumping
 	Player();
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
