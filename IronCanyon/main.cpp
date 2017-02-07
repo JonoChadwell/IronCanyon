@@ -30,6 +30,7 @@ using namespace glm;
 
 #define LOOK_SENS (1 / 400.0)
 #define PLAYER_ACCELERATION 50
+#define BOOST_ACCELERATION 100
 #define ENEMY_SPEED 6
 
 GLFWwindow *window; // Main application window
@@ -103,6 +104,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS && player->jumping == 0) {
 		player->jumping = 1;
+	}
+	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS && player->boosting == 0) {
+		player->boosting = 1;
+	}
+	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE && player->boosting > .6) {
+		player->boosting = 1.2 - player->boosting;
 	}
 }
 
@@ -301,6 +308,10 @@ static void stepPlayer(float dt) {
 	else {
         player->xacc = -sin(angle) * PLAYER_ACCELERATION;
         player->zacc = -cos(angle) * PLAYER_ACCELERATION;
+    }
+    if (player->boosting > .6) {
+      player->xacc += -sin(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
+      player->zacc += -cos(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
     }
     player->step(dt);
 }

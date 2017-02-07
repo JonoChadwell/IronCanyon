@@ -55,6 +55,7 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
 {
     firing = 0;
 	jumping = 0;
+	boosting = 0;
 }
 
 // destructor
@@ -91,6 +92,12 @@ void Player::step(float dt) {
 	if (yacc < -200) {
 		yacc = -200;
 	}
+   if (boosting > 0) {
+      boosting -= dt * .2;
+      if (boosting < 0) {
+         boosting = 0;
+      }
+   }
 
     // apply acceleration
 	velx = velx * (1 - dt * DRAG) + xacc * dt;
@@ -189,6 +196,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 	    Player::laser->draw(Player::shader);
+	   M->popMatrix();
     }
     //laser charging
     else if (firing > 0) {
@@ -205,6 +213,37 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 	    Player::laser->draw(Player::shader);
+	   M->popMatrix();
+    }
+    if (boosting > .6) {
+	    M->pushMatrix();
+	   M->loadIdentity();
+	   M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
+	   M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+	   M->translate(vec3(-1, 0, 0));
+      M->scale(vec3(.09, 0.3, 0.49));
+	   glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 10);
+	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+	   Player::chassis->draw(Player::shader);
+	   M->popMatrix();
+    }
+    else if (boosting > 0) {
+	    M->pushMatrix();
+	   M->loadIdentity();
+	   M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
+	   M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
+	   M->translate(vec3(-1, 0, 0));
+      M->scale(vec3(.09, 0.3, 0.49));
+	   glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 10);
+	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+	   Player::chassis->draw(Player::shader);
+	   M->popMatrix();
     }
 
 	// shadow
@@ -234,6 +273,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->scale(vec3(1, 0.3, 0.5));
 	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	    Player::chassis->draw(Player::shader);
+	   M->popMatrix();
     }
 
 	// garbage collection
