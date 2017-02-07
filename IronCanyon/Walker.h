@@ -11,7 +11,7 @@
 #define STEP_TIME 1.6
 #define HEIGHT 6.0
 #define STANCE_WIDTH 1.0
-#define STEP_FORWARD_DIST 0.6
+#define STEP_FORWARD_DIST 0.8
 
 class Walker : public Enemy {
 

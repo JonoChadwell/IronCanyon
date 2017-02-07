@@ -37,19 +37,20 @@ Walker::~Walker()
 void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     // solve leg positions
-    float L1 = 3.0;
-    float L2 = 6.0;
+    float L1 = 2.0;
+    float L2 = 5.0;
     float height_l = -left_height;
     float height_r = -right_height;
-    float base_angle_l = atan2(left_actual, height_l);
-    float base_angle_r = atan2(right_actual, height_r);
     float dist_l = sqrt(height_l * height_l + left_actual * left_actual);
     float dist_r = sqrt(height_r * height_r + right_actual * right_actual);
-    std::cout << "left_height: " << left_height << "\n";
-    float top_angle_l = acos((dist_l * dist_l + L1 * L1 - L2 * L2) / (2 * dist_l * L1));
-    float top_angle_r = acos((dist_r * dist_r + L1 * L1 - L2 * L2) / (2 * dist_r * L1));
-    float left_angle_l = acos((L1 * L1 + L2 * L2 - dist_l * dist_l) / (2 * L1 * L1));
-    float left_angle_r = acos((L1 * L1 + L2 * L2 - dist_r * dist_r) / (2 * L1 * L1));
+    float upper_leg_angle_l = atan2(height_l, left_actual);
+    float upper_leg_angle_r = atan2(height_r, right_actual);
+    upper_leg_angle_l += acos((dist_l * dist_l + L1 * L1 - L2 * L2) / (2 * dist_l * L1));
+    upper_leg_angle_r += acos((dist_r * dist_r + L1 * L1 - L2 * L2) / (2 * dist_r * L1));
+    float lower_leg_angle_l = -atan2(left_actual, height_l);
+    float lower_leg_angle_r = -atan2(right_actual, height_r);
+    lower_leg_angle_l += -acos((dist_l * dist_l + L2 * L2 - L1 * L1) / (2 * dist_l * L2)) + MATH_PI / 2;
+    lower_leg_angle_r += -acos((dist_r * dist_r + L2 * L2 - L1 * L1) / (2 * dist_r * L2)) + MATH_PI / 2;
 
     // variable declaration
     MatrixStack *M = new MatrixStack();
@@ -95,16 +96,38 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
             // left upper leg
             M->pushMatrix();
                 M->translate(vec3(STANCE_WIDTH / 2, 0, 0));
-                M->rotate(-base_angle_l + top_angle_l, vec3(1, 0, 0));
-                M->scale(vec3(0.2, L1, 0.2));
+                M->rotate(upper_leg_angle_l, vec3(1, 0, 0));
+                M->scale(vec3(0.2, 0.2, L1/2));
+                M->translate(vec3(0,0,1));
+                glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                Walker::upper_leg->draw(Walker::shader);
+            M->popMatrix();
+            // right upper leg
+            M->pushMatrix();
+                M->translate(vec3(-STANCE_WIDTH / 2, 0, 0));
+                M->rotate(upper_leg_angle_r, vec3(1, 0, 0));
+                M->scale(vec3(0.2, 0.2, L1/2));
+                M->translate(vec3(0,0,1));
                 glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
                 Walker::upper_leg->draw(Walker::shader);
             M->popMatrix();
             // left lower leg
             M->pushMatrix();
                 M->translate(vec3(STANCE_WIDTH / 2, left_height, left_actual));
-                M->rotate(
-
+                M->rotate(lower_leg_angle_l, vec3(1, 0, 0));
+                M->scale(vec3(0.2, 0.2, L2/2));
+                M->translate(vec3(0,0,-1));
+                glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                Walker::lower_leg->draw(Walker::shader);
+            M->popMatrix();
+            // right lower leg
+            M->pushMatrix();
+                M->translate(vec3(-STANCE_WIDTH / 2, right_height, right_actual));
+                M->rotate(lower_leg_angle_r, vec3(1, 0, 0));
+                M->scale(vec3(0.2, 0.2, L2/2));
+                M->translate(vec3(0,0,-1));
+                glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                Walker::lower_leg->draw(Walker::shader);
             M->popMatrix();
 
             if (i == 0) {
@@ -149,21 +172,24 @@ void Walker::step(float dt) {
 	// do walk animation
     pos.y = grid->height(pos.x, pos.z) + HEIGHT;
 
-    // float walk_anim = sin((walk_time / STEP_TIME) * MATH_PI * 2);
 
     left_foot -= dt * vel;
     right_foot -= dt * vel;
 
-    left_actual = left_actual * 0.97 + left_foot * 0.03;
-    right_actual = right_actual * 0.97 + right_foot * 0.03;
+    left_actual = left_actual * 0.99 + left_foot * 0.01;
+    right_actual = right_actual * 0.99 + right_foot * 0.01;
     
     float leftx = pos.x + cos(theta) * left_actual + sin(theta) * STANCE_WIDTH / 2;
     float rightx = pos.x + cos(theta) * right_actual + sin(theta) * -STANCE_WIDTH / 2;
     float leftz = pos.z + sin(theta) * left_actual + cos(theta) * STANCE_WIDTH / 2;
     float rightz = pos.z + sin(theta) * right_actual + cos(theta) * -STANCE_WIDTH / 2;
 
-    left_height = grid->height(leftx, leftz) - pos.y;
-    right_height = grid->height(rightx, rightz) - pos.y;
+    float foot_raise_offset = 0.7;
+    float walk_anim_l = sin((walk_time / STEP_TIME) * MATH_PI * 2 + foot_raise_offset);
+    float walk_anim_r = -sin((walk_time / STEP_TIME) * MATH_PI * 2 + foot_raise_offset);
+
+    left_height = grid->height(leftx, leftz) - pos.y + std::max(0.0f, (walk_anim_l * 2 - 1) * 0.5f);
+    right_height = grid->height(rightx, rightz) - pos.y + std::max(0.0f, (walk_anim_r * 2 - 1) * 0.5f);
 }
 
 void Walker::setup() {
