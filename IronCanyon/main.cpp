@@ -19,6 +19,7 @@
 #include "Grid.h"
 #include "Enemy.h"
 #include "Walker.h"
+#include "Scrap.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -176,6 +177,7 @@ static void init()
 	Player::setup();
 	Enemy::setup();
     Walker::setup();
+    Scrap::setup();
 
 	forwards = 0;
 	sideways = 0;
@@ -189,7 +191,9 @@ static void laserFire()
       float radius = objects[i]->bound;
       vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
-      if (det > 0) {
+      // hit
+      if (det > 0 && typeid(*objects[i]) == typeid(Enemy)) {
+         objects.push_back(new Scrap(objects[i]->pos, 0, 0, 0, 1, grid, 10));
          delete objects[i];
          objects.erase(objects.begin() + i);
          i--;
