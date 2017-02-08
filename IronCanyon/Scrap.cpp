@@ -10,8 +10,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define BOB_AMP 5
-#define BOB_CYC 5
+#define BOB_FREQ 5
+#define RAND_VEL ( (float)rand() / RAND_MAX * 5 )
+#define RAND_VEL_Y ( (float)rand() / RAND_MAX * 30 )
+#define BOB_VEL ( (float)rand() / RAND_MAX * 5 )
 
 Shape* Scrap::model;
 Program* Scrap::shader;
@@ -21,7 +23,8 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     GameObject(pos, ph, th, rl, b),
     grid(grid),
     worth(worth),
-    vel( glm::vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX * BOB_AMP, (float)rand() / RAND_MAX) )
+    vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
+    groundTime(-1.0)
 {
 }
 
@@ -61,7 +64,16 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Scrap::step(float dt) {
-    pos.y += dt * sin(glfwGetTime() * BOB_CYC) * vel.y;
+    if (vel.y < 0 && pos.y < grid->height(pos.x, pos.y) + 3) {
+        groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
+        pos.y += dt * sin((glfwGetTime()-groundTime) * BOB_FREQ) * 3;
+    }
+    else {
+        pos.x += dt * vel.x;
+        pos.y += dt * vel.y;
+        pos.z += dt * vel.z;
+        vel.y -= GRAVITY * dt;
+    }
 }
 
 void Scrap::setup() {
