@@ -11,8 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #define BOB_FREQ 5
-#define RAND_VEL ( (float)rand() / RAND_MAX * 5 )
-#define RAND_VEL_Y ( (float)rand() / RAND_MAX * 30 )
+#define RAND_VEL ( (float)rand() / RAND_MAX * 10 )
+#define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
 #define BOB_VEL ( (float)rand() / RAND_MAX * 5 )
 
 Shape* Scrap::model;
@@ -64,15 +64,18 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Scrap::step(float dt) {
-    if (vel.y < 0 && pos.y < grid->height(pos.x, pos.y) + 3) {
-        groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
-        pos.y += dt * sin((glfwGetTime()-groundTime) * BOB_FREQ) * 3;
-    }
-    else {
+    // right after enemy is destroyed, scrap is flung in a random upward direction
+    if (groundTime < 0 && (vel.y > 0 || pos.y >= grid->height(pos.x, pos.y) + 3)) {
         pos.x += dt * vel.x;
         pos.y += dt * vel.y;
         pos.z += dt * vel.z;
+        // affected by gravity
         vel.y -= GRAVITY * dt;
+    }
+    // once it hits the ground, it bobs up and down
+    else {
+        groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
+        pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * 3;
     }
 }
 
