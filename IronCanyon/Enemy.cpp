@@ -104,7 +104,7 @@ void Enemy::step(float dt) {
 
 void Enemy::setup() {
 	Enemy::model = new Shape();
-	Enemy::model->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Enemy::model->loadMesh(RESOURCE_DIR + std::string("wheelEnemy.obj"));
 	Enemy::model->resize();
 	Enemy::model->init();
 
@@ -123,4 +123,6 @@ void Enemy::setup() {
 	Enemy::shader->addUniform("shine");
 	Enemy::shader->addAttribute("vertPos");
 	Enemy::shader->addAttribute("vertNor");
+	Enemy::shader->addAttribute("vertTex");
+
 }
