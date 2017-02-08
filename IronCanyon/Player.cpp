@@ -30,7 +30,8 @@ Player::Player() :
 	vely(0),
 	velz(0),
 	bound(0),
-	ctheta(MATH_PI)
+	ctheta(MATH_PI),
+    scrap(0)
 {
     firing = 0;
 }
@@ -51,6 +52,7 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
 	velz(0),
 	bound(b),
 	ctheta(MATH_PI),
+    scrap(0),
     grid(grid)
 {
     firing = 0;
@@ -160,9 +162,9 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->pushMatrix();
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, this->ypos, this->zpos));
-	M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
+	M->rotate(theta + MATH_PI/2, vec3(0, 1, 0));
 	M->rotate(phi + .2, vec3(1, 0, 0));
-    M->scale(vec3(0.2, 0.2, 1.5));
+    //M->scale(vec3(0.2, 0.2, 1.5));
     M->translate(vec3(0, 0, -0.75));
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
@@ -175,8 +177,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->pushMatrix();
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
-	M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
-    M->scale(vec3(1, 0.3, 0.5));
+	M->rotate(ctheta - MATH_PI/2, vec3(0, 1, 0));
+    //M->scale(vec3(1, 0.3, 0.5));
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::chassis->draw(Player::shader);
 	M->popMatrix();
@@ -284,11 +286,11 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 void Player::setup() {
 	Player::turret = new Shape();
-	Player::turret->loadMesh(RESOURCE_DIR + "cube.obj");
+	Player::turret->loadMesh(RESOURCE_DIR + "turret.obj");
 	Player::turret->resize();
 	Player::turret->init();
 	Player::chassis = new Shape();
-	Player::chassis->loadMesh(RESOURCE_DIR + "cube.obj");
+	Player::chassis->loadMesh(RESOURCE_DIR + "tank.obj");
 	Player::chassis->resize();
 	Player::chassis->init();
 	Player::laser = new Shape();
@@ -311,4 +313,5 @@ void Player::setup() {
 	Player::shader->addUniform("shine");
 	Player::shader->addAttribute("vertPos");
 	Player::shader->addAttribute("vertNor");
+	Player::shader->addAttribute("vertTex");
 }

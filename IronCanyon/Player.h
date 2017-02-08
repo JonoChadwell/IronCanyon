@@ -20,6 +20,7 @@ public:
     float firing; // positive when displaying laser
 	float jumping; // positive when jumping
 	float boosting; // positive when jumping
+    int scrap;
 	Player();
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
