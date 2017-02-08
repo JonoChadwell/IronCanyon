@@ -167,7 +167,7 @@ static void init()
 
     grid = new Grid();
     player = new Player(0, 2, 0, 1, 0, 0, 5, grid);
-    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos);
+    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos, grid);
     terrain = new Terrain();
 
     theta = MATH_PI;
