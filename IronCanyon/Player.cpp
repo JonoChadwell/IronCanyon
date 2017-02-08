@@ -88,9 +88,9 @@ void Player::step(float dt) {
 		// state of jumping
 		jumping = 2;
 	}
-	yacc -= 60 * dt;
-	if (yacc < -200) {
-		yacc = -200;
+	yacc -= GRAVITY * dt;
+	if (yacc < -MAX_GRAVITY) {
+		yacc = -MAX_GRAVITY;
 	}
    if (boosting > 0) {
       boosting -= dt * .2;
