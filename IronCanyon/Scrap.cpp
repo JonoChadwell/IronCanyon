@@ -13,7 +13,7 @@
 #define BOB_FREQ 5
 #define RAND_VEL ( (float)rand() / RAND_MAX * 20 - 10 )
 #define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
-#define BOB_VEL ( (float)rand() / RAND_MAX * 5 )
+#define BOB_VEL 3
 
 Shape* Scrap::model;
 Program* Scrap::shader;
@@ -75,7 +75,7 @@ void Scrap::step(float dt) {
     // once it hits the ground, it bobs up and down
     else {
         groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
-        pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * 3;
+        pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * BOB_VEL;
     }
 }
 
