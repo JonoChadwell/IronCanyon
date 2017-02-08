@@ -8,13 +8,14 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl) :
+Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid) :
 	xpos(xp),
 	ypos(yp),
 	zpos(zp),
 	xlook(xl),
 	ylook(yl),
-	zlook(zl)
+	zlook(zl),
+   grid(grid)
 {}
 
 // destructor
@@ -30,6 +31,13 @@ void Camera::trackToPlayer(Player *player) {
     xpos = xlook + 10 * cos(-player->theta) * cos(-player->phi);
     ypos = ylook + 10 * sin(-player->phi);
     zpos = zlook + 10 * sin(-player->theta) * cos(-player->phi);
+    if (!grid->inBounds(xpos, zpos) ) {
+      xpos = xlook + 5 * cos(-player->theta) * cos(-player->phi);
+      zpos = zlook + 5 * sin(-player->theta) * cos(-player->phi);
+    }
+    if (ypos < grid->height(xpos, zpos) ) {
+      ypos = grid->height(xpos, zpos) + .5;
+    }
 }
 
 // vector calculations

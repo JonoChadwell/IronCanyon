@@ -15,7 +15,8 @@ public:
 	float xlook;
 	float ylook;
 	float zlook;
-	Camera(float xp, float yp, float zp, float xl, float yl, float zl);
+   Grid* grid;
+	Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid);
 	virtual ~Camera();
 
 	// functions
