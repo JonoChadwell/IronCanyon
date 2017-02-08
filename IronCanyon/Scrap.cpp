@@ -11,7 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #define BOB_FREQ 5
-#define RAND_VEL ( (float)rand() / RAND_MAX * 10 )
+#define RAND_VEL ( (float)rand() / RAND_MAX * 20 - 10 )
 #define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
 #define BOB_VEL ( (float)rand() / RAND_MAX * 5 )
 

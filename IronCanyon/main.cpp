@@ -200,6 +200,9 @@ static void laserFire()
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
       // hit
       if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
+        // dumb forloop just to show off scrap stuff
+        // will be changed to incorporate enemy worth
+        for (int der = 0; der < 5; der++)
          objects.push_back(new Scrap(objects[i]->pos, 0, 0, 0, 1, grid, 10));
          delete objects[i];
          objects.erase(objects.begin() + i);
