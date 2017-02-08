@@ -199,7 +199,7 @@ static void laserFire()
       vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
       // hit
-      if (det > 0 && typeid(*objects[i]) == typeid(Enemy)) {
+      if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
          objects.push_back(new Scrap(objects[i]->pos, 0, 0, 0, 1, grid, 10));
          delete objects[i];
          objects.erase(objects.begin() + i);
