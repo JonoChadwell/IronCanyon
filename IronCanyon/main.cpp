@@ -5,7 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+//#include <GL/freeglut.h>
 #include <GLFW/glfw3.h>
 
 #include "GLSL.h"
@@ -60,6 +60,16 @@ double maxPhysicsStepLength = 0.005;
 bool spawnEnemy = false;
 bool spawnWalker = false;
 
+/* MATH HELPERS */
+static float dist(glm::vec3 p1, glm::vec3 p2) {
+    return sqrt( pow(p1.x-p2.x, 2) + pow(p1.y-p2.y, 2) + pow(p1.z-p2.z, 2) );
+}
+
+static float randf() {
+	return (rand() * 1.0) / (RAND_MAX);
+}
+
+/* BEGIN MAIN STUFF */
 static void error_callback(int error, const char *description)
 {
 	cerr << description << endl;
@@ -166,7 +176,7 @@ static void init()
     srand(0);
 
     grid = new Grid();
-    player = new Player(0, 2, 0, 1, 0, 0, 5, grid);
+    player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
     camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos, grid);
     terrain = new Terrain();
 
@@ -203,7 +213,7 @@ static void laserFire()
         // dumb forloop just to show off scrap stuff
         // will be changed to incorporate enemy worth
         for (int der = 0; der < 5; der++)
-         objects.push_back(new Scrap(objects[i]->pos, 0, 0, 0, 1, grid, 10));
+         objects.push_back(new Scrap(objects[i]->pos, 0, randf() * 2*MATH_PI, 0, 1, grid, 10));
          delete objects[i];
          objects.erase(objects.begin() + i);
          i--;
@@ -233,10 +243,6 @@ static void drawGameObjects() {
     delete P;
 }
 
-static float randf() {
-	return (rand() * 1.0) / (RAND_MAX);
-}
-
 static void stepGameObjects(float dt) {
 	if (spawnEnemy) {
 		spawnEnemy = false;
@@ -259,6 +265,22 @@ static void stepGameObjects(float dt) {
 		objects.push_back(new Walker(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
     }
 	for (unsigned int i = 0; i < objects.size(); i++) {
+        float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), objects[i]->pos);
+        // check collision with scrap to collect
+        if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {
+            player->scrap += ((Scrap*)objects[i])->worth;
+            delete objects[i];
+            objects.erase(objects.begin() + i);
+            i--;
+        }
+        // check collision of scrap to begin magnet effect
+        if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
+          (((Scrap*)objects[i])->playerMagnet || objDist < player->bound + 10)) {
+            ((Scrap*)objects[i])->playerMagnet = true;
+            ((Scrap*)objects[i])->vel =
+              glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
+            ((Scrap*)objects[i])->vel *= 5;
+        }
 		objects[i]->step(dt);
 	}
 }
@@ -442,6 +464,7 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < objects.size(); i++) {
         delete objects[i];
     }
+    cout << "Scrap: " << player->scrap << endl;
     cout << "\ngame exited\n";
 	return 0;
 }

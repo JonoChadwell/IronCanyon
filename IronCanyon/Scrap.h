@@ -10,7 +10,9 @@ class Scrap : public GameObject {
 public:
     int worth;
     glm::vec3 vel;
+    glm::vec3 acc;
     double groundTime;
+    bool playerMagnet;
     Scrap(glm::vec3 pos, float ph, float th, float rl, float b, Grid* grid, int worth);
     virtual ~Scrap();
 

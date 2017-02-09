@@ -21,10 +21,12 @@ Program* Scrap::shader;
 Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
   float b, Grid* grid, int worth) :
     GameObject(pos, ph, th, rl, b),
-    grid(grid),
     worth(worth),
     vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
-    groundTime(-1.0)
+    acc( glm::vec3(0, -GRAVITY, 0) ),
+    groundTime(-1.0),
+    playerMagnet(false),
+    grid(grid)
 {
 }
 
@@ -51,7 +53,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     M->pushMatrix();
        M->loadIdentity();
        M->translate(vec3(pos.x, pos.y, pos.z));
-	   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+	   M->rotate(-theta + glfwGetTime(), vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
 	   M->scale(vec3(0.5, 0.5, 1.0));
@@ -64,16 +66,19 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Scrap::step(float dt) {
-    // right after enemy is destroyed, scrap is flung in a random upward direction
-    if (groundTime < 0 && (vel.y > 0 || pos.y >= grid->height(pos.x, pos.y) + 3)) {
-        pos.x += dt * vel.x;
-        pos.y += dt * vel.y;
-        pos.z += dt * vel.z;
+    // apply acceleration
+    pos.x += dt * vel.x;
+    pos.z += dt * vel.z;
+    // normal movement for when it is destroyed or being tracked into player
+    if (playerMagnet || (groundTime < 0 &&
+      (vel.y > 0 || pos.y >= grid->height(pos.x, pos.y) + 3))) {
         // affected by gravity
-        vel.y -= GRAVITY * dt;
+        vel.y += dt * acc.y;
+        pos.y += dt * vel.y;
     }
     // once it hits the ground, it bobs up and down
-    else {
+    else if (!playerMagnet) {
+        vel.x = vel.z = 0;
         groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
         pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * BOB_VEL;
     }
