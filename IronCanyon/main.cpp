@@ -265,14 +265,8 @@ static void stepGameObjects(float dt) {
 		objects.push_back(new Walker(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
     }
 	for (unsigned int i = 0; i < objects.size(); i++) {
+		objects[i]->step(dt);
         float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), objects[i]->pos);
-        // check collision with scrap to collect
-        if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {
-            player->scrap += ((Scrap*)objects[i])->worth;
-            delete objects[i];
-            objects.erase(objects.begin() + i);
-            i--;
-        }
         // check collision of scrap to begin magnet effect
         if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
           (((Scrap*)objects[i])->playerMagnet || objDist < player->bound + 10)) {
@@ -281,7 +275,13 @@ static void stepGameObjects(float dt) {
               glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
             ((Scrap*)objects[i])->vel *= 5;
         }
-		objects[i]->step(dt);
+        // check collision with scrap to collect
+        if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {
+            player->scrap += ((Scrap*)objects[i])->worth;
+            delete objects[i];
+            objects.erase(objects.begin() + i);
+            i--;
+        }
 	}
 }
 
