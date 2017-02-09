@@ -71,7 +71,7 @@ void Scrap::step(float dt) {
     pos.z += dt * vel.z;
     // normal movement for when it is destroyed or being tracked into player
     if (playerMagnet || (groundTime < 0 &&
-      (vel.y > 0 || pos.y >= grid->height(pos.x, pos.y) + 3))) {
+      (vel.y > 0 || pos.y >= grid->height(pos.x, pos.z) + 2.2))) {
         // affected by gravity
         vel.y += dt * acc.y;
         pos.y += dt * vel.y;
