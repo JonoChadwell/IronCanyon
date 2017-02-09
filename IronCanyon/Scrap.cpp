@@ -66,12 +66,14 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Scrap::step(float dt) {
+    // helper height variable to avoid needless computation
+    float gridHeight = grid->height(pos.x, pos.z);
     // apply acceleration
     pos.x += dt * vel.x;
     pos.z += dt * vel.z;
     // normal movement for when it is destroyed or being tracked into player
     if (playerMagnet || (groundTime < 0 &&
-      (vel.y > 0 || pos.y >= grid->height(pos.x, pos.z) + 2.2))) {
+      (vel.y > 0 || pos.y >= gridHeight + 2.2))) {
         // affected by gravity
         vel.y += dt * acc.y;
         pos.y += dt * vel.y;
@@ -81,6 +83,16 @@ void Scrap::step(float dt) {
         vel.x = vel.z = 0;
         groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
         pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * BOB_VEL;
+    }
+    // make sure the position doesn't pass through terrain
+    float oldx = pos.x;
+    float oldz = pos.z;
+    if (!grid->inBounds(pos.x, pos.z)) {
+        pos.x = oldx;
+        pos.z = oldz;
+    }
+    if (pos.y < gridHeight) {
+        pos.y = gridHeight;;
     }
 }
 
