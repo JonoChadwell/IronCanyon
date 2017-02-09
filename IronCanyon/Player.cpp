@@ -162,10 +162,10 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->pushMatrix();
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, this->ypos, this->zpos));
-	M->rotate(theta + MATH_PI/2, vec3(0, 1, 0));
-	M->rotate(phi + .2, vec3(1, 0, 0));
+	M->rotate(theta - MATH_PI/2, vec3(0, 1, 0));
+	M->rotate(-phi - .2, vec3(1, 0, 0));
+    M->translate(vec3(0, 0, 0.5));
     //M->scale(vec3(0.2, 0.2, 1.5));
-    M->translate(vec3(0, 0, -0.75));
 
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::turret->draw(Player::shader);
