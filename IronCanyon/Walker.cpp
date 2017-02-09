@@ -19,8 +19,8 @@ Program* Walker::shader;
 Walker::Walker(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid) :
     Enemy(p, ph, th, rl, v, b, grid)
 {
-    left_foot = 0;
-    right_foot = 0;
+    left_foot = STEP_FORWARD_DIST * vel;
+    right_foot = STEP_FORWARD_DIST * vel;
     left_actual = 0;
     right_actual = 0;
     walk_time = 0;
