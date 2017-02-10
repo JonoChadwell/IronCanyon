@@ -15,7 +15,9 @@
 #define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
 #define BOB_VEL 3
 
-Shape* Scrap::model;
+Shape* Scrap::nut;
+Shape* Scrap::bolt;
+Shape* Scrap::box;
 Program* Scrap::shader;
 
 Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
@@ -56,9 +58,9 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	   M->rotate(-theta + glfwGetTime(), vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
-	   M->scale(vec3(0.5, 0.5, 1.0));
+       //M->scale(vec3(5, 1, 1));
        glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Scrap::model->draw(Scrap::shader);
+       Scrap::bolt->draw(Scrap::shader);
     M->popMatrix();
 
     delete M;
@@ -97,11 +99,23 @@ void Scrap::step(float dt) {
 }
 
 void Scrap::setup() {
-	Scrap::model = new Shape();
-	Scrap::model->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
-	Scrap::model->resize();
-	Scrap::model->init();
+	Scrap::nut = new Shape();
+	Scrap::nut->loadMesh(RESOURCE_DIR + std::string("nut.obj"));
+	Scrap::nut->resize();
+	Scrap::nut->init();
 
+	Scrap::bolt = new Shape();
+	Scrap::bolt->loadMesh(RESOURCE_DIR + std::string("bolt.obj"));
+	Scrap::bolt->resize();
+	Scrap::bolt->init();
+
+	Scrap::box = new Shape();
+	Scrap::box->loadMesh(RESOURCE_DIR + std::string("box.obj"));
+	Scrap::box->resize();
+	Scrap::box->init();
+
+	Scrap::shader = new Program();
+	Scrap::shader = new Program();
 	Scrap::shader = new Program();
 	Scrap::shader->setVerbose(true);
 	Scrap::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
@@ -117,4 +131,5 @@ void Scrap::setup() {
 	Scrap::shader->addUniform("shine");
 	Scrap::shader->addAttribute("vertPos");
 	Scrap::shader->addAttribute("vertNor");
+	Scrap::shader->addAttribute("vertTex");
 }

@@ -23,6 +23,8 @@ public:
 
 private:
     Grid* grid;
-    static Shape* model;
+    static Shape* nut;
+    static Shape* box;
+    static Shape* bolt;
     static Program* shader;
 };
