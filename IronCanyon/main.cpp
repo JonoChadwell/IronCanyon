@@ -20,6 +20,8 @@
 #include "Enemy.h"
 #include "Walker.h"
 #include "Scrap.h"
+#include "GridObject.h"
+#include "RockOne.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -195,9 +197,27 @@ static void init()
 	Enemy::setup();
     Walker::setup();
     Scrap::setup();
+    RockOne::setup();
 
 	forwards = 0;
 	sideways = 0;
+
+    // add some rocks to the world
+    srand(0);
+    for (int i = 0; i < 10; i++) {
+		float x = randf() * 300 - 150;
+		float z = randf() * 300 - 150;
+		while (sqrt(x * x + z * z) < 10) {
+			x = randf() * 300 - 150;
+			z = randf() * 300 - 150;
+		}
+        
+        RockOne* r = new RockOne(vec3(x, 0, z), i, grid);
+        grid->addToGrid(r);
+        objects.push_back(r);
+
+    }
+
 }
 
 static void laserFire()

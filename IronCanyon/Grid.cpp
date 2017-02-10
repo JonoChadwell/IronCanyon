@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include "Constants.h"
 #include "math.h"
+#include "GridObject.h"
 
 #include <iostream>
 #include <fstream>
@@ -138,6 +139,17 @@ vector<vec2> Grid::getPath(vec2 from, vec2 to) {
 
     cout << "unable to find path\n";
     return vector<vec2>();
+}
+
+void Grid::addToGrid(GridObject* obj) {
+    vec2 pos = vec2(obj->pos.x, obj->pos.z);
+    for (int z = 0; z < GRID_SIZE; z++) {
+	    for (int x = 0; x < GRID_SIZE; x++) {
+            if (obj->bound >= distance(getGameCoords(x, z), pos)) {
+                bounds[x][z] = false;
+            }
+        }
+    }
 }
 
 float Grid::height(float x, float z) {

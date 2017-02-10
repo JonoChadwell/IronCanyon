@@ -9,6 +9,8 @@
 
 using namespace glm;
 
+class GridObject;
+
 class Grid {
 
 public:
@@ -21,11 +23,14 @@ public:
 	float height(float x, float z);
     std::vector<vec2> getPath(vec2 from, vec2 to);
 
-private:
     ivec2 getGridCoords(float x, float z);
     ivec2 getGridCoords(vec2 pos);
     vec2 getGameCoords(ivec2 pos);
     vec2 getGameCoords(int x, int z);
+
+    void addToGrid(GridObject* obj);
+
+private:
 	float heights[GRID_SIZE][GRID_SIZE];
 	bool bounds[GRID_SIZE][GRID_SIZE];
 };
