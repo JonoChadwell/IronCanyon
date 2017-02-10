@@ -81,7 +81,7 @@ void Scrap::step(float dt) {
         pos.y += dt * vel.y;
     }
     // once it hits the ground, it bobs up and down
-    else if (!playerMagnet) {
+    else {
         vel.x = vel.z = 0;
         groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
         pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * BOB_VEL;
