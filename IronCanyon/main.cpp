@@ -273,7 +273,7 @@ static void stepGameObjects(float dt) {
             ((Scrap*)objects[i])->playerMagnet = true;
             ((Scrap*)objects[i])->vel =
               glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
-            ((Scrap*)objects[i])->vel *= 5;
+            ((Scrap*)objects[i])->vel *= 10;
         }
         // check collision with scrap to collect
         if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {

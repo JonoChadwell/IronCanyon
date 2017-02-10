@@ -161,6 +161,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//turret
 	M->pushMatrix();
 	M->loadIdentity();
+    M->translate(vec3(.2*cos(ctheta), 0, -.2*sin(ctheta)));
 	M->translate(vec3(this->xpos, this->ypos, this->zpos));
 	M->rotate(theta - MATH_PI/2, vec3(0, 1, 0));
 	M->rotate(-phi - .2, vec3(1, 0, 0));
