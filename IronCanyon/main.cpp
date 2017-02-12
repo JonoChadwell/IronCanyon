@@ -22,6 +22,7 @@
 #include "Scrap.h"
 #include "GridObject.h"
 #include "RockOne.h"
+#include "Turret.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -198,6 +199,7 @@ static void init()
     Walker::setup();
     Scrap::setup();
     RockOne::setup();
+    Turret::setup();
 
 	forwards = 0;
 	sideways = 0;
