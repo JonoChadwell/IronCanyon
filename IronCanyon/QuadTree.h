@@ -28,8 +28,7 @@ public:
 	QuadTree(float minx, float maxx, float minz, float maxz);
 	void insert(GameObject* obj);
 	virtual ~QuadTree();
-	vector<GameObject*> QuadTree::getObjects(float xpos, float ypos);
-	int countNodes();
+	vector<GameObject*> getObjects(float xpos, float ypos);
 
 private:
 	int size;
