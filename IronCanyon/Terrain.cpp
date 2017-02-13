@@ -26,7 +26,7 @@ void Terrain::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
    
    MatrixStack *M = new MatrixStack();
    
-   glUniform3f(Terrain::program->getUniform("lightPos"), 100, 100, 100);
+   glUniform3f(Terrain::program->getUniform("sunDir"), SUN_DIR);
    glUniform3f(Terrain::program->getUniform("eye"), eye.x, eye.y, eye.z);
    glUniform3f(Terrain::program->getUniform("MatAmb"), .2, .6, .3);
    glUniform3f(Terrain::program->getUniform("MatDif"), .7, .26, .3);
@@ -61,7 +61,7 @@ void Terrain::setup() {
 	Terrain::program->addUniform("P");
 	Terrain::program->addUniform("M");
 	Terrain::program->addUniform("V");
-	Terrain::program->addUniform("lightPos");
+	Terrain::program->addUniform("sunDir");
 	Terrain::program->addUniform("eye");
 	Terrain::program->addUniform("MatAmb");
 	Terrain::program->addUniform("MatDif");
