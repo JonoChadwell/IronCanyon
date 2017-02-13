@@ -25,4 +25,7 @@ public:
     float getYComp();
     float getZComp();
     static void setup();
+
+	// set in quad trees to remove from main object array
+	bool toDelete = false;
 };

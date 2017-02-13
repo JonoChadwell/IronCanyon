@@ -6,7 +6,26 @@ QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
 	maxx(maxx),
 	minz(minz),
 	maxz(maxz)
-{}
+{
+	size = 0;
+}
+
+int QuadTree::countNodes() {
+	int sum = 1;
+	if (topright) {
+		sum += topright->countNodes();
+	}
+	if (topleft) {
+		sum += topleft->countNodes();
+	}
+	if (bottomright) {
+		sum += bottomright->countNodes();
+	}
+	if (bottomleft) {
+		sum += bottomleft->countNodes();
+	}
+	return sum;
+}
 
 vector<GameObject*> QuadTree::getObjects(float xpos, float zpos) {
 	if (xpos > (maxx - minx) / 2 + minx) {
@@ -47,16 +66,16 @@ vector<GameObject*> QuadTree::getObjects(float xpos, float zpos) {
 void QuadTree::insert(GameObject * obj)
 {
 	size++;
-	std::cout << "HERE";
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
 		topleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxz - minz) / 2 + minz, maxz);
 		topright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxz - minz) / 2 + minz, maxz);
 		bottomleft = new QuadTree(minx, (maxx - minx) / 2 + minx, minz, (maxz - minz) / 2 + minz);
 		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz);
-		for (int i = 0; i < QUADTREE_CAPACITY; i++) {
+		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
 			insert(objects[i]);
 		}
+		insert(obj);
 	}
 	else if (size > QUADTREE_CAPACITY) {
 		//right

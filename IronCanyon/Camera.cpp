@@ -37,7 +37,6 @@ void Camera::trackToPlayer(Player *player) {
       xpos = xlook + i * cos(-player->theta) * cos(-player->phi);
       zpos = zlook + i * sin(-player->theta) * cos(-player->phi);
       i -= .1;
-	  std::cout << xpos << " " << zpos << '\n';
     }
     if (ypos < grid->height(xpos, zpos) + .5 ) {
       ypos = grid->height(xpos, zpos) + .5;

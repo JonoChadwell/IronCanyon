@@ -219,7 +219,6 @@ static void init()
         RockOne* r = new RockOne(vec3(x, 0, z), i, grid);
         grid->addToGrid(r);
         objects.push_back(r);
-
     }
 
 }
@@ -236,11 +235,11 @@ static void laserFire()
       if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
         // dumb forloop just to show off scrap stuff
         // will be changed to incorporate enemy worth
-        for (int der = 0; der < 5; der++)
-         objects.push_back(new Scrap(objects[i]->pos, 0, randf() * 2*MATH_PI, 0, 1, grid, 10));
-         delete objects[i];
-         objects.erase(objects.begin() + i);
-         i--;
+		  for (int der = 0; der < 5; der++) {
+			  objects.push_back(new Scrap(objects[i]->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+			  quadtree->insert(objects[objects.size() - 1]);
+		  }
+		  objects[i]->toDelete = true;
       }
    }
 }
@@ -277,8 +276,9 @@ static void stepGameObjects(float dt) {
 			z = randf() * 100 - 50;
 		}
         objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+		quadtree->insert(objects[objects.size() - 1]);
 	}
-    if (spawnWalker) {
+    else if (spawnWalker) {
         spawnWalker = false;
 		float x = randf() * 100 - 50;
 		float z = randf() * 100 - 50;
@@ -287,6 +287,7 @@ static void stepGameObjects(float dt) {
 			z = randf() * 100 - 50;
 		}
 		objects.push_back(new Walker(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+		quadtree->insert(objects[objects.size() - 1]);
     }
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
@@ -302,9 +303,7 @@ static void stepGameObjects(float dt) {
         // check collision with scrap to collect
         if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {
             player->scrap += ((Scrap*)objects[i])->worth;
-            delete objects[i];
-            objects.erase(objects.begin() + i);
-            i--;
+			objects[i]->toDelete = true;
         }
 	}
 }
@@ -415,6 +414,16 @@ static void updateWorld()
 	stepPlayer(timePassed);
 }
 
+static void updateObjectVector() {
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (objects[i]->toDelete) {
+			delete objects[i];
+			objects.erase(objects.begin() + i);
+			i--;
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	// Set error callback.
@@ -470,6 +479,9 @@ int main(int argc, char **argv)
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
 		quadtree = new QuadTree(-200, 200, -200, 200);
+		for (int i = 0; i < objects.size(); i++) {
+			quadtree->insert(objects[i]);
+		}
         lastFrameStartTime = thisFrameStartTime;
         thisFrameStartTime = glfwGetTime();
         // Update game state
@@ -482,6 +494,8 @@ int main(int argc, char **argv)
 		glfwPollEvents();
 		// Remove the QuadTree
 		delete quadtree;
+		// Update main object vector
+		updateObjectVector();
 	}
 
 	// Quit program.
