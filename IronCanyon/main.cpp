@@ -23,6 +23,7 @@
 #include "GridObject.h"
 #include "RockOne.h"
 #include "Turret.h"
+#include "QuadTree.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -45,6 +46,7 @@ Terrain* terrain;
 
 // Vector holding all game objects
 vector<GameObject*> objects;
+QuadTree* quadtree;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
@@ -467,6 +469,7 @@ int main(int argc, char **argv)
 
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
+		quadtree = new QuadTree(-200, 200, -200, 200);
         lastFrameStartTime = thisFrameStartTime;
         thisFrameStartTime = glfwGetTime();
         // Update game state
@@ -477,6 +480,8 @@ int main(int argc, char **argv)
 		glfwSwapBuffers(window);
 		// Poll for and process events.
 		glfwPollEvents();
+		// Remove the QuadTree
+		delete quadtree;
 	}
 
 	// Quit program.

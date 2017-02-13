@@ -1,4 +1,5 @@
 #include "QuadTree.h"
+#include <iostream>
 
 QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
 	minx(minx),
@@ -7,9 +8,46 @@ QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
 	maxz(maxz)
 {}
 
+vector<GameObject*> QuadTree::getObjects(float xpos, float zpos) {
+	if (xpos > (maxx - minx) / 2 + minx) {
+		//topright
+		if (zpos > (maxz - minz) / 2 + minz) {
+			if (topright)
+				return topright->getObjects(xpos, zpos);
+			else
+				return objects;
+		}
+		//bottomright
+		else {
+			if (bottomright)
+				return bottomright->getObjects(xpos, zpos);
+			else
+				return objects;
+		}
+	}
+	//left
+	else {
+		//topleft
+		if (zpos > (maxz - minz) / 2 + minz) {
+			if (topleft)
+				return topleft->getObjects(xpos, zpos);
+			else
+				return objects;
+		}
+		//bottomleft
+		else {
+			if(bottomleft)
+				return topleft->getObjects(xpos,zpos);
+			else
+				return objects;
+		}
+	}
+}
+
 void QuadTree::insert(GameObject * obj)
 {
 	size++;
+	std::cout << "HERE";
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
 		topleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxz - minz) / 2 + minz, maxz);
