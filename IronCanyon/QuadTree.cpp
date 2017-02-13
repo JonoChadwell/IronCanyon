@@ -29,38 +29,27 @@ int QuadTree::countNodes() {
 }
 
 vector<GameObject*> QuadTree::getObjects(float xpos, float zpos) {
+	// either all subtrees exist or none of them
+	if (!topright)
+		return objects;
+
+	//cout << "HERE" << xpos << " " << zpos << '\n';
 	if (xpos > (maxx - minx) / 2 + minx) {
 		//topright
-		if (zpos > (maxz - minz) / 2 + minz) {
-			if (topright)
-				return topright->getObjects(xpos, zpos);
-			else
-				return objects;
-		}
+		if (zpos > (maxz - minz) / 2 + minz)
+			return topright->getObjects(xpos, zpos);
 		//bottomright
-		else {
-			if (bottomright)
-				return bottomright->getObjects(xpos, zpos);
-			else
-				return objects;
-		}
+		else 
+			return bottomright->getObjects(xpos, zpos);
 	}
 	//left
 	else {
 		//topleft
-		if (zpos > (maxz - minz) / 2 + minz) {
-			if (topleft)
-				return topleft->getObjects(xpos, zpos);
-			else
-				return objects;
-		}
+		if (zpos > (maxz - minz) / 2 + minz)
+			return topleft->getObjects(xpos, zpos);
 		//bottomleft
-		else {
-			if(bottomleft)
-				return topleft->getObjects(xpos,zpos);
-			else
-				return objects;
-		}
+		else 
+			return bottomleft->getObjects(xpos,zpos);
 	}
 }
 

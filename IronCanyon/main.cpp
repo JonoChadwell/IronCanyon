@@ -291,19 +291,22 @@ static void stepGameObjects(float dt) {
     }
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
-        float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), objects[i]->pos);
+	}
+	vector<GameObject *> qObjects = quadtree->getObjects(player->xpos, player->zpos);
+	for (unsigned int i = 0; i < qObjects.size(); i++) {
+		float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), qObjects[i]->pos);
         // check collision of scrap to begin magnet effect
-        if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
-          (((Scrap*)objects[i])->playerMagnet || objDist < player->bound + 10)) {
-            ((Scrap*)objects[i])->playerMagnet = true;
-            ((Scrap*)objects[i])->vel =
-              glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
-            ((Scrap*)objects[i])->vel *= 10;
+        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL &&
+          (((Scrap*)qObjects[i])->playerMagnet || objDist < player->bound + 10)) {
+            ((Scrap*)qObjects[i])->playerMagnet = true;
+            ((Scrap*)qObjects[i])->vel =
+              glm::vec3(player->xpos, player->ypos, player->zpos) - qObjects[i]->pos;
+            ((Scrap*)qObjects[i])->vel *= 10;
         }
         // check collision with scrap to collect
-        if (dynamic_cast<Scrap*>(objects[i]) != NULL && objDist < player->bound) {
-            player->scrap += ((Scrap*)objects[i])->worth;
-			objects[i]->toDelete = true;
+        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound) {
+            player->scrap += ((Scrap*)qObjects[i])->worth;
+			qObjects[i]->toDelete = true;
         }
 	}
 }

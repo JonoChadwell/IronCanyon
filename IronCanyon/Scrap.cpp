@@ -41,6 +41,8 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     MatrixStack* M = new MatrixStack();
     Scrap::shader->bind();
 
+	//std::cout << "Scrap " << pos.x << " " << pos.z << " " << playerMagnet << '\n';
+
     // render setup
     glUniform3f(Scrap::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Scrap::shader->getUniform("eye"), eye.x, eye.y, eye.z);
