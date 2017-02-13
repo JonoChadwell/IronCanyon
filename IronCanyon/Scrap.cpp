@@ -42,7 +42,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     Scrap::shader->bind();
 
     // render setup
-    glUniform3f(Scrap::shader->getUniform("lightPos"), 100, 100, 100);
+    glUniform3f(Scrap::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Scrap::shader->getUniform("eye"), eye.x, eye.y, eye.z);
     glUniform3f(Scrap::shader->getUniform("MatAmb"), 0.6, .6, .6);
     glUniform3f(Scrap::shader->getUniform("MatDif"), .3, .3, .3);
@@ -123,7 +123,7 @@ void Scrap::setup() {
 	Scrap::shader->addUniform("P");
 	Scrap::shader->addUniform("M");
 	Scrap::shader->addUniform("V");
-	Scrap::shader->addUniform("lightPos");
+	Scrap::shader->addUniform("sunDir");
 	Scrap::shader->addUniform("eye");
 	Scrap::shader->addUniform("MatAmb");
 	Scrap::shader->addUniform("MatDif");

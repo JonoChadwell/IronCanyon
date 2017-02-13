@@ -34,7 +34,7 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     //render shit
     Enemy::shader->bind();
-    glUniform3f(Enemy::shader->getUniform("lightPos"), 100, 100, 100);
+    glUniform3f(Enemy::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Enemy::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
     glUniform3f(Enemy::shader->getUniform("MatAmb"), 0, .8, 1);
@@ -115,7 +115,7 @@ void Enemy::setup() {
 	Enemy::shader->addUniform("P");
 	Enemy::shader->addUniform("M");
 	Enemy::shader->addUniform("V");
-	Enemy::shader->addUniform("lightPos");
+	Enemy::shader->addUniform("sunDir");
 	Enemy::shader->addUniform("eye");
 	Enemy::shader->addUniform("MatAmb");
 	Enemy::shader->addUniform("MatDif");
