@@ -12,6 +12,8 @@ out vec4 color;
 void main(){
    vec3 lightColor = vec3(1, 1, 1);
    vec3 normLight = normalize(-sunDir);
+   normLight.x = -normLight.x;
+   normLight.z = -normLight.z;
    float ambient = .2;
    vec3 diffShade = MatDif * max(0, dot(normLight, fragNor));
    vec3 ambShade = ambient * MatAmb;
