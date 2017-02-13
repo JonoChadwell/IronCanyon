@@ -10,6 +10,7 @@ QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
 	size = 0;
 }
 
+//debug function
 int QuadTree::countNodes() {
 	int sum = 1;
 	if (topright) {

@@ -29,6 +29,7 @@ public:
 	void insert(GameObject* obj);
 	virtual ~QuadTree();
 	vector<GameObject*> getObjects(float xpos, float ypos);
+	int countNodes();
 
 private:
 	int size;
