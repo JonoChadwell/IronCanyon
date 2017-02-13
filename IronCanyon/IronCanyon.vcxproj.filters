@@ -36,9 +36,6 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Head.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +52,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Walker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RockOne.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GridObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scrap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -102,6 +114,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Walker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RockOne.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GridObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scrap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

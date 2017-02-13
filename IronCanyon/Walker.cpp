@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Grid.h"
 #include <iostream>
+#include <algorithm>
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
