@@ -34,7 +34,7 @@ void RockOne::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     //render shit
     RockOne::shader->bind();
-    glUniform3f(RockOne::shader->getUniform("lightPos"), 100, 100, 100);
+	glUniform3f(RockOne::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(RockOne::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
     glUniform3f(RockOne::shader->getUniform("MatAmb"), .9, .8, .6);
@@ -72,7 +72,7 @@ void RockOne::setup() {
     RockOne::shader->addUniform("P");
     RockOne::shader->addUniform("M");
     RockOne::shader->addUniform("V");
-    RockOne::shader->addUniform("lightPos");
+    RockOne::shader->addUniform("sunDir");
     RockOne::shader->addUniform("eye");
     RockOne::shader->addUniform("MatAmb");
     RockOne::shader->addUniform("MatDif");

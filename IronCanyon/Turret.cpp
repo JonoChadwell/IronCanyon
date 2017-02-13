@@ -17,6 +17,10 @@ Turret::Turret(glm::vec3 p, int rotation, float b, Grid *grid) :
 {
 }
 
+void Turret::step(float dt) {
+    
+}
+
 void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
@@ -36,7 +40,7 @@ void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // render shit
     M->pushMatrix();
         M->loadIdentity();
-        M->translate(vec3(pos.x, pos.y, pos.z));
+        M->translate(pos);
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(1, 1, 1));

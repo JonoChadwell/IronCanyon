@@ -57,7 +57,7 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     MatrixStack *M = new MatrixStack();
 
     Walker::shader->bind();
-    glUniform3f(Walker::shader->getUniform("lightPos"), 100, 100, 100);
+    glUniform3f(Walker::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Walker::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
 
@@ -221,7 +221,7 @@ void Walker::setup() {
 	Walker::shader->addUniform("P");
 	Walker::shader->addUniform("M");
 	Walker::shader->addUniform("V");
-	Walker::shader->addUniform("lightPos");
+	Walker::shader->addUniform("sunDir");
 	Walker::shader->addUniform("eye");
 	Walker::shader->addUniform("MatAmb");
 	Walker::shader->addUniform("MatDif");

@@ -149,7 +149,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//printf("draw xpos: %f", xpos);
 	//render shit
 	Player::shader->bind();
-	glUniform3f(Player::shader->getUniform("lightPos"), 100, 100, 100);
+	glUniform3f(Player::shader->getUniform("sunDir"), SUN_DIR);
 	glUniform3f(Player::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 	glUniform3f(Player::shader->getUniform("MatAmb"), 0, .8, 1);
 	glUniform3f(Player::shader->getUniform("MatDif"), .5, .5, .1);
@@ -306,7 +306,7 @@ void Player::setup() {
 	Player::shader->addUniform("P");
 	Player::shader->addUniform("M");
 	Player::shader->addUniform("V");
-	Player::shader->addUniform("lightPos");
+	Player::shader->addUniform("sunDir");
 	Player::shader->addUniform("eye");
 	Player::shader->addUniform("MatAmb");
 	Player::shader->addUniform("MatDif");

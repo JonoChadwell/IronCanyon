@@ -6,3 +6,4 @@
 #define GRAVITY 60
 #define MAX_GRAVITY 200
 #define QUADTREE_CAPACITY 10
+#define SUN_DIR -0.75f, -0.75f, -0.75f
