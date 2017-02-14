@@ -24,6 +24,7 @@
 #include "RockOne.h"
 #include "Turret.h"
 #include "QuadTree.h"
+#include "Projectile.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
