@@ -28,28 +28,30 @@ int QuadTree::countNodes() {
 	return sum;
 }
 
-vector<GameObject*> QuadTree::getObjects(float xpos, float zpos) {
+void QuadTree::getObjects(float xpos, float zpos, vector<GameObject*> *ret) {
 	// either all subtrees exist or none of them
-	if (!topright)
-		return objects;
+	if (!topright) {
+		*ret = objects;
+		return;
+	}
 
 	//cout << "HERE" << xpos << " " << zpos << '\n';
 	if (xpos > (maxx - minx) / 2 + minx) {
 		//topright
 		if (zpos > (maxz - minz) / 2 + minz)
-			return topright->getObjects(xpos, zpos);
+			topright->getObjects(xpos, zpos, ret);
 		//bottomright
 		else 
-			return bottomright->getObjects(xpos, zpos);
+			bottomright->getObjects(xpos, zpos, ret);
 	}
 	//left
 	else {
 		//topleft
 		if (zpos > (maxz - minz) / 2 + minz)
-			return topleft->getObjects(xpos, zpos);
+			topleft->getObjects(xpos, zpos, ret);
 		//bottomleft
 		else 
-			return bottomleft->getObjects(xpos,zpos);
+			bottomleft->getObjects(xpos,zpos, ret);
 	}
 }
 
@@ -67,26 +69,27 @@ void QuadTree::insert(GameObject * obj)
 		}
 		insert(obj);
 	}
+	//We might put the object into multiple different leaves if it is near the edge
 	else if (size > QUADTREE_CAPACITY) {
 		//right
-		if (obj->pos.x > (maxx - minx) / 2 + minx) {
+		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound) {
 			//topright
-			if (obj->pos.z > (maxz - minz) / 2 + minz) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound) {
 				topright->insert(obj);
 			}
 			//bottomright
-			else {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound) {
 				bottomright->insert(obj);
 			}
 		}
 		//left
-		else {
+		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound) {
 			//topleft
-			if (obj->pos.z > (maxz - minz) / 2 + minz) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound) {
 				topleft->insert(obj);
 			}
 			//bottomleft
-			else {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound) {
 				bottomleft->insert(obj);
 			}
 		}
