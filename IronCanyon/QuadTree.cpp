@@ -8,6 +8,10 @@ QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
 	maxz(maxz)
 {
 	size = 0;
+   topright = NULL;
+   topleft = NULL;
+   bottomright = NULL;
+   bottomleft = NULL;
 }
 
 //debug function
