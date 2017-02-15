@@ -32,8 +32,8 @@ namespace {
     bool isOpenPath(bool grid[GRID_SIZE][GRID_SIZE], ivec2 a, ivec2 b) {
         int minx = std::min(a.x, b.x);
         int miny = std::min(a.y, b.y);
-        int maxx = std::min(a.x, b.x);
-        int maxy = std::min(a.y, b.y);
+        int maxx = std::max(a.x, b.x);
+        int maxy = std::max(a.y, b.y);
 
         for (int x = minx; x <= maxx; x++) {
             for (int y = miny; y <= maxy; y++) {
@@ -121,7 +121,6 @@ vector<vec2> Grid::getPath(vec2 from, vec2 to) {
     while (q.size() > 0) {
         ivec2 pos = q.top();
         q.pop();
-        cout << "looking at: " << pos.x << ", " << pos.y << endl;
         neighbors[0] = ivec2(pos.x + 1, pos.y);
         neighbors[1] = ivec2(pos.x, pos.y + 1);
         neighbors[2] = ivec2(pos.x - 1, pos.y);
