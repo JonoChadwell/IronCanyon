@@ -2,10 +2,13 @@
 #include "GameObject.h"
 #include "Shape.h"
 #include "MatrixStack.h"
-#include "Grid.h"
 #include <string>
 #include <vector>
 #include <memory>
+
+// forwards declarations
+class Player;
+class Grid;
 
 class Enemy : public GameObject {
 
@@ -19,10 +22,13 @@ public:
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
     static void setup();
+    static Player* target;
 
 protected:
     Grid* grid;
 	float animtime;
+    std::vector<vec2> currentPath;
+    float pathAge;
 
 private:
 	static Shape* model;

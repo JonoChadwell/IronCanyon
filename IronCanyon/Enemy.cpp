@@ -3,23 +3,69 @@
 #include "math.h"
 #include "Constants.h"
 #include "Grid.h"
+#include "Player.h"
 #include <iostream>
+#include <cmath>
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+using namespace glm;
+using namespace std;
+
 Shape* Enemy::model;
 Program* Enemy::shader;
+Player* Enemy::target;
+
+// helper functions
+namespace {
+    float getLength(vector<vec2> path) {
+        float length = 0;
+        for (int i = 1; i < (int) path.size(); i++) {
+            length += distance(path[i-1], path[i]);
+        }
+        return length;
+    }
+
+    vec2 moveFrom(vec2 a, vec2 b, float amt) {
+        float dist = distance(a, b);
+        return mix(a, b, amt / dist);
+    }
+
+    vec2 moveAlong(vector<vec2> path, float amt) {
+        for (int i = 1; i < (int) path.size(); i++) {
+            float dist = distance(path[i-1], path[i]);
+            if (amt < dist) {
+                return moveFrom(path[i-1], path[i], amt);
+            }
+            amt -= dist;
+        }
+        return path.back();
+    }
+
+    float getFacing(vector<vec2> path, float amt) {
+        for (int i = 1; i < (int) path.size(); i++) {
+            float dist = distance(path[i-1], path[i]);
+            if (amt < dist) {
+                return atan2(path[i-1].y - path[i].y, path[i-1].x - path[i].x);
+            }
+            amt -= dist;
+        }
+        return 0;
+    }
+}
 
 Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
   float v, float b, Grid* grid) :
     GameObject(p, ph, th, rl, b),
     vel(v),
     active(true),
-	grid(grid)
+	grid(grid),
+    animtime(0.0),
+    pathAge(0.0)
 {
-	animtime = 0.0;
+    currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
 }
 
 // destructor
@@ -79,6 +125,7 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 void Enemy::step(float dt) {
 	animtime += dt;
+    pathAge += dt;
 	// do bob animation
 	if (grid->inBounds(pos.x, pos.z)) {
 	    pos.y = grid->height(pos.x, pos.z) + 1.6 + 0.4 * sin(animtime * 2.0);
@@ -88,17 +135,23 @@ void Enemy::step(float dt) {
 		pos.y = -0.5;
 	}
 
+    if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->xpos, target->zpos))) {
+        pathAge = dt;
+        currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
+    }
+
 	float oldx = pos.x;
 	float oldz = pos.z;
 
-    pos.x += getXComp() * dt * vel; 
-    pos.z += getZComp() * dt * vel;
+    vec2 newPos = moveAlong(currentPath, pathAge * vel);
+    theta = getFacing(currentPath, pathAge * vel) + MATH_PI;
 
+    pos.x = newPos.x;
+    pos.z = newPos.y;
 
     if (!grid->inBounds(pos.x, pos.z)) {
 		pos.x = oldx;
 		pos.z = oldz;
-        theta += MATH_PI;
     }
 }
 

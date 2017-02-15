@@ -199,6 +199,7 @@ static void init()
     Terrain::setup();
 	Player::setup();
 	Enemy::setup();
+    Enemy::target = player;
     Walker::setup();
     Scrap::setup();
     RockOne::setup();
@@ -488,7 +489,7 @@ int main(int argc, char **argv)
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
 		quadtree = new QuadTree(-200, 200, -200, 200);
-		for (int i = 0; i < objects.size(); i++) {
+		for (int i = 0; i < (int) objects.size(); i++) {
 			quadtree->insert(objects[i]);
 		}
         lastFrameStartTime = thisFrameStartTime;
