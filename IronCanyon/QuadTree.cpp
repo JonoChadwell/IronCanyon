@@ -70,30 +70,31 @@ void QuadTree::insert(GameObject * obj)
 		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz);
 		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
 			insert(objects[i]);
+			objects.erase(objects.begin());
 		}
 		insert(obj);
 	}
 	//We might put the object into multiple different leaves if it is near the edge
 	else if (size > QUADTREE_CAPACITY) {
 		//right
-		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound) {
+		if (obj->pos.x > (maxx - minx) / 2 + minx) {
 			//topright
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz) {
 				topright->insert(obj);
 			}
 			//bottomright
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound) {
+			else if (obj->pos.z < (maxz - minz) / 2 + minz) {
 				bottomright->insert(obj);
 			}
 		}
 		//left
-		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound) {
+		else if (obj->pos.x < (maxx - minx) / 2 + minx) {
 			//topleft
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz) {
 				topleft->insert(obj);
 			}
 			//bottomleft
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound) {
+			else if (obj->pos.z < (maxz - minz) / 2 + minz) {
 				bottomleft->insert(obj);
 			}
 		}
@@ -106,4 +107,10 @@ void QuadTree::insert(GameObject * obj)
 //Once one(root) quadtree is freed, the children are also freed
 QuadTree::~QuadTree()
 {
+	if (topright) {
+		delete topright;
+		delete bottomright;
+		delete topleft;
+		delete bottomleft;
+	}
 }

@@ -291,14 +291,16 @@ static void scrapDetection() {
 static void stepGameObjects(float dt) {
 	if (spawnEnemy) {
 		spawnEnemy = false;
-		float x = randf() * 100 - 50;
-		float z = randf() * 100 - 50;
-		while (!grid->inBounds(x,z)) {
-			x = randf() * 100 - 50;
-			z = randf() * 100 - 50;
+		for (int i = 0; i < 100; i++) {
+			float x = randf() * 100 - 50;
+			float z = randf() * 100 - 50;
+			while (!grid->inBounds(x, z)) {
+				x = randf() * 100 - 50;
+				z = randf() * 100 - 50;
+			}
+			objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
+			quadtree->insert(objects[objects.size() - 1]);
 		}
-        objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
-		quadtree->insert(objects[objects.size() - 1]);
 	}
     else if (spawnWalker) {
         spawnWalker = false;
