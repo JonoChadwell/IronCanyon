@@ -28,6 +28,23 @@ namespace {
         }
         return grid[x][z];
     }
+
+    bool isOpenPath(bool grid[GRID_SIZE][GRID_SIZE], ivec2 a, ivec2 b) {
+        int minx = std::min(a.x, b.x);
+        int miny = std::min(a.y, b.y);
+        int maxx = std::min(a.x, b.x);
+        int maxy = std::min(a.y, b.y);
+
+        for (int x = minx; x <= maxx; x++) {
+            for (int y = miny; y <= maxy; y++) {
+                if (!grid[x][y]) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 }
 
 Grid::Grid() {
@@ -93,6 +110,7 @@ vector<vec2> Grid::getPath(vec2 from, vec2 to) {
     priority_queue<ivec2, vector<ivec2>, decltype(cmp)> q(cmp);
     vector<ivec2> visited;
     vector<ivec2> path;
+    vector<ivec2> completePath;
     vector<vec2> result;
 
     q.push(start);
@@ -113,18 +131,23 @@ vector<vec2> Grid::getPath(vec2 from, vec2 to) {
             
             if (newpos == destination) {
                 ivec2 pos2 = pos;
-                result.push_back(to);
+                completePath.push_back(pos2);
                 for (int i = path.size() - 2; i >= 0; i -= 2) {
                     if (pos2 == path[i + 1]) {
                         pos2 = path[i];
-                        result.push_back(getGameCoords(path[i]));
+                        completePath.push_back(path[i]);
                     }
                 }
-                reverse(result.begin(), result.end());
-                cout << "found path to player:\n";
-                for (int i = 0; i < result.size(); i++) {
-                    cout << result[i].x << " " << result[i].y << endl;
+                reverse(completePath.begin(), completePath.end());
+                result.push_back(from);
+                ivec2 last = completePath[0];
+                for (int loc = 1; loc < (int) completePath.size(); loc++) {
+                    if (!isOpenPath(bounds, last, completePath[loc])) {
+                        last = completePath[loc - 1];
+                        result.push_back(getGameCoords(last));
+                    }
                 }
+                result.push_back(to);
                 return result;
             }
             
