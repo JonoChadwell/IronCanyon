@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Grid.h"
 #include <iostream>
+#include <cmath>
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -12,6 +13,7 @@
 
 // constants
 #define DRAG 2.0
+#define VERT_DRAG 0.2
 
 Shape* Player::turret;
 Shape* Player::chassis;
@@ -85,25 +87,23 @@ void Player::step(float dt) {
         }
     }
 	if (jumping == 1) {
-		yacc = 20;
+		//yacc = 20;
 		vely = 10;
 		// state of jumping
 		jumping = 2;
 	}
-	yacc -= GRAVITY * dt;
-	if (yacc < -MAX_GRAVITY) {
-		yacc = -MAX_GRAVITY;
-	}
-   if (boosting > 0) {
-      boosting -= dt * .2;
-      if (boosting < 0) {
-         boosting = 0;
-      }
-   }
+    yacc = -PLAYER_GRAVITY;
+
+    if (boosting > 0) {
+        boosting -= dt * .2;
+        if (boosting < 0) {
+            boosting = 0;
+        }
+    }
 
     // apply acceleration
 	velx = velx * (1 - dt * DRAG) + xacc * dt;
-	vely = vely * (1 - dt * DRAG) + yacc * dt;
+	vely = vely * (1 - dt * VERT_DRAG) + yacc * dt;
 	velz = velz * (1 - dt * DRAG) + zacc * dt;
 
     // apply velocity to position
@@ -118,8 +118,14 @@ void Player::step(float dt) {
 		velx = 0;
 		velz = 0;
     }
-    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.5) {
-        ypos = grid->height(xpos, zpos) + 1.5;
+    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.2) {
+        float offset = (grid->height(xpos, zpos) + 1.2 - ypos);
+        vely += pow(2, -vely) * offset * dt * 20;
+        float heightChange = grid->height(xpos, zpos) - grid->height(oldx, oldz);
+        if (heightChange > 0) {
+            ypos += heightChange;
+            vely += heightChange * 4;
+        }
 		jumping = 0;
     }
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
