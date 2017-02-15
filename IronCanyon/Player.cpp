@@ -14,10 +14,18 @@
 // constants
 #define DRAG 2.0
 #define VERT_DRAG 0.2
+#define PAD_THETA (MATH_PI / 16.0)
+#define PAD_SCALE_FACTOR 0.45
+#define PAD_X 0.7
+#define PAD_Y -0.05
+#define PAD_Z_BACK -0.85
+#define PAD_Z_FRONT (-(PAD_Z_BACK) / 1.3)
+#define PAD_SCALE vec3(PAD_SCALE_FACTOR, PAD_SCALE_FACTOR, PAD_SCALE_FACTOR)
 
 Shape* Player::turret;
 Shape* Player::chassis;
 Shape* Player::laser;
+Shape* Player::hover;
 Program* Player::shader;
 
 // default constructor
@@ -185,7 +193,42 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->loadIdentity();
 	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
 	M->rotate(ctheta - MATH_PI/2, vec3(0, 1, 0));
-    //M->scale(vec3(1, 0.3, 0.5));
+        // hover pad left back
+        M->pushMatrix();
+        M->translate(vec3(PAD_X, PAD_Y, PAD_Z_BACK));
+        M->rotate(MATH_PI, vec3(0, 0, 1));
+        M->rotate(-PAD_THETA, vec3(1, 0, 0));
+        M->scale(PAD_SCALE);
+        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Player::hover->draw(Player::shader);
+        M->popMatrix();
+        // hover pad right back
+        M->pushMatrix();
+        M->translate(vec3(-PAD_X, PAD_Y, PAD_Z_BACK));
+        M->rotate(MATH_PI, vec3(0, 0, 1));
+        M->rotate(-PAD_THETA, vec3(1, 0, 0));
+        M->scale(PAD_SCALE);
+        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Player::hover->draw(Player::shader);
+        M->popMatrix();
+        // hover pad left front
+        M->pushMatrix();
+        M->translate(vec3(PAD_X, PAD_Y, PAD_Z_FRONT));
+        M->rotate(MATH_PI, vec3(0, 0, 1));
+        M->rotate(-PAD_THETA, vec3(1, 0, 0));
+        M->scale(PAD_SCALE);
+        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Player::hover->draw(Player::shader);
+        M->popMatrix();
+        // hover pad right front
+        M->pushMatrix();
+        M->translate(vec3(-PAD_X, PAD_Y, PAD_Z_FRONT));
+        M->rotate(MATH_PI, vec3(0, 0, 1));
+        M->rotate(-PAD_THETA, vec3(1, 0, 0));
+        M->scale(PAD_SCALE);
+        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Player::hover->draw(Player::shader);
+        M->popMatrix();
 	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Player::chassis->draw(Player::shader);
 	M->popMatrix();
@@ -304,6 +347,10 @@ void Player::setup() {
 	Player::laser->loadMesh(RESOURCE_DIR + "cube.obj");
 	Player::laser->resize();
 	Player::laser->init();
+	Player::hover = new Shape();
+	Player::hover->loadMesh(RESOURCE_DIR + "hover.obj");
+	Player::hover->resize();
+	Player::hover->init();
 
 	Player::shader = new Program();
 	Player::shader->setVerbose(true);

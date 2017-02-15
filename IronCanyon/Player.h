@@ -40,6 +40,7 @@ private:
 	static Shape* turret;
 	static Shape* chassis;
 	static Shape* laser;
+	static Shape* hover;
 	static Program* shader;
 
 };
