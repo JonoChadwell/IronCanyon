@@ -27,6 +27,7 @@ Walker::Walker(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid
     walk_time = 0;
     left_height = 0;
     right_height = 0;
+	spawn = 0.0;
 }
 
 // destructor
