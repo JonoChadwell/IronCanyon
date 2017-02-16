@@ -369,6 +369,7 @@ static void projectileDetection() {
 			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
 			float distance = dist(objectPosition, projectilePosition);
 			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL) {
+				createScrapPile(qObjects[j]);
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
