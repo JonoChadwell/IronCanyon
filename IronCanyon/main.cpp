@@ -527,17 +527,15 @@ static void render()
 
 static void updateWorld()
 {
-	if (!dead) {
+	if (!dead && !gamePaused) {
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
-		if (!gamePaused) {
-			while (timePassed > maxPhysicsStepLength) {
-				timePassed -= maxPhysicsStepLength;
-				stepGameObjects(maxPhysicsStepLength);
-				stepPlayer(maxPhysicsStepLength);
-			}
-			stepGameObjects(timePassed);
-			stepPlayer(timePassed);
-		}
+        while (timePassed > maxPhysicsStepLength) {
+            timePassed -= maxPhysicsStepLength;
+            stepGameObjects(maxPhysicsStepLength);
+            stepPlayer(maxPhysicsStepLength);
+        }
+        stepGameObjects(timePassed);
+        stepPlayer(timePassed);
 	}
 }
 
