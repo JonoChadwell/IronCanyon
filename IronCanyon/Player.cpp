@@ -134,7 +134,9 @@ void Player::step(float dt) {
             ypos += heightChange;
             vely += heightChange * 4;
         }
-		jumping = 0;
+        if (vely < 0) {
+		    jumping = 0;
+        }
     }
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
 	float tAngle = fmod(fmod(theta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
