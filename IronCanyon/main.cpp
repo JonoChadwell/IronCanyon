@@ -293,7 +293,7 @@ static void laserFire()
 
 static void missileFire() {
 	vec3 pos = vec3(player->xpos, player->ypos, player->zpos);
-	projectiles.push_back(new Projectile(pos, 0, -(player->theta) + MATH_PI, 0, 120, 1, grid));
+	projectiles.push_back(new Projectile(pos, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, grid));
 }
 
 
@@ -450,7 +450,7 @@ static void drawPlayer() {
    if (player->firing >= .5 && player->fireMode == 1) {
       laserFire();
    }
-   else if (player->firing >= .5 && player->fireMode == 2 && semiAutoCooldown == false) {
+   else if (player->firing >= .01 && player->fireMode == 2 && semiAutoCooldown == false) {
 	   missileFire();
 	   semiAutoCooldown = true;
    }
