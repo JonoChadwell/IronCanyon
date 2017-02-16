@@ -29,6 +29,7 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
     acc( glm::vec3(0, -GRAVITY, 0) ),
     groundTime(0.0),
+    startTime(glfwGetTime()),
     playerMagnet(false),
     grid(grid)
 {
@@ -98,6 +99,10 @@ void Scrap::step(float dt) {
 			vel = vec3(0, -50, 0);
 		}
 	}
+    // update time the scrap has been out
+    if (glfwGetTime() - startTime > SCRAP_TIMER) {
+        toDelete = true;
+    }
 }
 
 void Scrap::setup() {
