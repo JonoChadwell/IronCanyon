@@ -68,10 +68,12 @@ bool spawnWave = false;
 bool gameStarted = false;
 bool gamePaused = false;
 bool dead = false;
-bool semiAutoCooldown = false;
 int waveNumber = 1;
 int turretCost = 1000;
 int turretsBuilt = 0;
+float rifleCooldown = 0.0;
+
+#define RIFLE_COOLDOWN 0.3
 
 /* MATH HELPERS */
 static float dist(glm::vec3 p1, glm::vec3 p2) {
@@ -176,6 +178,12 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
 {
    double posX, posY;
    if (action == GLFW_PRESS) {
+      if (button == 0) {
+          player->fireMode = 2;
+      }
+      else if (button == 1) {
+          player->fireMode = 1;
+      }
       if (!mouseCaptured) {
          mouseCaptured = true;
          glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -185,7 +193,6 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
    }
    else if (action == GLFW_RELEASE) {
       player->firing = 0;
-	  semiAutoCooldown = false;
    }
    
 }
@@ -444,13 +451,6 @@ static void drawPlayer() {
 	player->draw(P, lookAt, camera->eyeVector());
 
    // check laser collision
-   if (player->firing >= .5 && player->fireMode == 1) {
-      laserFire();
-   }
-   else if (player->firing >= .01 && player->fireMode == 2 && semiAutoCooldown == false) {
-	   missileFire();
-	   semiAutoCooldown = true;
-   }
 
 	P->popMatrix();
 	delete P;
@@ -484,6 +484,20 @@ static void stepPlayer(float dt) {
       player->xacc += -sin(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
       player->zacc += -cos(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
     }
+
+    // handle weapon fire
+    rifleCooldown -= dt;
+    if (rifleCooldown < 0) {
+        rifleCooldown = 0;
+    }
+    if (player->firing >= .5 && player->fireMode == 1) {
+        laserFire();
+    }
+    else if (player->firing > 0 && player->fireMode == 2 && rifleCooldown == 0) {
+        missileFire();
+        rifleCooldown = RIFLE_COOLDOWN;
+    }
+
     player->step(dt);
 }
 
