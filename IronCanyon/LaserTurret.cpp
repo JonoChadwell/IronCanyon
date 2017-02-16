@@ -31,7 +31,52 @@ void LaserTurret::step(float dt) {
 
 // draw
 void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
+    // render turret base
     Turret::draw(P, lookAt, eye);
+    // variable declaration
+    glm::vec3 housePos = vec3(pos.x, pos.y + 1.0, pos.z);
+    MatrixStack *M = new MatrixStack();
+    LaserTurret::shader->bind();
+	glUniform3f(LaserTurret::shader->getUniform("sunDir"), SUN_DIR);
+    glUniform3f(LaserTurret::shader->getUniform("eye"), eye.x, eye.y, eye.z);
+
+	glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 0, .8, 1);
+	glUniform3f(LaserTurret::shader->getUniform("MatDif"), .5, .5, .1);
+	glUniform3f(LaserTurret::shader->getUniform("MatSpec"), .31, .16, .08);
+	glUniform1f(LaserTurret::shader->getUniform("shine"), 3.5);
+
+    glUniformMatrix4fv(LaserTurret::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+    glUniformMatrix4fv(LaserTurret::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+
+
+    // render housing
+    M->pushMatrix();
+        M->loadIdentity();
+        M->translate(housePos);
+        M->rotate(phi, vec3(1, 0, 0));
+        M->rotate(theta, vec3(0, 1, 0));
+        M->rotate(roll, vec3(0, 0, 1));
+        M->scale(vec3(2, 2, 2));
+        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+       LaserTurret::housing->draw(LaserTurret::shader);
+    M->popMatrix();
+
+    // render barrel
+    M->pushMatrix();
+        M->loadIdentity();
+        housePos.y += 3;
+        M->translate(housePos);
+        M->rotate(phi + MATH_PI/2, vec3(1, 0, 0));
+        M->rotate(theta, vec3(0, 1, 0));
+        M->rotate(roll, vec3(0, 0, 1));
+        M->scale(vec3(1, 1, 1));
+        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+       LaserTurret::barrel->draw(LaserTurret::shader);
+    M->popMatrix();
+
+    // cleanup
+    LaserTurret::shader->unbind();
+    delete M;
 }
 
 // model setup
@@ -40,6 +85,11 @@ void LaserTurret::setup() {
     LaserTurret::housing->loadMesh(RESOURCE_DIR + std::string("IronCanyon_TurretHousing.obj"));
     LaserTurret::housing->resize();
     LaserTurret::housing->init();
+
+    LaserTurret::barrel = new Shape();
+    LaserTurret::barrel->loadMesh(RESOURCE_DIR + std::string("IronCanyon_RailGunBarrel.obj"));
+    LaserTurret::barrel->resize();
+    LaserTurret::barrel->init();
 
     LaserTurret::shader = new Program();
     LaserTurret::shader->setVerbose(true);

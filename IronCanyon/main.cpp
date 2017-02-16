@@ -255,6 +255,7 @@ static void init()
     Scrap::setup();
     RockOne::setup();
     Turret::setup();
+    LaserTurret::setup();
 	Projectile::setup();
 
 	forwards = 0;
