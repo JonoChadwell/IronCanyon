@@ -43,7 +43,7 @@ void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->translate(pos);
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
-        M->scale(vec3(1, 1, 1));
+        M->scale(vec3(3, 3, 3));
         glUniformMatrix4fv(Turret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        Turret::model->draw(Turret::shader);
     M->popMatrix();
