@@ -19,6 +19,7 @@ public:
 	float ctheta;
     float cphi;
     float croll;
+	float fireMode;
     float firing; // positive when displaying laser
 	float jumping; // positive when jumping
 	float boosting; // positive when jumping

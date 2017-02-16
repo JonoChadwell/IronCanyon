@@ -69,6 +69,7 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     scrap(0),
     grid(grid)
 {
+	fireMode = 1;
     firing = 0;
 	jumping = 0;
 	boosting = 0;
@@ -251,7 +252,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->popMatrix();
 
     //laser firing
-    if (firing >= .5) {
+    if (firing >= .5 && fireMode == 1) {
 	    M->pushMatrix();
 	    M->loadIdentity();
 	    M->translate(vec3(this->xpos, this->ypos, this->zpos));
@@ -268,7 +269,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	   M->popMatrix();
     }
     //laser charging
-    else if (firing > 0) {
+    else if (firing > 0 && fireMode == 1) {
 	    M->pushMatrix();
 	    M->loadIdentity();
 	    M->translate(vec3(this->xpos, this->ypos, this->zpos));

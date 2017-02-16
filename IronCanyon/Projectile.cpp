@@ -51,7 +51,7 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(phi, vec3(1, 0, 0));
 	M->rotate(roll, vec3(0, 0, 1));
-	M->scale(vec3(0.5, 0.5, 1.0));
+	M->scale(vec3(0.5, 0.5, 0.5));
 	glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Projectile::model->draw(Projectile::shader);
 	M->popMatrix();
@@ -78,13 +78,15 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Projectile::step(float dt) {
-	std::cout << animtime;
+	//std::cout << animtime;
 	animtime += dt;
 
 	float oldx = pos.x;
+	float oldy = pos.y;
 	float oldz = pos.z;
 
 	pos.x += getXComp() * dt * vel;
+	pos.y += getYComp() * dt * vel;
 	pos.z += getZComp() * dt * vel;
 }
 

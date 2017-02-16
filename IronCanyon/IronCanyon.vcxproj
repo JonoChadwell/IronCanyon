@@ -130,6 +130,7 @@
     <ClCompile Include="MatrixStack.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RockOne.cpp" />
     <ClCompile Include="Scrap.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Program.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="RockOne.h" />
     <ClInclude Include="Scrap.h" />

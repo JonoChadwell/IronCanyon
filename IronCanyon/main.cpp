@@ -47,6 +47,7 @@ Terrain* terrain;
 
 // Vector holding all game objects
 vector<GameObject*> objects;
+vector<GameObject*> projectiles;
 QuadTree* quadtree;
 
 int g_width = 640*2, g_height = 480*2;
@@ -66,6 +67,7 @@ double maxPhysicsStepLength = 0.005;
 bool spawnWave = false;
 bool gameStarted = false;
 bool dead = false;
+bool semiAutoCooldown = false;
 int waveNumber = 1;
 int turretCost = 1000;
 int turretsBuilt = 0;
@@ -87,6 +89,8 @@ static void error_callback(int error, const char *description)
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	//int present = glfwJoystickPresent(GLFW_JOYSTICK_2);
+	//cout << present << endl;
     if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) && action == GLFW_PRESS) {
         mouseCaptured = false;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -148,6 +152,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE && player->boosting > .6) {
 		player->boosting = 1.2 - player->boosting;
 	}
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+		player->fireMode = 1;
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+		player->fireMode = 2;
+	}
 }
 
 
@@ -164,6 +174,7 @@ static void mouse_callback(GLFWwindow *window, int button, int action, int mods)
    }
    else if (action == GLFW_RELEASE) {
       player->firing = 0;
+	  semiAutoCooldown = false;
    }
    
 }
@@ -225,6 +236,7 @@ static void init()
     Scrap::setup();
     RockOne::setup();
     Turret::setup();
+	Projectile::setup();
 
 	forwards = 0;
 	sideways = 0;
@@ -268,6 +280,11 @@ static void laserFire()
    }
 }
 
+static void missileFire() {
+	vec3 pos = vec3(player->xpos, player->ypos, player->zpos);
+	projectiles.push_back(new Projectile(pos, 0, -(player->theta) + MATH_PI, 0, 120, 1, grid));
+}
+
 
 static void drawGameObjects() {
    int width, height;
@@ -285,6 +302,9 @@ static void drawGameObjects() {
     for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->draw(P, lookAt, camera->eyeVector());
     }
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		projectiles[i]->draw(P, lookAt, camera->eyeVector());
+	}
 
     P->popMatrix();
     delete P;
@@ -312,6 +332,23 @@ static void scrapDetection() {
 			((Scrap*)objects[i])->vel =
 				glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
 			((Scrap*)objects[i])->vel *= 10;
+		}
+	}
+}
+
+static void projectileDetection() {
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		for (unsigned int j = 0; j < objects.size(); j++) {
+			vec3 objectPosition = vec3(objects[j]->pos.x, objects[j]->pos.y, objects[j]->pos.z);
+			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
+			float distance = dist(objectPosition, projectilePosition);
+			if (distance < 1.5 && dynamic_cast<Enemy*>(objects[j]) != NULL) {
+				for (int der = 0; der < 5; der++) {
+					objects.push_back(new Scrap(objects[j]->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+					quadtree->insert(objects[objects.size() - 1]);
+				}
+				objects[j]->toDelete = true;
+			}
 		}
 	}
 }
@@ -372,9 +409,13 @@ static void stepGameObjects(float dt) {
 			dead = true;
 		}
 	}
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		projectiles[i]->step(dt);
+	}
     if (gameStarted && !wheelEnemiesAlive) {
         spawnWave = true;
     }
+	projectileDetection();
 	scrapDetection();
 }
 
@@ -395,8 +436,12 @@ static void drawPlayer() {
 	player->draw(P, lookAt, camera->eyeVector());
 
    // check laser collision
-   if (player->firing >= .5) {
+   if (player->firing >= .5 && player->fireMode == 1) {
       laserFire();
+   }
+   else if (player->firing >= .5 && player->fireMode == 2 && semiAutoCooldown == false) {
+	   missileFire();
+	   semiAutoCooldown = true;
    }
 
 	P->popMatrix();
@@ -467,7 +512,7 @@ static void render()
     camera->trackToPlayer(player);
 
     // render things
-    drawGameObjects();
+	drawGameObjects();
 	drawPlayer();
 	drawTerrain();
 }
