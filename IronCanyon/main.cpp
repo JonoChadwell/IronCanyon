@@ -23,6 +23,7 @@
 #include "GridObject.h"
 #include "RockOne.h"
 #include "Turret.h"
+#include "LaserTurret.h"
 #include "QuadTree.h"
 #include "Projectile.h"
 
@@ -113,7 +114,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         /* jank turret building for 50% demo */
         if (player->scrap >= turretCost) {
             player->scrap -= turretCost;
-            Turret* t = new Turret(vec3(player->xpos, 0, player->zpos + player->bound*3), 0, 5, grid);
+            LaserTurret* t = new LaserTurret(vec3(player->xpos, 0, player->zpos + player->bound*3), 0, 5, grid);
             grid->addToGrid(t);
             objects.push_back(t);
             turretsBuilt++;
