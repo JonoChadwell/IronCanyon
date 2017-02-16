@@ -64,6 +64,7 @@ double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 
 bool spawnWave = false;
+bool gameStarted = false;
 int waveNumber = 1;
 
 /* MATH HELPERS */
@@ -88,7 +89,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-		spawnWave = true;
+        gameStarted = true;
 	}
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -209,12 +210,13 @@ static void init()
 
     // add some rocks to the world
     srand(0);
-    for (int i = 0; i < 10; i++) {
-		float x = randf() * 300 - 150;
-		float z = randf() * 300 - 150;
-		while (sqrt(x * x + z * z) < 10) {
-			x = randf() * 300 - 150;
-			z = randf() * 300 - 150;
+    float ROCK_AREA = 380;
+    for (int i = 0; i < 60; i++) {
+		float x = randf() * ROCK_AREA - ROCK_AREA / 2;
+		float z = randf() * ROCK_AREA - ROCK_AREA / 2;
+		while (sqrt(x * x + z * z) < 60) {
+			x = randf() * ROCK_AREA - ROCK_AREA / 2;
+			z = randf() * ROCK_AREA - ROCK_AREA / 2;
 		}
         
         RockOne* r = new RockOne(vec3(x, 0, z), i, grid);
@@ -335,7 +337,7 @@ static void stepGameObjects(float dt) {
             }
         }
     }
-    if (!enemiesAlive) {
+    if (gameStarted && !enemiesAlive) {
         spawnWave = true;
     }
 	scrapDetection();
