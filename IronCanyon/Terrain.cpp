@@ -28,8 +28,8 @@ void Terrain::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
    
    glUniform3f(Terrain::program->getUniform("sunDir"), SUN_DIR);
    glUniform3f(Terrain::program->getUniform("eye"), eye.x, eye.y, eye.z);
-   glUniform3f(Terrain::program->getUniform("MatAmb"), .2, .6, .3);
-   glUniform3f(Terrain::program->getUniform("MatDif"), .7, .26, .3);
+   glUniform3f(Terrain::program->getUniform("MatAmb"), .6, 1.0, .7);
+   glUniform3f(Terrain::program->getUniform("MatDif"), .0, .0, .0);
    glUniform3f(Terrain::program->getUniform("MatSpec"), .31, .16, .08);
    glUniform1f(Terrain::program->getUniform("shine"), 2.5);
    

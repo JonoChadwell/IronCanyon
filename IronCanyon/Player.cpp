@@ -93,7 +93,7 @@ float Player::getZComp() {
 // step function
 void Player::step(float dt) {
     // reduce firing time
-    if (firing > 0) {
+    if (firing > 0 && fireMode == 1) {
         firing += dt;
         if (firing > .6) {
             firing = 0;
