@@ -25,7 +25,7 @@ public:
 	float minz;
 	float maxz;
 
-	QuadTree(float minx, float maxx, float minz, float maxz);
+	QuadTree(float minx, float maxx, float minz, float maxz, int depth);
 	void insert(GameObject* obj);
 	virtual ~QuadTree();
 	void getObjects(float xpos, float ypos, vector<GameObject*> *ret);
@@ -33,5 +33,6 @@ public:
 
 private:
 	int size;
+	int depth;
 
 };

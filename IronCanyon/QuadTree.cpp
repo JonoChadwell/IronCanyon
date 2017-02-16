@@ -1,11 +1,12 @@
 #include "QuadTree.h"
 #include <iostream>
 
-QuadTree::QuadTree(float minx, float maxx, float minz, float maxz) :
+QuadTree::QuadTree(float minx, float maxx, float minz, float maxz, int depth) :
 	minx(minx),
 	maxx(maxx),
 	minz(minz),
-	maxz(maxz)
+	maxz(maxz),
+	depth(depth)
 {
 	size = 0;
    topright = NULL;
@@ -62,12 +63,16 @@ void QuadTree::getObjects(float xpos, float zpos, vector<GameObject*> *ret) {
 void QuadTree::insert(GameObject * obj)
 {
 	size++;
+	// depth is used so the minimum node is 6.75 x 6.75
+	if (depth == QUADTREE_DEPTH) {
+		objects.push_back(obj);
+	}
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
-		topleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxz - minz) / 2 + minz, maxz);
-		topright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxz - minz) / 2 + minz, maxz);
-		bottomleft = new QuadTree(minx, (maxx - minx) / 2 + minx, minz, (maxz - minz) / 2 + minz);
-		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz);
+		topleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		topright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		bottomleft = new QuadTree(minx, (maxx - minx) / 2 + minx, minz, (maxz - minz) / 2 + minz, depth + 1);
+		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz, depth + 1);
 		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
 			insert(objects[i]);
 			objects.erase(objects.begin());
@@ -77,24 +82,24 @@ void QuadTree::insert(GameObject * obj)
 	//We might put the object into multiple different leaves if it is near the edge
 	else if (size > QUADTREE_CAPACITY) {
 		//right
-		if (obj->pos.x > (maxx - minx) / 2 + minx) {
+		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound / 2) {
 			//topright
-			if (obj->pos.z > (maxz - minz) / 2 + minz) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound / 2) {
 				topright->insert(obj);
 			}
 			//bottomright
-			else if (obj->pos.z < (maxz - minz) / 2 + minz) {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound / 2) {
 				bottomright->insert(obj);
 			}
 		}
 		//left
-		else if (obj->pos.x < (maxx - minx) / 2 + minx) {
+		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound / 2) {
 			//topleft
-			if (obj->pos.z > (maxz - minz) / 2 + minz) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound / 2) {
 				topleft->insert(obj);
 			}
 			//bottomleft
-			else if (obj->pos.z < (maxz - minz) / 2 + minz) {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound / 2) {
 				bottomleft->insert(obj);
 			}
 		}

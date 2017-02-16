@@ -275,18 +275,23 @@ static void scrapDetection() {
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), qObjects[i]->pos);
         // check collision of scrap to begin magnet effect
-        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL &&
-          (((Scrap*)qObjects[i])->playerMagnet || objDist < player->bound + 10)) {
+        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound + 10) {
             ((Scrap*)qObjects[i])->playerMagnet = true;
-            ((Scrap*)qObjects[i])->vel =
-              glm::vec3(player->xpos, player->ypos, player->zpos) - qObjects[i]->pos;
-            ((Scrap*)qObjects[i])->vel *= 10;
         }
         // check collision with scrap to collect
         if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound) {
             player->scrap += ((Scrap*)qObjects[i])->worth;
 			qObjects[i]->toDelete = true;
         }
+	}
+	// seperate for loop for scrap to move to player
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
+			(((Scrap*)objects[i])->playerMagnet)) {
+			((Scrap*)objects[i])->vel =
+				glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
+			((Scrap*)objects[i])->vel *= 10;
+		}
 	}
 }
 
@@ -331,12 +336,17 @@ static void stepGameObjects(float dt) {
 		objects[i]->step(dt);
         if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
             enemiesAlive = true;
-            if (distance(vec2(player->xpos, player->zpos), vec2(objects[i]->pos.x, objects[i]->pos.z)) < 2) {
-                // Game over
-		        glfwSetWindowShouldClose(window, GL_TRUE);
-            }
         }
     }
+
+	vector<GameObject *> qObjects;
+	quadtree->getObjects(player->xpos, player->zpos, &qObjects);
+	for (unsigned int i = 0; i < qObjects.size(); i++) {
+		if (distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
+			// Game over
+			glfwSetWindowShouldClose(window, GL_TRUE);
+		}
+	}
     if (gameStarted && !enemiesAlive) {
         spawnWave = true;
     }
@@ -513,7 +523,7 @@ int main(int argc, char **argv)
 
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
-		quadtree = new QuadTree(-200, 200, -200, 200);
+		quadtree = new QuadTree(-200, 200, -200, 200, 0);
 		for (int i = 0; i < (int) objects.size(); i++) {
 			quadtree->insert(objects[i]);
 		}
