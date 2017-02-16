@@ -279,7 +279,9 @@ static void init()
 
 static void createScrapPile(GameObject* enemy) {
     for (int i = 0; i < 5; i++) {
-        objects.push_back(new Scrap(enemy->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+		Scrap* scrap = new Scrap(enemy->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10);
+        objects.push_back(scrap);
+		quadtree->insert(scrap);
     }
 }
 
@@ -293,6 +295,7 @@ static void laserFire()
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
       // hit
       if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
+		  createScrapPile(objects[i]);
 		  objects[i]->toDelete = true;
       }
    }
@@ -300,7 +303,8 @@ static void laserFire()
 
 static void missileFire() {
 	vec3 pos = vec3(player->xpos, player->ypos, player->zpos);
-	projectiles.push_back(new Projectile(pos, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, grid));
+	Projectile* proj = new Projectile(pos, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, grid);
+	projectiles.push_back(proj);
 }
 
 
@@ -356,13 +360,16 @@ static void scrapDetection() {
 
 static void projectileDetection() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		for (unsigned int j = 0; j < objects.size(); j++) {
-			vec3 objectPosition = vec3(objects[j]->pos.x, objects[j]->pos.y, objects[j]->pos.z);
+		vector<GameObject *> qObjects;
+		quadtree->getObjects(projectiles[i]->pos.x, projectiles[i]->pos.z, &qObjects);
+		for (unsigned int j = 0; j < qObjects.size(); j++) {
+			vec3 objectPosition = vec3(qObjects[j]->pos.x, qObjects[j]->pos.y, qObjects[j]->pos.z);
 			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
 			float distance = dist(objectPosition, projectilePosition);
-			if (distance < 1.5 && dynamic_cast<Enemy*>(objects[j]) != NULL) {
+			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL) {
+				createScrapPile(qObjects[j]);
                 projectiles[i]->toDelete = true;
-				objects[j]->toDelete = true;
+				qObjects[j]->toDelete = true;
 			}
 		}
 	}
@@ -383,24 +390,24 @@ static void stepGameObjects(float dt) {
 		spawnWave = false;
         cout << "Spawning wave " << waveNumber++ << endl;
         for (int i = 0; i < 10 + waveNumber; i++) {
-		    objects.push_back(
-                    new Enemy(
-                            getSpawnLocation(),
-                            0, 0, 0, // rotations
-                            ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
-                            2, // bounding radius
-                            grid));
-		    quadtree->insert(objects[objects.size() - 1]);
+			Enemy* enemy = new Enemy(
+				getSpawnLocation(),
+				0, 0, 0, // rotations
+				ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
+				2, // bounding radius
+				grid);
+		    objects.push_back(enemy);
+		    quadtree->insert(enemy);
         }
         for (int i = 0; i < 5 + waveNumber; i++) {
-		    objects.push_back(
-                    new Walker(
-                            getSpawnLocation(),
-                            0, 0, 0, // rotations
-                            ENEMY_SPEED, // speed
-                            2, // bounding radius
-                            grid));
-		    quadtree->insert(objects[objects.size() - 1]);
+			Walker* walker = new Walker(
+				getSpawnLocation(),
+				0, 0, 0, // rotations
+				ENEMY_SPEED, // speed
+				2, // bounding radius
+				grid);
+		    objects.push_back(walker);
+		    quadtree->insert(walker);
 
         }
 	}
@@ -542,7 +549,7 @@ static void render()
 static void updateWorld()
 {
 	if (!dead && !gamePaused) {
-        Turret::quadtree = quadtree;
+        //Turret::quadtree = quadtree;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
             timePassed -= maxPhysicsStepLength;
@@ -557,9 +564,6 @@ static void updateWorld()
 static void updateObjectVector() {
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (objects[i]->toDelete) {
-            if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
-                createScrapPile(objects[i]);
-            }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
 			i--;

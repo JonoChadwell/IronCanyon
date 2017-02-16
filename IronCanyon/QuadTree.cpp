@@ -62,6 +62,10 @@ void QuadTree::getObjects(float xpos, float zpos, vector<GameObject*> *ret) {
 
 void QuadTree::insert(GameObject * obj)
 {
+	if (!obj) {
+		cout << "SOMEONE INSERTED A NULL OBJECT";
+		return;
+	}
 	size++;
 	// depth is used so the minimum node is 6.75 x 6.75
 	if (depth == QUADTREE_DEPTH) {
@@ -75,8 +79,8 @@ void QuadTree::insert(GameObject * obj)
 		bottomleft = new QuadTree(minx, (maxx - minx) / 2 + minx, minz, (maxz - minz) / 2 + minz, depth + 1);
 		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz, depth + 1);
 		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
-			insert(objects[i]);
-			objects.erase(objects.begin());
+			GameObject* tempObj = objects[i];
+			insert(tempObj);
 		}
 		insert(obj);
 	}
