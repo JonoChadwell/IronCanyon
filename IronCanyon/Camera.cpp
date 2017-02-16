@@ -29,10 +29,10 @@ void Camera::trackToPlayer(Player *player) {
     xlook = player->xpos;
     ylook = player->ypos;
     zlook = player->zpos;
-    xpos = xlook + 10 * cos(-player->theta) * cos(-player->phi);
-    ypos = ylook + 10 * sin(-player->phi);
-    zpos = zlook + 10 * sin(-player->theta) * cos(-player->phi);
-    float i = 10;
+    xpos = xlook + 20 * cos(-player->theta) * cos(-player->phi);
+    ypos = ylook + 20 * sin(-player->phi);
+    zpos = zlook + 20 * sin(-player->theta) * cos(-player->phi);
+    float i = 20;
     while (!grid->inBounds(xpos, zpos) && i > 1) {
       xpos = xlook + i * cos(-player->theta) * cos(-player->phi);
       zpos = zlook + i * sin(-player->theta) * cos(-player->phi);
