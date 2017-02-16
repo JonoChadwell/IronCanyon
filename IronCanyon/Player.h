@@ -17,6 +17,8 @@ public:
 	float velx, vely, velz;
 	float bound;
 	float ctheta;
+    float cphi;
+    float croll;
     float firing; // positive when displaying laser
 	float jumping; // positive when jumping
 	float boosting; // positive when jumping

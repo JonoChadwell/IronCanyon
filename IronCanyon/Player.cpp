@@ -62,6 +62,8 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
 	velz(0),
 	bound(b),
 	ctheta(MATH_PI),
+    cphi(0),
+    croll(0),
     scrap(0),
     grid(grid)
 {
@@ -114,6 +116,12 @@ void Player::step(float dt) {
 	vely = vely * (1 - dt * VERT_DRAG) + yacc * dt;
 	velz = velz * (1 - dt * DRAG) + zacc * dt;
 
+    float sideAccel = sin(theta) * xacc + cos(theta) * zacc;
+    float frontAccel = -cos(theta) * xacc + sin(theta) * zacc;
+
+    cphi = cphi * (1 - 5 * dt) + (cbrt(frontAccel) / 30.0) * 5 * dt;
+    croll = croll * (1 - 5 * dt) - (cbrt(sideAccel) / 30.0) * 5 * dt;
+
     // apply velocity to position
     float oldx = xpos;
     float oldz = zpos;
@@ -126,8 +134,8 @@ void Player::step(float dt) {
 		velx = 0;
 		velz = 0;
     }
-    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.2) {
-        float offset = (grid->height(xpos, zpos) + 1.2 - ypos);
+    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.3) {
+        float offset = (grid->height(xpos, zpos) + 1.3 - ypos);
         vely += pow(2, -vely) * offset * dt * 20;
         float heightChange = grid->height(xpos, zpos) - grid->height(oldx, oldz);
         if (heightChange > 0) {
@@ -192,47 +200,50 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 	//chassis
 	M->pushMatrix();
-	M->loadIdentity();
-	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
-	M->rotate(ctheta - MATH_PI/2, vec3(0, 1, 0));
-        // hover pad left back
-        M->pushMatrix();
-        M->translate(vec3(PAD_X, PAD_Y, PAD_Z_BACK));
-        M->rotate(MATH_PI, vec3(0, 0, 1));
-        M->rotate(-PAD_THETA, vec3(1, 0, 0));
-        M->scale(PAD_SCALE);
-        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        Player::hover->draw(Player::shader);
-        M->popMatrix();
-        // hover pad right back
-        M->pushMatrix();
-        M->translate(vec3(-PAD_X, PAD_Y, PAD_Z_BACK));
-        M->rotate(MATH_PI, vec3(0, 0, 1));
-        M->rotate(-PAD_THETA, vec3(1, 0, 0));
-        M->scale(PAD_SCALE);
-        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        Player::hover->draw(Player::shader);
-        M->popMatrix();
-        // hover pad left front
-        M->pushMatrix();
-        M->translate(vec3(PAD_X, PAD_Y, PAD_Z_FRONT));
-        M->rotate(MATH_PI, vec3(0, 0, 1));
-        M->rotate(-PAD_THETA, vec3(1, 0, 0));
-        M->scale(PAD_SCALE);
-        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        Player::hover->draw(Player::shader);
-        M->popMatrix();
-        // hover pad right front
-        M->pushMatrix();
-        M->translate(vec3(-PAD_X, PAD_Y, PAD_Z_FRONT));
-        M->rotate(MATH_PI, vec3(0, 0, 1));
-        M->rotate(-PAD_THETA, vec3(1, 0, 0));
-        M->scale(PAD_SCALE);
-        glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        Player::hover->draw(Player::shader);
-        M->popMatrix();
-	glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Player::chassis->draw(Player::shader);
+    	M->loadIdentity();
+    	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
+    	M->rotate(ctheta - MATH_PI/2, vec3(0, 1, 0));
+        M->rotate(cphi, vec3(1, 0, 0));
+        M->rotate(croll, vec3(0, 0, 1));
+
+        vec3 padDisplacements[4] = {
+                vec3(PAD_X, PAD_Y, PAD_Z_BACK),
+                vec3(-PAD_X, PAD_Y, PAD_Z_BACK),
+                vec3(PAD_X, PAD_Y, PAD_Z_FRONT),
+                vec3(-PAD_X, PAD_Y, PAD_Z_FRONT)};
+
+        // Hover Pads
+        for (int i = 0; i < 4; i++) {
+            M->pushMatrix();
+            M->translate(padDisplacements[i]);
+            M->rotate(MATH_PI, vec3(0, 0, 1));
+            M->rotate(-PAD_THETA, vec3(1, 0, 0));
+            M->scale(PAD_SCALE);
+            glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+            Player::hover->draw(Player::shader);
+            M->popMatrix();
+        }
+
+	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	    Player::chassis->draw(Player::shader);
+
+        // Boost indicator
+        if (boosting > 0) {
+	        M->pushMatrix();
+            M->rotate(-MATH_PI / 2, vec3(0, 1, 0));
+            M->translate(vec3(-1, 0, 0));
+            M->scale(vec3(.09, 0.3, 0.49));
+            glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+            if (boosting > 0.6) {
+                glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 10);
+            } else {
+                glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 10);
+            }
+            glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
+            glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
+            Player::chassis->draw(Player::shader);
+            M->popMatrix();
+        }
 	M->popMatrix();
 
     //laser firing
@@ -267,36 +278,6 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 	    Player::laser->draw(Player::shader);
-	   M->popMatrix();
-    }
-    if (boosting > .6) {
-	    M->pushMatrix();
-	   M->loadIdentity();
-	   M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
-	   M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
-	   M->translate(vec3(-1, 0, 0));
-      M->scale(vec3(.09, 0.3, 0.49));
-	   glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 10);
-	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
-	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
-	   Player::chassis->draw(Player::shader);
-	   M->popMatrix();
-    }
-    else if (boosting > 0) {
-	    M->pushMatrix();
-	   M->loadIdentity();
-	   M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
-	   M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
-	   M->translate(vec3(-1, 0, 0));
-      M->scale(vec3(.09, 0.3, 0.49));
-	   glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 10);
-	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
-	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
-	   Player::chassis->draw(Player::shader);
 	   M->popMatrix();
     }
 
