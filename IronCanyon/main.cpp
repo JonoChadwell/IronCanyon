@@ -647,6 +647,9 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < objects.size(); i++) {
         delete objects[i];
     }
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		delete projectiles[i];
+	}
     cout << "GAME OVER\n";
     cout << "Scrap: " << player->scrap << endl;
     cout << "Waves Survived: " << (waveNumber - 2) << endl;
