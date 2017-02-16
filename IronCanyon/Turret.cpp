@@ -11,27 +11,48 @@
 
 Shape* Turret::model;
 Program* Turret::shader;
+QuadTree* Turret::quadtree;
+float dist(glm::vec3 p1, glm::vec3 p2);
 
 Turret::Turret(glm::vec3 p, int rotation, float b, Grid *grid) :
-    GridObject(p, rotation, b, grid)
+    GridObject(p, rotation, b, grid),
+    quadTree(NULL),
+    target(NULL)
 {
 }
 
+//helper distance function
+float dist(glm::vec3 p1, glm::vec3 p2) {
+    return sqrt( pow(p1.x-p2.x, 2) + pow(p1.y-p2.y, 2) + pow(p1.z-p2.z, 2) );
+}
+
 void Turret::step(float dt) {
-    
+    if (target == NULL) {
+        vector<GameObject *> qObjects;
+        Turret::quadtree->getObjects(pos.x, pos.z, &qObjects);
+        for (unsigned int i = 0; i < qObjects.size(); i++) {
+            float objDist = dist(pos, qObjects[i]->pos);
+            /* lock */ 
+            if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
+                target = (Enemy*)(qObjects[i]);
+                printf("TARGET LOCK\n");
+                break;
+            }
+        }
+    }
 }
 
 void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
     Turret::shader->bind();
-    glUniform3f(Turret::shader->getUniform("lightPos"), 100, 100, 100);
+	glUniform3f(Turret::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Turret::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    glUniform3f(Turret::shader->getUniform("MatAmb"), .3, .3, 3);
-    glUniform3f(Turret::shader->getUniform("MatDif"), .6, .6, .6);
-    glUniform3f(Turret::shader->getUniform("MatSpec"), 1, 1, 1);
-    glUniform1f(Turret::shader->getUniform("shine"), 1.5);
+	glUniform3f(Turret::shader->getUniform("MatAmb"), 0, .8, 1);
+	glUniform3f(Turret::shader->getUniform("MatDif"), .5, .5, .1);
+	glUniform3f(Turret::shader->getUniform("MatSpec"), .31, .16, .08);
+	glUniform1f(Turret::shader->getUniform("shine"), 3.5);
 
     glUniformMatrix4fv(Turret::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
     glUniformMatrix4fv(Turret::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
@@ -60,7 +81,7 @@ Turret::~Turret()
 // model setup
 void Turret::setup() {
 	Turret::model = new Shape();
-	Turret::model->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Turret::model->loadMesh(RESOURCE_DIR + std::string("IronCanyon_TurretBase.obj"));
 	Turret::model->resize();
 	Turret::model->init();
 
@@ -71,7 +92,7 @@ void Turret::setup() {
 	Turret::shader->addUniform("P");
 	Turret::shader->addUniform("M");
 	Turret::shader->addUniform("V");
-	Turret::shader->addUniform("lightPos");
+	Turret::shader->addUniform("sunDir");
 	Turret::shader->addUniform("eye");
 	Turret::shader->addUniform("MatAmb");
 	Turret::shader->addUniform("MatDif");
@@ -81,4 +102,5 @@ void Turret::setup() {
 	Turret::shader->addAttribute("vertNor");
 	Turret::shader->addAttribute("vertTex");
 
+    Turret::quadtree = NULL;
 }
