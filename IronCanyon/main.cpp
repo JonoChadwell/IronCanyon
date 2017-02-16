@@ -67,6 +67,8 @@ bool spawnWave = false;
 bool gameStarted = false;
 bool dead = false;
 int waveNumber = 1;
+int turretCost = 1000;
+int turretsBuilt = 0;
 
 /* MATH HELPERS */
 static float dist(glm::vec3 p1, glm::vec3 p2) {
@@ -91,6 +93,24 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         gameStarted = true;
+	}
+	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+        /* jank turret building for 50% demo */
+        if (player->scrap >= turretCost) {
+            player->scrap -= turretCost;
+            Turret* t = new Turret(vec3(player->xpos, 0, player->zpos + player->bound*3), 0, 5, grid);
+            grid->addToGrid(t);
+            objects.push_back(t);
+            turretsBuilt++;
+            cout << "turret " << turretsBuilt << " built\n";
+            dead = turretsBuilt >= 10 ? true : false;
+            if (dead)
+                cout << "you win this 50% demo!\n";
+        }
+        else {
+            cout << "Not enough scrap! You only have " << player->scrap << endl;
+        }
+        /* end jankness */
 	}
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
