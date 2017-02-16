@@ -342,7 +342,7 @@ static void stepGameObjects(float dt) {
 	vector<GameObject *> qObjects;
 	quadtree->getObjects(player->xpos, player->zpos, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
-		if (distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
+		if (dynamic_cast<Enemy*>(objects[i]) != NULL && distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
 			// Game over
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
