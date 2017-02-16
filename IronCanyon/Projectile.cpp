@@ -94,7 +94,7 @@ void Projectile::step(float dt) {
 
 void Projectile::setup() {
 	Projectile::model = new Shape();
-	Projectile::model->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Projectile::model->loadMesh(RESOURCE_DIR + std::string("shell.obj"));
 	Projectile::model->resize();
 	Projectile::model->init();
 
@@ -113,4 +113,5 @@ void Projectile::setup() {
 	Projectile::shader->addUniform("shine");
 	Projectile::shader->addAttribute("vertPos");
 	Projectile::shader->addAttribute("vertNor");
+	Projectile::shader->addAttribute("vertTex");
 }

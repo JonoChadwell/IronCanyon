@@ -90,8 +90,8 @@ static void error_callback(int error, const char *description)
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-	//int present = glfwJoystickPresent(GLFW_JOYSTICK_2);
-	//cout << present << endl;
+	int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+	cout << present << endl;
     if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) && action == GLFW_PRESS) {
         mouseCaptured = false;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
