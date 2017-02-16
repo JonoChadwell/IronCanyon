@@ -65,6 +65,7 @@ double maxPhysicsStepLength = 0.005;
 
 bool spawnWave = false;
 bool gameStarted = false;
+bool dead = false;
 int waveNumber = 1;
 
 /* MATH HELPERS */
@@ -344,11 +345,11 @@ static void stepGameObjects(float dt) {
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		if (dynamic_cast<Walker*>(qObjects[i]) != NULL && distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
 			// Game over
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			dead = true;
 		}
 		else if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && distance(vec3(player->xpos, player->zpos, player->ypos), vec3(qObjects[i]->pos.x, qObjects[i]->pos.z, qObjects[i]->pos.y)) < 2) {
 			// Game over
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			dead = true;
 		}
 	}
     if (gameStarted && !enemiesAlive) {
@@ -453,14 +454,16 @@ static void render()
 
 static void updateWorld()
 {
-    double timePassed = thisFrameStartTime - lastFrameStartTime;
-    while (timePassed > maxPhysicsStepLength) {
-        timePassed -= maxPhysicsStepLength;
-        stepGameObjects(maxPhysicsStepLength);
-        stepPlayer(maxPhysicsStepLength);
-    }
-	stepGameObjects(timePassed);
-	stepPlayer(timePassed);
+	if (!dead) {
+		double timePassed = thisFrameStartTime - lastFrameStartTime;
+		while (timePassed > maxPhysicsStepLength) {
+			timePassed -= maxPhysicsStepLength;
+			stepGameObjects(maxPhysicsStepLength);
+			stepPlayer(maxPhysicsStepLength);
+		}
+		stepGameObjects(timePassed);
+		stepPlayer(timePassed);
+	}
 }
 
 static void updateObjectVector() {
