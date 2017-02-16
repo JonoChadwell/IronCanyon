@@ -66,6 +66,7 @@ void QuadTree::insert(GameObject * obj)
 	// depth is used so the minimum node is 6.75 x 6.75
 	if (depth == QUADTREE_DEPTH) {
 		objects.push_back(obj);
+		return;
 	}
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
