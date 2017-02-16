@@ -358,6 +358,7 @@ static void projectileDetection() {
 					objects.push_back(new Scrap(objects[j]->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
 					quadtree->insert(objects[objects.size() - 1]);
 				}
+                projectiles[i]->toDelete = true;
 				objects[j]->toDelete = true;
 			}
 		}
@@ -554,6 +555,17 @@ static void updateObjectVector() {
 	}
 }
 
+static void updateProjectileVector() {
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		if (projectiles[i]->toDelete) {
+			delete projectiles[i];
+			projectiles.erase(projectiles.begin() + i);
+			i--;
+		}
+	}
+}
+    
+
 int main(int argc, char **argv)
 {
 	// Set error callback.
@@ -626,6 +638,7 @@ int main(int argc, char **argv)
 		delete quadtree;
 		// Update main object vector
 		updateObjectVector();
+        updateProjectileVector();
 	}
 
 	// Quit program.

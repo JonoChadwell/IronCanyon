@@ -81,9 +81,11 @@ void Projectile::step(float dt) {
 	//std::cout << animtime;
 	animtime += dt;
 
-	float oldx = pos.x;
-	float oldy = pos.y;
-	float oldz = pos.z;
+    if (!grid->inBounds(pos.x, pos.z)) {
+        toDelete = true;
+    } else if (pos.y < grid->height(pos.x, pos.z)) {
+        toDelete = true;
+    }
 
 	pos.x += getXComp() * dt * vel;
 	pos.y += getYComp() * dt * vel;
