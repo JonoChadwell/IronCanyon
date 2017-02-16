@@ -12,7 +12,7 @@ public:
     glm::vec3 vel;
     glm::vec3 acc;
     double groundTime;
-    double startTime;
+    double despawnTimer;
     bool playerMagnet;
     Scrap(glm::vec3 pos, float ph, float th, float rl, float b, Grid* grid, int worth);
     virtual ~Scrap();
