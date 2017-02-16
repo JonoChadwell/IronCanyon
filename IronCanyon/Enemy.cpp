@@ -97,7 +97,7 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
-	   M->scale(vec3(0.5, 0.5, 1.0));
+	   M->scale(vec3(1, 1, 2.0));
        glUniformMatrix4fv(Enemy::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        Enemy::model->draw(Enemy::shader);
     M->popMatrix();
@@ -138,6 +138,11 @@ void Enemy::step(float dt) {
     if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->xpos, target->zpos))) {
         pathAge = dt;
         currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
+    }
+
+    if (distance(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos)) < 2) {
+        cout << "GAME OVER\n";
+        exit(EXIT_SUCCESS);
     }
 
 	float oldx = pos.x;
