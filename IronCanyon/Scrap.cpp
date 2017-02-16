@@ -10,10 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define BOB_FREQ 5
+#define BOB_FREQ 4
 #define RAND_VEL ( (float)rand() / RAND_MAX * 20 - 10 )
 #define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
-#define BOB_VEL 3
+#define BOB_HEIGHT 0.6
+#define FLOAT_HEIGHT 1.6;
+#define SPIN_SPEED 2.0;
 
 Shape* Scrap::nut;
 Shape* Scrap::bolt;
@@ -26,7 +28,7 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     worth(worth),
     vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
     acc( glm::vec3(0, -GRAVITY, 0) ),
-    groundTime(-1.0),
+    groundTime(0.0),
     playerMagnet(false),
     grid(grid)
 {
@@ -57,7 +59,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     M->pushMatrix();
        M->loadIdentity();
        M->translate(vec3(pos.x, pos.y, pos.z));
-	   M->rotate(-theta + glfwGetTime(), vec3(0, 1, 0));
+	   M->rotate(-theta, vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
        //M->scale(vec3(5, 1, 1));
@@ -70,34 +72,32 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Scrap::step(float dt) {
-    // helper height variable to avoid needless computation
-    float gridHeight = grid->height(pos.x, pos.z);
-    // apply acceleration
-    pos.x += dt * vel.x;
-    pos.z += dt * vel.z;
-    // normal movement for when it is destroyed or being tracked into player
-    if (playerMagnet || (groundTime < 0 &&
-      (vel.y > 0 || pos.y >= gridHeight + 2.2))) {
-        // affected by gravity
-        vel.y += dt * acc.y;
-        pos.y += dt * vel.y;
-    }
-    // once it hits the ground, it bobs up and down
-    else {
-        vel.x = vel.z = 0;
-        groundTime = groundTime < 0 ? glfwGetTime() : groundTime;
-        pos.y += dt * -sin((glfwGetTime()-groundTime) * BOB_FREQ) * BOB_VEL;
-    }
-    // make sure the position doesn't pass through terrain
-    float oldx = pos.x;
-    float oldz = pos.z;
-    if (!grid->inBounds(pos.x, pos.z)) {
-        pos.x = oldx;
-        pos.z = oldz;
-    }
-    if (pos.y < gridHeight) {
-        pos.y = gridHeight;;
-    }
+	theta += dt * SPIN_SPEED;
+	// make sure the position doesn't pass through terrain
+	float oldx = pos.x;
+	float oldz = pos.z;
+	// apply movement
+	pos.x += dt * vel.x;
+	pos.z += dt * vel.z;
+	if (!grid->inBounds(pos.x, pos.z)) {
+		pos.x = oldx;
+		pos.z = oldz;
+	}
+	// helper height variable to avoid needless computation
+	float gridHeight = grid->height(pos.x, pos.z);
+	float desiredHeight = gridHeight + sin(groundTime * BOB_FREQ) * BOB_HEIGHT + FLOAT_HEIGHT;
+
+    // affected by gravity
+    vel.y += dt * acc.y;
+    pos.y += dt * vel.y;
+
+	if (pos.y < desiredHeight) {
+		groundTime += dt;
+		pos.y = desiredHeight;
+		if (!playerMagnet && vel.y < 0) {
+			vel = vec3(0, -50, 0);
+		}
+	}
 }
 
 void Scrap::setup() {

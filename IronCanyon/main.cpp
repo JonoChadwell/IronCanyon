@@ -65,6 +65,7 @@ double maxPhysicsStepLength = 0.005;
 
 bool spawnWave = false;
 bool gameStarted = false;
+bool dead = false;
 int waveNumber = 1;
 
 /* MATH HELPERS */
@@ -331,11 +332,11 @@ static void stepGameObjects(float dt) {
 
         }
 	}
-    bool enemiesAlive = false;
+    bool wheelEnemiesAlive = false;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
-        if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
-            enemiesAlive = true;
+        if (dynamic_cast<Enemy*>(objects[i]) != NULL && dynamic_cast<Walker*>(objects[i]) == NULL) {
+            wheelEnemiesAlive = true;
         }
     }
 
@@ -344,14 +345,14 @@ static void stepGameObjects(float dt) {
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		if (dynamic_cast<Walker*>(qObjects[i]) != NULL && distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
 			// Game over
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			dead = true;
 		}
 		else if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && distance(vec3(player->xpos, player->zpos, player->ypos), vec3(qObjects[i]->pos.x, qObjects[i]->pos.z, qObjects[i]->pos.y)) < 2) {
 			// Game over
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			dead = true;
 		}
 	}
-    if (gameStarted && !enemiesAlive) {
+    if (gameStarted && !wheelEnemiesAlive) {
         spawnWave = true;
     }
 	scrapDetection();
@@ -453,14 +454,16 @@ static void render()
 
 static void updateWorld()
 {
-    double timePassed = thisFrameStartTime - lastFrameStartTime;
-    while (timePassed > maxPhysicsStepLength) {
-        timePassed -= maxPhysicsStepLength;
-        stepGameObjects(maxPhysicsStepLength);
-        stepPlayer(maxPhysicsStepLength);
-    }
-	stepGameObjects(timePassed);
-	stepPlayer(timePassed);
+	if (!dead) {
+		double timePassed = thisFrameStartTime - lastFrameStartTime;
+		while (timePassed > maxPhysicsStepLength) {
+			timePassed -= maxPhysicsStepLength;
+			stepGameObjects(maxPhysicsStepLength);
+			stepPlayer(maxPhysicsStepLength);
+		}
+		stepGameObjects(timePassed);
+		stepPlayer(timePassed);
+	}
 }
 
 static void updateObjectVector() {
