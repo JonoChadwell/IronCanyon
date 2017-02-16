@@ -269,7 +269,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	   M->popMatrix();
     }
     //laser charging
-    else if (firing > 0 && fireMode == 1) {
+    else if (firing > 0 && fireMode == 1 && !isPaused) {
 	    M->pushMatrix();
 	    M->loadIdentity();
 	    M->translate(vec3(this->xpos, this->ypos, this->zpos));

@@ -66,6 +66,7 @@ double maxPhysicsStepLength = 0.005;
 
 bool spawnWave = false;
 bool gameStarted = false;
+bool gamePaused = false;
 bool dead = false;
 bool semiAutoCooldown = false;
 int waveNumber = 1;
@@ -97,6 +98,16 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         gameStarted = true;
+	}
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		if (gamePaused == false) {
+			gamePaused = true;
+			player->isPaused = gamePaused;
+		}
+		else if (gamePaused == true) {
+			gamePaused = false;
+			player->isPaused = gamePaused;
+		}
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
         /* jank turret building for 50% demo */
@@ -521,13 +532,15 @@ static void updateWorld()
 {
 	if (!dead) {
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
-		while (timePassed > maxPhysicsStepLength) {
-			timePassed -= maxPhysicsStepLength;
-			stepGameObjects(maxPhysicsStepLength);
-			stepPlayer(maxPhysicsStepLength);
+		if (!gamePaused) {
+			while (timePassed > maxPhysicsStepLength) {
+				timePassed -= maxPhysicsStepLength;
+				stepGameObjects(maxPhysicsStepLength);
+				stepPlayer(maxPhysicsStepLength);
+			}
+			stepGameObjects(timePassed);
+			stepPlayer(timePassed);
 		}
-		stepGameObjects(timePassed);
-		stepPlayer(timePassed);
 	}
 }
 
