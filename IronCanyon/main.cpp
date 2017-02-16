@@ -63,8 +63,8 @@ double lastFrameStartTime;
 double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 
-bool spawnEnemy = false;
-bool spawnWalker = false;
+bool spawnWave = false;
+int waveNumber = 1;
 
 /* MATH HELPERS */
 static float dist(glm::vec3 p1, glm::vec3 p2) {
@@ -88,8 +88,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-		spawnEnemy = true;
-        spawnWalker = true;
+		spawnWave = true;
 	}
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -289,32 +288,56 @@ static void scrapDetection() {
 	}
 }
 
-static void stepGameObjects(float dt) {
-	if (spawnEnemy) {
-		spawnEnemy = false;
-		float x = randf() * 100 - 50;
-		float z = randf() * 100 - 50;
-		while (!grid->inBounds(x, z)) {
-			x = randf() * 100 - 50;
-			z = randf() * 100 - 50;
-		}
-		objects.push_back(new Enemy(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
-		quadtree->insert(objects[objects.size() - 1]);
-	}
-    else if (spawnWalker) {
-        spawnWalker = false;
-		float x = randf() * 100 - 50;
-		float z = randf() * 100 - 50;
-		while (!grid->inBounds(x,z)) {
-			x = randf() * 100 - 50;
-			z = randf() * 100 - 50;
-		}
-		objects.push_back(new Walker(vec3(x, 0, z), 0, randf() * 2 * MATH_PI, 0, ENEMY_SPEED, 2, grid));
-		quadtree->insert(objects[objects.size() - 1]);
+static vec3 getSpawnLocation() {
+    float x = randf() * 500 - 250;
+    float z = randf() * 500 - 250;
+    while (!grid->inBounds(x, z) || (std::abs(x) < 100 && std::abs(z) < 100) || distance(vec2(x,z), vec2(player->xpos, player->zpos)) < 50) {
+        x = randf() * 500 - 250;
+        z = randf() * 500 - 250;
     }
+    return vec3(x, 0, z);
+}
+
+static void stepGameObjects(float dt) {
+	if (spawnWave) {
+		spawnWave = false;
+        cout << "Spawning wave " << waveNumber++ << endl;
+        for (int i = 0; i < 10 + waveNumber; i++) {
+		    objects.push_back(
+                    new Enemy(
+                            getSpawnLocation(),
+                            0, 0, 0, // rotations
+                            ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
+                            2, // bounding radius
+                            grid));
+		    quadtree->insert(objects[objects.size() - 1]);
+        }
+        for (int i = 0; i < 5 + waveNumber; i++) {
+		    objects.push_back(
+                    new Walker(
+                            getSpawnLocation(),
+                            0, 0, 0, // rotations
+                            ENEMY_SPEED, // speed
+                            2, // bounding radius
+                            grid));
+		    quadtree->insert(objects[objects.size() - 1]);
+
+        }
+	}
+    bool enemiesAlive = false;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
-	}
+        if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
+            enemiesAlive = true;
+            if (distance(vec2(player->xpos, player->zpos), vec2(objects[i]->pos.x, objects[i]->pos.z)) < 2) {
+                // Game over
+		        glfwSetWindowShouldClose(window, GL_TRUE);
+            }
+        }
+    }
+    if (!enemiesAlive) {
+        spawnWave = true;
+    }
 	scrapDetection();
 }
 
@@ -515,7 +538,8 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < objects.size(); i++) {
         delete objects[i];
     }
+    cout << "GAME OVER\n";
     cout << "Scrap: " << player->scrap << endl;
-    cout << "\ngame exited\n";
+    cout << "Waves Survived: " << (waveNumber - 2) << endl;
 	return 0;
 }

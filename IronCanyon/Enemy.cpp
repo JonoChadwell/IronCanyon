@@ -140,11 +140,6 @@ void Enemy::step(float dt) {
         currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
     }
 
-    if (distance(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos)) < 2) {
-        cout << "GAME OVER\n";
-        exit(EXIT_SUCCESS);
-    }
-
 	float oldx = pos.x;
 	float oldz = pos.z;
 
