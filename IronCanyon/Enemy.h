@@ -29,8 +29,10 @@ protected:
 	float animtime;
     std::vector<vec2> currentPath;
     float pathAge;
+	float spawn;
 
 private:
 	static Shape* model;
+	static Shape* spawnModel;
 	static Program* shader;
 };

@@ -15,8 +15,11 @@ using namespace glm;
 using namespace std;
 
 Shape* Enemy::model;
+Shape* Enemy::spawnModel;
 Program* Enemy::shader;
 Player* Enemy::target;
+
+#define FALL_SPEED 8.0;
 
 // helper functions
 namespace {
@@ -63,7 +66,8 @@ Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
     active(true),
 	grid(grid),
     animtime(0.0),
-    pathAge(0.0)
+    pathAge(0.0),
+	spawn(25.0)
 {
     currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
 }
@@ -94,12 +98,18 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     M->pushMatrix();
        M->loadIdentity();
        M->translate(vec3(pos.x, pos.y, pos.z));
-	   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
-       M->rotate(phi, vec3(1, 0, 0));
-       M->rotate(roll, vec3(0, 0, 1));
-	   M->scale(vec3(1, 1, 2.0));
-       glUniformMatrix4fv(Enemy::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Enemy::model->draw(Enemy::shader);
+	   if (spawn > 0) {
+		   M->scale(vec3(2));
+		   glUniformMatrix4fv(Enemy::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+		   Enemy::spawnModel->draw(Enemy::shader);
+	   } else {
+		   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
+		   M->rotate(phi, vec3(1, 0, 0));
+		   M->rotate(roll, vec3(0, 0, 1));
+		   M->scale(vec3(1.2, 1.2, 2.4));
+		   glUniformMatrix4fv(Enemy::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+		   Enemy::model->draw(Enemy::shader);
+	   }
     M->popMatrix();
 	
 	if (grid->inBounds(pos.x, pos.z)) {
@@ -134,6 +144,11 @@ void Enemy::step(float dt) {
 	else {
 		pos.y = -0.5;
 	}
+	if (spawn > 0) {
+		pos.y += spawn;
+		spawn -= dt * FALL_SPEED;
+		return;
+	}
 
     if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->xpos, target->zpos))) {
         pathAge = dt;
@@ -160,6 +175,11 @@ void Enemy::setup() {
 	Enemy::model->loadMesh(RESOURCE_DIR + std::string("wheelEnemy.obj"));
 	Enemy::model->resize();
 	Enemy::model->init();
+
+	Enemy::spawnModel = new Shape();
+	Enemy::spawnModel->loadMesh(RESOURCE_DIR + std::string("sphere.obj"));
+	Enemy::spawnModel->resize();
+	Enemy::spawnModel->init();
 
 	Enemy::shader = new Program();
 	Enemy::shader->setVerbose(true);
