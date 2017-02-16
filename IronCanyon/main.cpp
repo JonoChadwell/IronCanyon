@@ -332,11 +332,11 @@ static void stepGameObjects(float dt) {
 
         }
 	}
-    bool enemiesAlive = false;
+    bool wheelEnemiesAlive = false;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
-        if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
-            enemiesAlive = true;
+        if (dynamic_cast<Enemy*>(objects[i]) != NULL && dynamic_cast<Walker*>(objects[i]) == NULL) {
+            wheelEnemiesAlive = true;
         }
     }
 
@@ -352,7 +352,7 @@ static void stepGameObjects(float dt) {
 			dead = true;
 		}
 	}
-    if (gameStarted && !enemiesAlive) {
+    if (gameStarted && !wheelEnemiesAlive) {
         spawnWave = true;
     }
 	scrapDetection();
