@@ -21,12 +21,14 @@
 #define PAD_Z_BACK -0.85
 #define PAD_Z_FRONT (-(PAD_Z_BACK) / 1.3)
 #define PAD_SCALE vec3(PAD_SCALE_FACTOR, PAD_SCALE_FACTOR, PAD_SCALE_FACTOR)
+#define PAD_SEARCH 0.2
 
 Shape* Player::turret;
 Shape* Player::chassis;
 Shape* Player::laser;
 Shape* Player::hover;
 Program* Player::shader;
+
 
 // default constructor
 Player::Player() :
@@ -216,6 +218,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         for (int i = 0; i < 4; i++) {
             M->pushMatrix();
             M->translate(padDisplacements[i]);
+            M->rotate(calcPadRotZ(padDisplacements[i].z, padDisplacements[i].x), vec3(0, 0, 1));
+            M->rotate(calcPadRotX(padDisplacements[i].z, padDisplacements[i].x), vec3(1, 0, 0));
             M->rotate(MATH_PI, vec3(0, 0, 1));
             M->rotate(-PAD_THETA, vec3(1, 0, 0));
             M->scale(PAD_SCALE);
@@ -351,4 +355,34 @@ void Player::setup() {
 	Player::shader->addAttribute("vertPos");
 	Player::shader->addAttribute("vertNor");
 	Player::shader->addAttribute("vertTex");
+}
+
+// helper functions for hover pad rotation
+float Player::calcPadRotX(float padx, float padz) {
+    float realPadx, realPadz;
+    float realTheta = ctheta - MATH_PI/2;
+    float deltaTheta = atan(padz / padx);
+
+    realPadx = sin(deltaTheta) * padz + xpos;
+    realPadz = cos(deltaTheta) * padx + zpos;
+    float x1 = realPadx + sin(realTheta) * PAD_SEARCH;
+    float z1 = realPadz + cos(realTheta) * PAD_SEARCH;
+    float x2 = realPadx - sin(realTheta) * PAD_SEARCH;
+    float z2 = realPadz - cos(realTheta) * PAD_SEARCH;
+    float deltaY = grid->height(x1, z1) - grid->height(x2, z2);
+    return -deltaY * 5;
+}
+float Player::calcPadRotZ(float padx, float padz) {
+    float realPadx, realPadz;
+    float realTheta = ctheta - MATH_PI/2;
+    float deltaTheta = atan(padz / padx);
+
+    realPadx = sin(deltaTheta) * padz + xpos;
+    realPadz = cos(deltaTheta) * padx + zpos;
+    float x1 = realPadx - cos(realTheta) * PAD_SEARCH;
+    float z1 = realPadz + sin(realTheta) * PAD_SEARCH;
+    float x2 = realPadx + cos(realTheta) * PAD_SEARCH;
+    float z2 = realPadz - sin(realTheta) * PAD_SEARCH;
+    float deltaY = grid->height(x1, z1) - grid->height(x2, z2);
+    return -deltaY * 5;
 }
