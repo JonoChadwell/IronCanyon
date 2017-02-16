@@ -270,6 +270,12 @@ static void init()
 
 }
 
+static void createScrapPile(GameObject* enemy) {
+    for (int i = 0; i < 5; i++) {
+        objects.push_back(new Scrap(enemy->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+    }
+}
+
 static void laserFire()
 {
    vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
@@ -280,12 +286,6 @@ static void laserFire()
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
       // hit
       if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
-        // dumb forloop just to show off scrap stuff
-        // will be changed to incorporate enemy worth
-		  for (int der = 0; der < 5; der++) {
-			  objects.push_back(new Scrap(objects[i]->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
-			  quadtree->insert(objects[objects.size() - 1]);
-		  }
 		  objects[i]->toDelete = true;
       }
    }
@@ -354,10 +354,6 @@ static void projectileDetection() {
 			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
 			float distance = dist(objectPosition, projectilePosition);
 			if (distance < 1.5 && dynamic_cast<Enemy*>(objects[j]) != NULL) {
-				for (int der = 0; der < 5; der++) {
-					objects.push_back(new Scrap(objects[j]->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
-					quadtree->insert(objects[objects.size() - 1]);
-				}
                 projectiles[i]->toDelete = true;
 				objects[j]->toDelete = true;
 			}
@@ -548,6 +544,9 @@ static void updateWorld()
 static void updateObjectVector() {
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (objects[i]->toDelete) {
+            if (dynamic_cast<Enemy*>(objects[i]) != NULL) {
+                createScrapPile(objects[i]);
+            }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
 			i--;
