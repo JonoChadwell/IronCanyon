@@ -551,7 +551,7 @@ static void render()
 static void updateWorld()
 {
 	if (!dead && !gamePaused) {
-        //Turret::quadtree = quadtree;
+        Turret::quadtree = quadtree;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
             timePassed -= maxPhysicsStepLength;
