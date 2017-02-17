@@ -363,6 +363,7 @@ float Player::calcPadRotX(float padx, float padz) {
     float realPadx, realPadz;
     float realTheta = ctheta - MATH_PI/2;
     float deltaTheta = atan(padz / padx);
+    deltaTheta = padx > 0 ? deltaTheta - MATH_PI : deltaTheta;
 
     realPadx = sin(deltaTheta) * padz + xpos;
     realPadz = cos(deltaTheta) * padx + zpos;
@@ -377,6 +378,7 @@ float Player::calcPadRotZ(float padx, float padz) {
     float realPadx, realPadz;
     float realTheta = ctheta - MATH_PI/2;
     float deltaTheta = atan(padz / padx);
+    deltaTheta = padx > 0 ? deltaTheta - MATH_PI : deltaTheta;
 
     realPadx = sin(deltaTheta) * padz + xpos;
     realPadz = cos(deltaTheta) * padx + zpos;
