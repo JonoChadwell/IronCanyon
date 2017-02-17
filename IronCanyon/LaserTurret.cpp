@@ -33,8 +33,18 @@ void LaserTurret::step(float dt) {
 void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // render turret base
     Turret::draw(P, lookAt, eye);
-    // variable declaration
+    // housing angle (theta) and barrel angle (phi)
+    float hangle = 0.0;
+    float bangle = 0.0;
+    if (target != NULL) {
+        // soh cah toa shit
+        float o = target->pos.x - this->pos.x;
+        float a = target->pos.z - this->pos.z;
+        hangle = atan(o / a);
+        hangle = (int)(a * 100) == 0 ? atan(o / abs(o)) : hangle;
+    }
     glm::vec3 housePos = vec3(pos.x, pos.y + 1.0, pos.z);
+    // variable declaration
     MatrixStack *M = new MatrixStack();
     LaserTurret::shader->bind();
 	glUniform3f(LaserTurret::shader->getUniform("sunDir"), SUN_DIR);
@@ -54,7 +64,7 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->loadIdentity();
         M->translate(housePos);
         M->rotate(phi, vec3(1, 0, 0));
-        M->rotate(theta, vec3(0, 1, 0));
+        M->rotate(theta + hangle, vec3(0, 1, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(2, 2, 2));
         glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
@@ -66,8 +76,8 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->loadIdentity();
         housePos.y += 3;
         M->translate(housePos);
-        M->rotate(phi + MATH_PI/2, vec3(1, 0, 0));
-        M->rotate(theta, vec3(0, 1, 0));
+        M->rotate(phi, vec3(1, 0, 0));
+        M->rotate(theta + hangle, vec3(0, 1, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(1, 1, 1));
         glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));

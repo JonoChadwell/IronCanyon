@@ -40,6 +40,11 @@ void Turret::step(float dt) {
             }
         }
     }
+    // 
+    else if (!target->active) {
+        printf("TARGET KILL\n");
+        target = NULL;
+    }
 }
 
 void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
