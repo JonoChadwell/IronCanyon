@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Grid.h"
 #include <iostream>
+#include <GLFW/glfw3.h>
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -12,12 +13,15 @@
 
 Shape* LaserTurret::housing;
 Shape* LaserTurret::barrel;
+Shape* LaserTurret::laser;
 Program* LaserTurret::shader;
 
 
 // constructor
 LaserTurret::LaserTurret(glm::vec3 p, int rotation, float b, Grid *grid) :
-    Turret(p, rotation, b, grid)
+    Turret(p, rotation, b, grid),
+    lastLaser(0.0),
+    firing(0.0)
 {
 }
 
@@ -30,6 +34,19 @@ LaserTurret::~LaserTurret()
 // step
 void LaserTurret::step(float dt) {
     Turret::step(dt);
+    // if cooldown time has elapsed, fire if targeting
+    if (target != NULL && glfwGetTime() - lastLaser > TURRET_LASER_COOLDOWN) {
+        lastLaser = glfwGetTime();
+        firing = 0.01;
+    }
+    // else turn off laser
+    else if (firing > 0.1) {
+        firing = 0.0;
+    }
+    // firing
+    if (firing > 0.0) {
+        firing += dt;
+    }
 }
 
 // draw
@@ -78,7 +95,7 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(2, 2, 2));
         glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       LaserTurret::housing->draw(LaserTurret::shader);
+        LaserTurret::housing->draw(LaserTurret::shader);
     M->popMatrix();
 
     // render barrel
@@ -90,7 +107,28 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(1, 1, 1));
         glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       LaserTurret::barrel->draw(LaserTurret::shader);
+        LaserTurret::barrel->draw(LaserTurret::shader);
+    M->popMatrix();
+
+    // laser
+	glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 10, 0, 0);
+	glUniform3f(LaserTurret::shader->getUniform("MatDif"), 0, 0, 0);
+	glUniform3f(LaserTurret::shader->getUniform("MatSpec"), 0, 0, 0);
+	glUniform1f(LaserTurret::shader->getUniform("shine"), 1);
+
+    M->pushMatrix();
+        M->loadIdentity();
+        M->translate(housePos);
+        M->rotate(theta + hangle, vec3(0, 1, 0));
+        M->rotate(phi + bangle, vec3(1, 0, 0));
+        M->rotate(roll, vec3(0, 0, 1));
+        if (firing > 0.0)
+            M->scale(vec3(0.5, 0.5, 50));
+        else
+            M->scale(vec3(0.1, 0.1, 50));
+        M->translate(vec3(0, 0, -1));
+        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        LaserTurret::laser->draw(LaserTurret::shader); 
     M->popMatrix();
 
     // cleanup
@@ -109,6 +147,11 @@ void LaserTurret::setup() {
     LaserTurret::barrel->loadMesh(RESOURCE_DIR + std::string("IronCanyon_RailGunBarrel.obj"));
     LaserTurret::barrel->resize();
     LaserTurret::barrel->init();
+
+	LaserTurret::laser = new Shape();
+	LaserTurret::laser->loadMesh(RESOURCE_DIR + "cube.obj");
+	LaserTurret::laser->resize();
+	LaserTurret::laser->init();
 
     LaserTurret::shader = new Program();
     LaserTurret::shader->setVerbose(true);

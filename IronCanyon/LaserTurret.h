@@ -9,6 +9,8 @@
 
 class LaserTurret : public Turret {
 public:
+    float lastLaser; // last time firing
+    float firing; // value that goes up while firing
     LaserTurret(glm::vec3 p, int rotation, float b, Grid *grid);
     ~LaserTurret();
 
@@ -23,5 +25,6 @@ protected:
 private:
     static Shape* housing;
     static Shape* barrel;
+    static Shape* laser;
     static Program* shader;
 };
