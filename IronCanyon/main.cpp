@@ -388,31 +388,7 @@ static vec3 getSpawnLocation() {
 }
 
 static void stepGameObjects(float dt) {
-	if (spawnWave) {
-		spawnWave = false;
-        cout << "Spawning wave " << waveNumber++ << endl;
-        for (int i = 0; i < 10 + waveNumber; i++) {
-			Enemy* enemy = new Enemy(
-				getSpawnLocation(),
-				0, 0, 0, // rotations
-				ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
-				2, // bounding radius
-				grid);
-		    objects.push_back(enemy);
-		    quadtree->insert(enemy);
-        }
-        for (int i = 0; i < 5 + waveNumber; i++) {
-			Walker* walker = new Walker(
-				getSpawnLocation(),
-				0, 0, 0, // rotations
-				ENEMY_SPEED, // speed
-				2, // bounding radius
-				grid);
-		    objects.push_back(walker);
-		    quadtree->insert(walker);
-
-        }
-	}
+	
     bool wheelEnemiesAlive = false;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->step(dt);
@@ -441,6 +417,29 @@ static void stepGameObjects(float dt) {
     }
 	projectileDetection();
 	scrapDetection();
+	if (spawnWave) {
+		spawnWave = false;
+        cout << "Spawning wave " << waveNumber++ << endl;
+        for (int i = 0; i < 10 + waveNumber; i++) {
+			Enemy* enemy = new Enemy(
+				getSpawnLocation(),
+				0, 0, 0, // rotations
+				ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
+				2, // bounding radius
+				grid);
+		    objects.push_back(enemy);
+        }
+        for (int i = 0; i < 5 + waveNumber; i++) {
+			Walker* walker = new Walker(
+				getSpawnLocation(),
+				0, 0, 0, // rotations
+				ENEMY_SPEED, // speed
+				2, // bounding radius
+				grid);
+		    objects.push_back(walker);
+
+        }
+	}
 }
 
 static void drawPlayer() {
