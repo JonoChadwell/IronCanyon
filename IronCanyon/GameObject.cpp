@@ -42,3 +42,7 @@ float GameObject::getZComp() {
 void GameObject::setup() {
 
 }
+
+std::vector<GameObject*> GameObject::getRemains() {
+    return std::vector<GameObject*>();
+}

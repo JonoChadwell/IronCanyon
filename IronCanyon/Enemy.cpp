@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include "Grid.h"
 #include "Player.h"
+#include "Scrap.h"
 #include <iostream>
 #include <cmath>
 
@@ -19,7 +20,8 @@ Shape* Enemy::spawnModel;
 Program* Enemy::shader;
 Player* Enemy::target;
 
-#define FALL_SPEED 8.0;
+#define FALL_SPEED 8.0
+#define SCRAP_AMT 4
 
 // helper functions
 namespace {
@@ -57,6 +59,10 @@ namespace {
         }
         return 0;
     }
+    
+    float randf() {
+	    return (rand() * 1.0) / (RAND_MAX);
+    }
 }
 
 Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
@@ -78,6 +84,14 @@ Enemy::~Enemy()
 }
 
 // functions
+vector<GameObject*> Enemy::getRemains() {
+    vector<GameObject*> result;
+    for (int i = 0; i < SCRAP_AMT; i++) {
+        result.push_back(new Scrap(pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+    }
+    return result;
+}
+
 void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();

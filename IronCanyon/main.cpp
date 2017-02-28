@@ -218,7 +218,7 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
     phi = std::max(phi, (float)(-.5));
     lastx = x;
     lasty = y;
-}   
+}
 
 static void resize_callback(GLFWwindow *window, int width, int height) {
    g_width = width;
@@ -297,7 +297,6 @@ static void laserFire()
       float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
       // hit
       if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
-		  createScrapPile(objects[i]);
 		  objects[i]->toDelete = true;
       }
    }
@@ -369,7 +368,6 @@ static void projectileDetection() {
 			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
 			float distance = dist(objectPosition, projectilePosition);
 			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL) {
-				createScrapPile(qObjects[j]);
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
@@ -565,6 +563,10 @@ static void updateWorld()
 static void updateObjectVector() {
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (objects[i]->toDelete) {
+            vector<GameObject*> remains = objects[i]->getRemains();
+            for (int j = 0; j < remains.size(); j++) {
+                objects.push_back(remains[j]);
+            }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
 			i--;

@@ -24,6 +24,7 @@ public:
     float getXComp();
     float getYComp();
     float getZComp();
+    virtual std::vector<GameObject*> getRemains();
     static void setup();
 
 	// set in quad trees to remove from main object array

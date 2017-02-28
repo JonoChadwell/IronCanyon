@@ -19,6 +19,7 @@ public:
     virtual ~Enemy();
 
     // functions
+    std::vector<GameObject*> getRemains();
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
     static void setup();
