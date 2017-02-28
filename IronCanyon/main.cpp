@@ -21,7 +21,7 @@
 #include "Walker.h"
 #include "Scrap.h"
 #include "GridObject.h"
-#include "RockOne.h"
+#include "StaticTerrainObject.h"
 #include "Turret.h"
 #include "LaserTurret.h"
 #include "QuadTree.h"
@@ -253,7 +253,7 @@ static void init()
     Enemy::target = player;
     Walker::setup();
     Scrap::setup();
-    RockOne::setup();
+    StaticTerrainObject::setup();
     Turret::setup();
     LaserTurret::setup();
 	Projectile::setup();
@@ -272,7 +272,7 @@ static void init()
 			z = randf() * ROCK_AREA - ROCK_AREA / 2;
 		}
         
-        RockOne* r = new RockOne(vec3(x, 0, z), i, grid);
+        StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 3, grid);
         grid->addToGrid(r);
         objects.push_back(r);
     }

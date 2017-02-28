@@ -5,24 +5,22 @@
 #include <vector>
 #include <memory>
 
-// An example of a grid object. Not intended as a permanant member of the game. I will replace it with a more generic terrain thing at some point.
-
-
 class Grid;
 class Shape;
 class Program;
 
-class RockOne : public GridObject {
+class StaticTerrainObject : public GridObject {
 
 public:
-    RockOne(glm::vec3 p, int rotation, Grid* grid);
-    ~RockOne();
+    int obj;
+    StaticTerrainObject(glm::vec3 p, int rotation, int type, Grid* grid);
+    ~StaticTerrainObject();
 
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
     static void setup();
 
 private:
-    static Shape* model;
+    static std::vector<Shape*> models;
     static Program* shader;
 };
