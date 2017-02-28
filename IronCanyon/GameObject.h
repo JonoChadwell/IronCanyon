@@ -1,5 +1,6 @@
 #pragma once
 #include "MatrixStack.h"
+#include "Constants.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -12,8 +13,11 @@ public:
     float theta;
     float roll;
     float bound;
+    TEAM team;
+
     GameObject();
     GameObject(glm::vec3 p, float ph, float th, float rl, float b);
+    GameObject(glm::vec3 p, float ph, float th, float rl, float b, TEAM t);
     virtual ~GameObject();
 
     // virtual functions (must be overriden by any subclass)

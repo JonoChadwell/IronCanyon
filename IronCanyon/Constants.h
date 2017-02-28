@@ -16,3 +16,8 @@
 #define TURRET_LOCK_RAD 30
 #define TURRET_LASER_COOLDOWN 4.0
 #define MISSILE_VEL 120
+
+#define TEAM int
+#define NO_TEAM 0
+#define PLAYER_TEAM 1
+#define ENEMY_TEAM 2

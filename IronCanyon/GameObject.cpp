@@ -18,7 +18,18 @@ GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
     phi(ph),
     theta(th),
     roll(rl),
-    bound(b)
+    bound(b),
+    team(NO_TEAM)
+{}
+
+GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
+  float b, TEAM t) :
+    pos(p),
+    phi(ph),
+    theta(th),
+    roll(rl),
+    bound(b),
+    team(team)
 {}
 
 // destructor
