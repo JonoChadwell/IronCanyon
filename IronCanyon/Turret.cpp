@@ -86,7 +86,7 @@ Turret::~Turret()
 // model setup
 void Turret::setup() {
 	Turret::model = new Shape();
-	Turret::model->loadMesh(RESOURCE_DIR + std::string("IronCanyon_TurretBase.obj"));
+	Turret::model->loadMesh(RESOURCE_DIR + std::string("drive/IronCanyon_TurretBase.obj"));
 	Turret::model->resize();
 	Turret::model->init();
 

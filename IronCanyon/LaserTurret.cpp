@@ -144,17 +144,17 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 // model setup
 void LaserTurret::setup() {
     LaserTurret::housing = new Shape();
-    LaserTurret::housing->loadMesh(RESOURCE_DIR + std::string("IronCanyon_TurretHousing.obj"));
+    LaserTurret::housing->loadMesh(RESOURCE_DIR + std::string("drive/IronCanyon_TurretHousing.obj"));
     LaserTurret::housing->resize();
     LaserTurret::housing->init();
 
     LaserTurret::barrel = new Shape();
-    LaserTurret::barrel->loadMesh(RESOURCE_DIR + std::string("IronCanyon_RailGunBarrel.obj"));
+    LaserTurret::barrel->loadMesh(RESOURCE_DIR + std::string("drive/IronCanyon_RailGunBarrel.obj"));
     LaserTurret::barrel->resize();
     LaserTurret::barrel->init();
 
 	LaserTurret::laser = new Shape();
-	LaserTurret::laser->loadMesh(RESOURCE_DIR + "cube.obj");
+	LaserTurret::laser->loadMesh(RESOURCE_DIR + "drive/cube.obj");
 	LaserTurret::laser->resize();
 	LaserTurret::laser->init();
 

@@ -324,19 +324,19 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 void Player::setup() {
 	Player::turret = new Shape();
-	Player::turret->loadMesh(RESOURCE_DIR + "turret.obj");
+	Player::turret->loadMesh(RESOURCE_DIR + "drive/turret.obj");
 	Player::turret->resize();
 	Player::turret->init();
 	Player::chassis = new Shape();
-	Player::chassis->loadMesh(RESOURCE_DIR + "tank.obj");
+	Player::chassis->loadMesh(RESOURCE_DIR + "drive/tank.obj");
 	Player::chassis->resize();
 	Player::chassis->init();
 	Player::laser = new Shape();
-	Player::laser->loadMesh(RESOURCE_DIR + "cube.obj");
+	Player::laser->loadMesh(RESOURCE_DIR + "drive/cube.obj");
 	Player::laser->resize();
 	Player::laser->init();
 	Player::hover = new Shape();
-	Player::hover->loadMesh(RESOURCE_DIR + "hover.obj");
+	Player::hover->loadMesh(RESOURCE_DIR + "drive/hover.obj");
 	Player::hover->resize();
 	Player::hover->init();
 

@@ -186,12 +186,12 @@ void Enemy::step(float dt) {
 
 void Enemy::setup() {
 	Enemy::model = new Shape();
-	Enemy::model->loadMesh(RESOURCE_DIR + std::string("wheelEnemy.obj"));
+	Enemy::model->loadMesh(RESOURCE_DIR + std::string("drive/wheelEnemy.obj"));
 	Enemy::model->resize();
 	Enemy::model->init();
 
 	Enemy::spawnModel = new Shape();
-	Enemy::spawnModel->loadMesh(RESOURCE_DIR + std::string("sphere.obj"));
+	Enemy::spawnModel->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
 	Enemy::spawnModel->resize();
 	Enemy::spawnModel->init();
 

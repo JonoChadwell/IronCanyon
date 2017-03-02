@@ -27,9 +27,9 @@ struct TypeDetails {
 };
 
 TypeDetails details[NUM_TYPES] = {
-    {"rockstack01.obj", vec3(10.0, 10.0, 10.0), 0, 5},
-    {"rockstack01.obj", vec3(8.0, 12.0, 8.0), -12, 2.5},
-    {"rockstack02.obj", vec3(4.0, 5.0, 4.0), -1.5, 3.5}
+    {"drive/rockstack01.obj", vec3(10.0, 10.0, 10.0), 0, 5},
+    {"drive/rockstack01.obj", vec3(8.0, 12.0, 8.0), -12, 2.5},
+    {"drive/rockstack02.obj", vec3(4.0, 5.0, 4.0), -1.5, 3.5}
 };
 
 vector<Shape*> StaticTerrainObject::models;

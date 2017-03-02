@@ -98,7 +98,7 @@ void Projectile::step(float dt) {
 
 void Projectile::setup() {
 	Projectile::model = new Shape();
-	Projectile::model->loadMesh(RESOURCE_DIR + std::string("shell.obj"));
+	Projectile::model->loadMesh(RESOURCE_DIR + std::string("drive/shell.obj"));
 	Projectile::model->resize();
 	Projectile::model->init();
 

@@ -196,22 +196,22 @@ void Walker::step(float dt) {
 
 void Walker::setup() {
 	Walker::body = new Shape();
-	Walker::body->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Walker::body->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
 	Walker::body->resize();
 	Walker::body->init();
 
 	Walker::upper_leg = new Shape();
-	Walker::upper_leg->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Walker::upper_leg->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
 	Walker::upper_leg->resize();
 	Walker::upper_leg->init();
 
 	Walker::lower_leg = new Shape();
-	Walker::lower_leg->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Walker::lower_leg->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
 	Walker::lower_leg->resize();
 	Walker::lower_leg->init();
 
 	Walker::foot = new Shape();
-	Walker::foot->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
+	Walker::foot->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
 	Walker::foot->resize();
 	Walker::foot->init();
 

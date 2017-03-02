@@ -108,17 +108,17 @@ void Scrap::step(float dt) {
 
 void Scrap::setup() {
 	Scrap::nut = new Shape();
-	Scrap::nut->loadMesh(RESOURCE_DIR + std::string("nut.obj"));
+	Scrap::nut->loadMesh(RESOURCE_DIR + std::string("drive/nut.obj"));
 	Scrap::nut->resize();
 	Scrap::nut->init();
 
 	Scrap::bolt = new Shape();
-	Scrap::bolt->loadMesh(RESOURCE_DIR + std::string("bolt.obj"));
+	Scrap::bolt->loadMesh(RESOURCE_DIR + std::string("drive/bolt.obj"));
 	Scrap::bolt->resize();
 	Scrap::bolt->init();
 
 	Scrap::box = new Shape();
-	Scrap::box->loadMesh(RESOURCE_DIR + std::string("box.obj"));
+	Scrap::box->loadMesh(RESOURCE_DIR + std::string("drive/box.obj"));
 	Scrap::box->resize();
 	Scrap::box->init();
 
