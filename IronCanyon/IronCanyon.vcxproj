@@ -133,9 +133,9 @@
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="RockOne.cpp" />
     <ClCompile Include="Scrap.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="StaticTerrainObject.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Turret.cpp" />
@@ -156,9 +156,9 @@
     <ClInclude Include="Program.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="RockOne.h" />
     <ClInclude Include="Scrap.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="StaticTerrainObject.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />

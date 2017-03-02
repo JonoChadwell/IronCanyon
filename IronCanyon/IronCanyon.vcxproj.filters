@@ -57,9 +57,6 @@
     <ClCompile Include="Walker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RockOne.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GridObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +73,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LaserTurret.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticTerrainObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -128,9 +128,6 @@
     <ClInclude Include="Walker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RockOne.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GridObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -147,6 +144,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LaserTurret.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticTerrainObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
