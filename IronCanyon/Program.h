@@ -7,6 +7,8 @@
 
 #include <GL/glew.h>
 
+class Texture;
+
 class Program
 {
 public:
@@ -23,8 +25,11 @@ public:
 
 	void addAttribute(const std::string &name);
 	void addUniform(const std::string &name);
+	void addTexture(Texture *texture);
 	GLint getAttribute(const std::string &name) const;
 	GLint getUniform(const std::string &name) const;
+	Texture *getTexture(const std::string &name) const;
+
 	
 protected:
 	std::string vShaderName;
@@ -34,6 +39,7 @@ private:
 	GLuint pid;
 	std::map<std::string,GLint> attributes;
 	std::map<std::string,GLint> uniforms;
+	std::map<std::string, Texture*> textures;
 	bool verbose;
 };
 

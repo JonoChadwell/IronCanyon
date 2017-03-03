@@ -28,6 +28,7 @@ Shape* Player::chassis;
 Shape* Player::laser;
 Shape* Player::hover;
 Program* Player::shader;
+Texture* Player::texture;
 
 
 // default constructor
@@ -339,10 +340,14 @@ void Player::setup() {
 	Player::hover->loadMesh(RESOURCE_DIR + "drive/hover.obj");
 	Player::hover->resize();
 	Player::hover->init();
+	Player::texture = new Texture();
+	Player::texture->setFilename(RESOURCE_DIR + "crate.bmp");
+	Player::texture->setName("PlayerTexture");
+	Player::texture->init();
 
 	Player::shader = new Program();
 	Player::shader->setVerbose(true);
-	Player::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Player::shader->setShaderNames(RESOURCE_DIR + "tex_vert.glsl", RESOURCE_DIR + "tex_frag.glsl");
 	Player::shader->init();
 	Player::shader->addUniform("P");
 	Player::shader->addUniform("M");
@@ -356,6 +361,7 @@ void Player::setup() {
 	Player::shader->addAttribute("vertPos");
 	Player::shader->addAttribute("vertNor");
 	Player::shader->addAttribute("vertTex");
+	Player::shader->addTexture(Player::texture);
 }
 
 // helper functions for hover pad rotation

@@ -2,6 +2,7 @@
 #include "MatrixStack.h"
 #include "Shape.h"
 #include "Grid.h"
+#include "Texture.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -48,5 +49,6 @@ private:
 	static Shape* laser;
 	static Shape* hover;
 	static Program* shader;
+	static Texture* texture;
 
 };
