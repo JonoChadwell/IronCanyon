@@ -9,17 +9,19 @@
 #include "Program.h"
 #include "GameObject.h"
 
+#define PARTICLE_FLOOR (-30.0f)
+#define PARTICLE_PURGATORY (-100.0f)
 
 // Represents a single particle and its state
 struct Particle {
-    glm::vec2 pos, vel;
+    glm::vec3 pos, vel;
     glm::vec4 color;
     GLfloat life;
 
-    Particle(glm::vec2 pos, glm::vec2 vel, glm::vec4 color, GLfloat life) :
+    Particle(glm::vec3 pos, glm::vec3 vel, glm::vec4 color, GLfloat life) :
       pos(pos), vel(vel), color(color), life(life) { }
     Particle() :
-      pos(0.0f), vel(0.0f), color(1.0f), life(0.0f) { }
+      pos(glm::vec3(0.0f, PARTICLE_PURGATORY, 0.0f)), vel(0.0f), color(1.0f), life(0.0f) { }
 };
 
 
@@ -37,6 +39,10 @@ public:
     void update(GLfloat dt, GameObject *obj, GLuint newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // Render all particles
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
+    // update physics
+    void step(float dt);
+    // create particles
+    void spawnParticles(int np, glm::vec3 at);
 private:
     Program *shader;
     Texture texture;
@@ -47,10 +53,12 @@ private:
     GLuint amount;
     GLfloat points[900];
     GLfloat pointColors[1200];
+    int lastUsedParticle = 0;
     // Initializes buffer and vertex attributes
     void initGeom();
+    void updateGeom();
     // Returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
-    GLuint firstUnusedParticle();
+    int firstUnusedParticle();
     // Respawns particle
     void respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };

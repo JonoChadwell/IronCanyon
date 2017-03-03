@@ -26,6 +26,7 @@
 #include "LaserTurret.h"
 #include "QuadTree.h"
 #include "Projectile.h"
+#include "ParticleSystem.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -50,6 +51,7 @@ Terrain* terrain;
 vector<GameObject*> objects;
 vector<GameObject*> projectiles;
 QuadTree* quadtree;
+ParticleSystem *pSystem;
 
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
@@ -245,6 +247,11 @@ static void init()
 	glClearColor(.5f, .7f, .9f, 1.0f);
 	// Enable z-buffer test.
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glPointSize(14.0f);
 
     // initialize models and shaders
     Terrain::setup();
@@ -257,6 +264,8 @@ static void init()
     Turret::setup();
     LaserTurret::setup();
 	Projectile::setup();
+    // Particles
+    pSystem = new ParticleSystem(300);
 
 	forwards = 0;
 	sideways = 0;
@@ -281,6 +290,7 @@ static void init()
 
 static void createScrapPile(GameObject* enemy) {
     for (int i = 0; i < 5; i++) {
+        // do scrap
 		Scrap* scrap = new Scrap(enemy->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10);
         objects.push_back(scrap);
 		quadtree->insert(scrap);
@@ -328,6 +338,8 @@ static void drawGameObjects() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
+    // draw particles
+    pSystem->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
     delete P;
@@ -554,9 +566,11 @@ static void updateWorld()
             timePassed -= maxPhysicsStepLength;
             stepGameObjects(maxPhysicsStepLength);
             stepPlayer(maxPhysicsStepLength);
+            pSystem->step(timePassed);
         }
         stepGameObjects(timePassed);
         stepPlayer(timePassed);
+        pSystem->step(timePassed);
 	}
 }
 
@@ -566,6 +580,8 @@ static void updateObjectVector() {
             vector<GameObject*> remains = objects[i]->getRemains();
             for (int j = 0; j < remains.size(); j++) {
                 objects.push_back(remains[j]);
+                // do particles
+                pSystem->spawnParticles(5, objects[i]->pos);
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
