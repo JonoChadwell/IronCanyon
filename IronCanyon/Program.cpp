@@ -125,3 +125,21 @@ GLint Program::getUniform(const string &name) const
 	}
 	return uniform->second;
 }
+
+void Program::addTexture(Texture *texture)
+{
+   const string &name = texture->getName();
+   GLint handle = GLSL::getUniformLocation(pid, name.c_str());
+   texture->setHandle(handle);
+   textures[name] = texture;
+}
+
+Texture *Program::getTexture(const string &name) const
+{
+   map<string,Texture*>::const_iterator texture = textures.find(name.c_str());
+   if(texture == textures.end()) {
+      cout << name << " is not a texture" << endl;
+      return 0;
+   }
+   return texture->second;
+}
