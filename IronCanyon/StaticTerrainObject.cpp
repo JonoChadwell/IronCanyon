@@ -17,7 +17,7 @@
 using namespace std;
 using namespace glm;
 
-#define NUM_TYPES 3
+#define NUM_TYPES 7
 
 struct TypeDetails {
     string name;
@@ -29,7 +29,11 @@ struct TypeDetails {
 TypeDetails details[NUM_TYPES] = {
     {"drive/rockstack01.obj", vec3(10.0, 10.0, 10.0), 0, 5},
     {"drive/rockstack01.obj", vec3(8.0, 12.0, 8.0), -12, 2.5},
-    {"drive/rockstack02.obj", vec3(4.0, 5.0, 4.0), -1.5, 3.5}
+    {"drive/rockstack02.obj", vec3(4.0, 5.0, 4.0), -1.5, 3.5},
+	{"drive/ore01.obj", vec3(5.0, 5.0, 5.0), -1.5, 3.5},
+	{"drive/ore02.obj", vec3(5.0, 5.0, 5.0), -1.5, 3.5},
+	{"drive/ore01.obj", vec3(30.0, 30.0, 30.0), -5.5, 25},
+	{"drive/ore02.obj", vec3(30.0, 30.0, 30.0), -5.5, 25}
 };
 
 vector<Shape*> StaticTerrainObject::models;

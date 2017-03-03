@@ -272,8 +272,8 @@ static void init()
 
     // add some rocks to the world
     srand(0);
-    float ROCK_AREA = 380;
-    for (int i = 0; i < 60; i++) {
+    float ROCK_AREA = 360;
+    for (int i = 0; i < 30; i++) {
 		float x = randf() * ROCK_AREA - ROCK_AREA / 2;
 		float z = randf() * ROCK_AREA - ROCK_AREA / 2;
 		while (sqrt(x * x + z * z) < 60) {
@@ -281,11 +281,39 @@ static void init()
 			z = randf() * ROCK_AREA - ROCK_AREA / 2;
 		}
         
-        StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 3, grid);
+        StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 5, grid);
         grid->addToGrid(r);
         objects.push_back(r);
     }
-
+	for (int i = 0; i < 25; i++) {
+		float x = randf() * ROCK_AREA - ROCK_AREA / 2;
+		float z = ROCK_AREA / 2 + (randf() - 0.5f) * 4;
+		StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 2 + 5, grid);
+		grid->addToGrid(r);
+		objects.push_back(r);
+	}
+	for (int i = 0; i < 25; i++) {
+		float x = randf() * ROCK_AREA - ROCK_AREA / 2;
+		float z = -ROCK_AREA / 2 + (randf() - 0.5f) * 4;
+		StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 2 + 5, grid);
+		grid->addToGrid(r);
+		objects.push_back(r);
+		
+	}
+	for (int i = 0; i < 25; i++) {
+		float x = ROCK_AREA / 2 + (randf() - 0.5f) * 4;
+		float z = randf() * ROCK_AREA - ROCK_AREA / 2;
+		StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 2 + 5, grid);
+		grid->addToGrid(r);
+		objects.push_back(r);
+	}
+	for (int i = 0; i < 25; i++) {
+		float x = -ROCK_AREA / 2 + (randf() - 0.5f) * 4;
+		float z = randf() * ROCK_AREA - ROCK_AREA / 2;
+		StaticTerrainObject* r = new StaticTerrainObject(vec3(x, 0, z), i, rand() % 2 + 5, grid);
+		grid->addToGrid(r);
+		objects.push_back(r);
+	}
 }
 
 static void createScrapPile(GameObject* enemy) {
