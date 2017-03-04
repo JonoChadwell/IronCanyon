@@ -24,6 +24,7 @@ ParticleSystem::ParticleSystem(GLuint amount)
     shader->addUniform("P");
     shader->addUniform("M");
     shader->addUniform("V");
+    shader->addUniform("Camera");
     shader->addAttribute("vertPos");
     shader->addAttribute("Pcolor");
     shader->addTexture(&texture);
@@ -127,6 +128,7 @@ void ParticleSystem::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     glUniformMatrix4fv(shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
     glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	glUniformMatrix4fv(shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+	glUniform3fv(shader->getUniform("Camera"), 1, value_ptr(eye));
   
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, pointsbuffer);
