@@ -43,6 +43,7 @@ public:
     void step(float dt);
     // create particles
     void spawnParticles(int np, glm::vec3 at);
+    void spawnStreamParticles(int np, glm::vec3 at, glm::vec3 v);
 private:
     Program *shader;
     Texture texture;

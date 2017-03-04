@@ -8,6 +8,7 @@
 #define GRAVITY 60
 #define PLAYER_GRAVITY 8.1
 #define SUN_DIR -0.75f, -0.75f, -0.75f
+#define STREAM_TIMER 0.01
 
 #define QUADTREE_CAPACITY 25
 #define QUADTREE_DEPTH 5

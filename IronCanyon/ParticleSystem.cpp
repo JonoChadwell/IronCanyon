@@ -63,6 +63,7 @@ void ParticleSystem::initGeom() {
     assert(glGetError() == GL_NO_ERROR);
 }
 
+// spawn explosions
 void ParticleSystem::spawnParticles(int np, glm::vec3 at) {
     // for each particle, give it position
     for (int i = 0; i < np; ++i) {
@@ -71,6 +72,17 @@ void ParticleSystem::spawnParticles(int np, glm::vec3 at) {
         particles[fu]->pos = at;
         particles[fu]->vel = glm::vec3(RAND_VEL, RAND_VEL, RAND_VEL);
         particles[fu]->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+}
+// spawn streams
+void ParticleSystem::spawnStreamParticles(int np, glm::vec3 at, glm::vec3 v) {
+    // for each particle, give it position
+    for (int i = 0; i < np; ++i) {
+        int fu = firstUnusedParticle();
+        particles[fu]->life = 1.0f;
+        particles[fu]->pos = at;
+        particles[fu]->vel = v;
+        particles[fu]->color = glm::vec4(0.0f, 0.8f, 1.0f, 1.0f);
     }
 }
 

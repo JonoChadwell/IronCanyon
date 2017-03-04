@@ -75,6 +75,7 @@ int waveNumber = 1;
 int turretCost = 1000;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
+float streamCooldown = 0.0;
 
 #define RIFLE_COOLDOWN 0.3
 
@@ -612,7 +613,19 @@ static void updateWorld()
             timePassed -= maxPhysicsStepLength;
             stepGameObjects(maxPhysicsStepLength);
             stepPlayer(maxPhysicsStepLength);
-            pSystem->step(timePassed);
+            // particle steps
+            pSystem->step(maxPhysicsStepLength);
+            if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
+                streamCooldown += maxPhysicsStepLength;
+            }
+            else  {
+                if (player->boosting > .6) {
+                    pSystem->spawnStreamParticles(1,
+                      glm::vec3(player->xpos, player->ypos, player->zpos),
+                      glm::vec3(-player->velx, player->vely, -player->velz));
+                }
+                streamCooldown = 0.0;
+            }
         }
         stepGameObjects(timePassed);
         stepPlayer(timePassed);
