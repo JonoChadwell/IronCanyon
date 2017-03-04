@@ -502,6 +502,34 @@ static void drawPlayer() {
 }
 
 static void stepPlayer(float dt) {
+    glm::vec4 playerStreamColor = glm::vec4(0.0f, 0.8f, 1.0f, 1.0f);
+    // deal with jump particles
+    if (player->jumping == 1) {
+        for (int i = 0; i < 20; i++) {
+            pSystem->spawnStreamParticle(
+              glm::vec3(player->xpos, player->ypos, player->zpos),
+              glm::vec3(randf()*40 - 20, -10.0, randf()*40 - 20),
+              playerStreamColor);
+        }
+    }
+    // deal with boost particles
+    if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
+        streamCooldown += maxPhysicsStepLength;
+    }
+    else  {
+        if (player->boosting > .6) {
+            float px = player->xpos + cos(player->ctheta);
+            float py = player->ypos;
+            float pz = player->zpos - sin(player->ctheta);
+            pSystem->spawnStreamParticle(
+              glm::vec3(px, py, pz),
+              glm::vec3(-player->velx, player->vely, -player->velz),
+              playerStreamColor);
+        }
+        streamCooldown = 0.0;
+    }
+
+    // now do physics
 	player->theta = theta;
 	player->phi = phi;
 	float angle;
@@ -544,23 +572,6 @@ static void stepPlayer(float dt) {
     }
 
     player->step(dt);
-
-    // deal with boost particles
-    if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
-        streamCooldown += maxPhysicsStepLength;
-    }
-    else  {
-        if (player->boosting > .6) {
-            float px = player->xpos + cos(player->ctheta);
-            float py = player->ypos;
-            float pz = player->zpos - sin(player->ctheta);
-            pSystem->spawnStreamParticle(
-              glm::vec3(px, py, pz),
-              glm::vec3(-player->velx, player->vely, -player->velz),
-              glm::vec4(0.0f, 0.8f, 1.0f, 1.0f));
-        }
-        streamCooldown = 0.0;
-    }
 }
 
 static void drawTerrain(){
