@@ -1,9 +1,8 @@
 #include "Terrain.h"
+#include "Shape.h"
 #include "Program.h"
-#include "math.h"
 #include "Constants.h"
-
-#define MATH_PI 3.1416
+#include "math.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +10,7 @@
 
 Shape* Terrain::model;
 Program* Terrain::program;
+Texture* Terrain::texture;
 
 Terrain::Terrain()
 {}
@@ -29,7 +29,7 @@ void Terrain::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
    glUniform3f(Terrain::program->getUniform("sunDir"), SUN_DIR);
    glUniform3f(Terrain::program->getUniform("eye"), eye.x, eye.y, eye.z);
    glUniform3f(Terrain::program->getUniform("MatAmb"), .6, 1.0, .7);
-   glUniform3f(Terrain::program->getUniform("MatDif"), .0, .0, .0);
+   glUniform3f(Terrain::program->getUniform("MatDif"), 1.0, .6, .7);
    glUniform3f(Terrain::program->getUniform("MatSpec"), .31, .16, .08);
    glUniform1f(Terrain::program->getUniform("shine"), 2.5);
    
@@ -53,6 +53,11 @@ void Terrain::setup() {
 	Terrain::model = new Shape();
 	Terrain::model->loadMesh(RESOURCE_DIR + std::string("terrain.obj"));
 	Terrain::model->init();
+
+	Terrain::texture = new Texture();
+	Terrain::texture->setFilename(RESOURCE_DIR + "drive/terrain.bmp");
+	Terrain::texture->setName("TerrainTexture");
+	Terrain::texture->init();
 	
 	Terrain::program = new Program();
 	Terrain::program->setVerbose(true);
@@ -69,4 +74,5 @@ void Terrain::setup() {
 	Terrain::program->addUniform("shine");
 	Terrain::program->addAttribute("vertPos");
 	Terrain::program->addAttribute("vertNor");
+	Terrain::program->addTexture(Terrain::texture);
 }

@@ -1,11 +1,13 @@
 #pragma once
 #include "MatrixStack.h"
-#include "Shape.h"
-#include "Grid.h"
-#include "Texture.h"
 #include <string>
 #include <vector>
 #include <memory>
+
+class Shape;
+class Program;
+class Texture;
+class Grid;
 
 class Player {
 

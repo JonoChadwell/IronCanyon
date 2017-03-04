@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+class Texture;
+
 class Terrain {
 
 public:
@@ -19,4 +21,5 @@ public:
 private:
     static Shape* model;
     static Program* program;
+	static Texture* texture;
 };
