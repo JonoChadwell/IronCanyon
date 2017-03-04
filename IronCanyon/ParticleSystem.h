@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Program.h"
 #include "GameObject.h"
+#include "Grid.h"
 
 #define PARTICLE_FLOOR (-30.0f)
 #define PARTICLE_PURGATORY (-100.0f)
@@ -33,7 +34,7 @@ class ParticleSystem
 public:
     std::vector<Particle*> particles;
     // Constructor
-    ParticleSystem(GLuint amount);
+    ParticleSystem(GLuint amount, Grid *grid);
     virtual ~ParticleSystem();
     // Update all particles
     void update(GLfloat dt, GameObject *obj, GLuint newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
@@ -47,6 +48,7 @@ public:
 private:
     Program *shader;
     Texture texture;
+    Grid *grid;
     GLint h_texture0;
     GLuint pointsbuffer;
     GLuint colorbuffer;

@@ -4,14 +4,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Constants.h"
+#include "Grid.h"
 
 #define PART_VEL 50
 #define RAND_VEL ( (float)rand() / RAND_MAX * PART_VEL - PART_VEL/2 )
 #define DECEL_FACTOR 2.5f
 
 // constructor
-ParticleSystem::ParticleSystem(GLuint amount)
-    : amount(amount)
+ParticleSystem::ParticleSystem(GLuint amount, Grid *grid)
+    : amount(amount),
+    grid(grid)
 {
     texture.setFilename(RESOURCE_DIR + "alpha.bmp");
     texture.setUnit(0);
@@ -92,9 +94,11 @@ void ParticleSystem::step(float dt) {
     for(int i = 0; i < amount; i++) {
         // only do stuff if particle is alive
         if (glm::length(particles[i]->vel) > 1.0f) {
+            float gridHeight = grid->height(particles[i]->pos.x, particles[i]->pos.z);
             particles[i]->pos += particles[i]->vel * dt;
             particles[i]->vel *= 1 - DECEL_FACTOR*dt;
             particles[i]->color.a *= 1 - DECEL_FACTOR*dt;
+            particles[i]->pos.y = particles[i]->pos.y < gridHeight ? gridHeight : particles[i]->pos.y;
         }
         // otherwise
         else if (particles[i]->pos.y > PARTICLE_PURGATORY) {

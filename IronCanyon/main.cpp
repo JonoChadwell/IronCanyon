@@ -266,7 +266,7 @@ static void init()
     LaserTurret::setup();
 	Projectile::setup();
     // Particles
-    pSystem = new ParticleSystem(300);
+    pSystem = new ParticleSystem(300, grid);
 
 	forwards = 0;
 	sideways = 0;
@@ -615,13 +615,17 @@ static void updateWorld()
             stepPlayer(maxPhysicsStepLength);
             // particle steps
             pSystem->step(maxPhysicsStepLength);
+            // deal with boost particles
             if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
                 streamCooldown += maxPhysicsStepLength;
             }
             else  {
                 if (player->boosting > .6) {
+                    float px = player->xpos + cos(player->ctheta);
+                    float py = player->ypos;
+                    float pz = player->zpos - sin(player->ctheta);
                     pSystem->spawnStreamParticles(1,
-                      glm::vec3(player->xpos, player->ypos, player->zpos),
+                      glm::vec3(px, py, pz),
                       glm::vec3(-player->velx, player->vely, -player->velz));
                 }
                 streamCooldown = 0.0;
