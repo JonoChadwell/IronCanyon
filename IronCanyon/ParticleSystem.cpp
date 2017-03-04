@@ -153,6 +153,7 @@ void ParticleSystem::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	MatrixStack *M = new MatrixStack();
     // Draw 
 
+    glDepthMask(GL_FALSE);
     shader->bind();
     updateGeom();
     glUniformMatrix4fv(shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
@@ -178,6 +179,7 @@ void ParticleSystem::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     shader->unbind();
+    glDepthMask(GL_TRUE);
     delete M;
 }
 
