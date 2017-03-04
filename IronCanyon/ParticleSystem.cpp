@@ -8,6 +8,7 @@
 
 #define PART_VEL 50
 #define RAND_VEL ( (float)rand() / RAND_MAX * PART_VEL - PART_VEL/2 )
+#define RANDF ((float)rand() / RAND_MAX)
 #define DECEL_FACTOR 2.5f
 
 // constructor
@@ -65,6 +66,21 @@ void ParticleSystem::initGeom() {
     assert(glGetError() == GL_NO_ERROR);
 }
 
+// spawn directional blasts
+void ParticleSystem::spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
+  float baseVel, float phi, float theta, float spread) {
+    // for each particle, give it position and random velocity
+    for (int i = 0; i < np; ++i) {
+        int fu = firstUnusedParticle();
+        particles[fu]->life = 1.0f;
+        particles[fu]->pos = at;
+        float vx = baseVel * cos(theta) + RANDF*spread - spread/2;
+        float vy = baseVel * sin(phi) + RANDF*spread - spread/2;
+        float vz = baseVel * sin(theta) + RANDF*spread - spread/2;
+        particles[fu]->vel = glm::vec3(vx, vy, vz);
+        particles[fu]->color = color;
+    }
+}
 // spawn explosions
 void ParticleSystem::spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color) {
     // for each particle, give it position and random velocity

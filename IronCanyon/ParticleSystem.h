@@ -43,6 +43,8 @@ public:
     // update physics
     void step(float dt);
     // create particles
+    void spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
+      float baseVel, float phi, float theta, float spread);
     void spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color);
     void spawnStreamParticle(glm::vec3 at, glm::vec3 v, glm::vec4 color);
 private:
