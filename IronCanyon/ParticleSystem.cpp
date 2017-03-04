@@ -70,7 +70,7 @@ void ParticleSystem::spawnParticles(int np, glm::vec3 at) {
         particles[fu]->life = 1.0f;
         particles[fu]->pos = at;
         particles[fu]->vel = glm::vec3(RAND_VEL, RAND_VEL, RAND_VEL);
-        particles[fu]->color = glm::vec4(1.0f, 0.0f, 0.0f, 0.5f);
+        particles[fu]->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
 
@@ -82,6 +82,7 @@ void ParticleSystem::step(float dt) {
         if (glm::length(particles[i]->vel) > 1.0f) {
             particles[i]->pos += particles[i]->vel * dt;
             particles[i]->vel *= 1 - DECEL_FACTOR*dt;
+            particles[i]->color.a *= 1 - DECEL_FACTOR*dt;
         }
         // otherwise
         else if (particles[i]->pos.y > PARTICLE_PURGATORY) {

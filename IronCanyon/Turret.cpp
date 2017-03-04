@@ -35,14 +35,12 @@ void Turret::step(float dt) {
             /* lock */ 
             if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
                 target = (Enemy*)(qObjects[i]);
-                printf("TARGET LOCK\n");
                 break;
             }
         }
     }
     // 
     else if (!target->active) {
-        printf("TARGET KILL\n");
         target = NULL;
     }
 }

@@ -366,8 +366,6 @@ static void drawGameObjects() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
-    // draw particles
-    pSystem->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
     delete P;
@@ -566,6 +564,24 @@ static void drawTerrain(){
    delete P;
 }
 
+static void drawParticles() {
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    float aspect = width/(float)height;
+    MatrixStack *P = new MatrixStack();
+    // Apply perspective projection.
+    P->pushMatrix();
+    P->perspective(45.0f, aspect, 0.01f, 500.0f);
+
+    glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
+      camera->lookAtPt(), glm::vec3(0, 1, 0));
+
+    pSystem->draw(P, lookAt, camera->eyeVector());
+
+     P->popMatrix();
+     delete P;
+}
+
 static void render()
 {
 	// Get current frame buffer size.
@@ -583,6 +599,8 @@ static void render()
 	drawGameObjects();
 	drawPlayer();
 	drawTerrain();
+    // draw particles
+    drawParticles();
 }
 
 static void updateWorld()
@@ -608,8 +626,10 @@ static void updateObjectVector() {
             vector<GameObject*> remains = objects[i]->getRemains();
             for (int j = 0; j < remains.size(); j++) {
                 objects.push_back(remains[j]);
-                // do particles
-                pSystem->spawnParticles(5, objects[i]->pos);
+            }
+            // do particles if object drops stuff
+            if (remains.size() > 0) {
+                pSystem->spawnParticles(25, objects[i]->pos);
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
