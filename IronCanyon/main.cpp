@@ -544,6 +544,23 @@ static void stepPlayer(float dt) {
     }
 
     player->step(dt);
+
+    // deal with boost particles
+    if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
+        streamCooldown += maxPhysicsStepLength;
+    }
+    else  {
+        if (player->boosting > .6) {
+            float px = player->xpos + cos(player->ctheta);
+            float py = player->ypos;
+            float pz = player->zpos - sin(player->ctheta);
+            pSystem->spawnStreamParticle(
+              glm::vec3(px, py, pz),
+              glm::vec3(-player->velx, player->vely, -player->velz),
+              glm::vec4(0.0f, 0.8f, 1.0f, 1.0f));
+        }
+        streamCooldown = 0.0;
+    }
 }
 
 static void drawTerrain(){
@@ -615,21 +632,6 @@ static void updateWorld()
             stepPlayer(maxPhysicsStepLength);
             // particle steps
             pSystem->step(maxPhysicsStepLength);
-            // deal with boost particles
-            if (player->boosting > 0 && streamCooldown < STREAM_TIMER) {
-                streamCooldown += maxPhysicsStepLength;
-            }
-            else  {
-                if (player->boosting > .6) {
-                    float px = player->xpos + cos(player->ctheta);
-                    float py = player->ypos;
-                    float pz = player->zpos - sin(player->ctheta);
-                    pSystem->spawnStreamParticles(1,
-                      glm::vec3(px, py, pz),
-                      glm::vec3(-player->velx, player->vely, -player->velz));
-                }
-                streamCooldown = 0.0;
-            }
         }
         stepGameObjects(timePassed);
         stepPlayer(timePassed);
@@ -646,7 +648,7 @@ static void updateObjectVector() {
             }
             // do particles if object drops stuff
             if (remains.size() > 0) {
-                pSystem->spawnParticles(25, objects[i]->pos);
+                pSystem->spawnBurstParticles(25, objects[i]->pos, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
