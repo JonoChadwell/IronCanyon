@@ -165,9 +165,13 @@ void Enemy::step(float dt) {
 		return;
 	}
 
-    if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->pos.x, target->pos.z))) {
+    if (currentPath.empty() || getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->pos.x, target->pos.z))) {
         pathAge = dt;
         currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->pos.x, target->pos.z));
+    }
+
+    if (currentPath.empty()) {
+        return;
     }
 
 	float oldx = pos.x;
