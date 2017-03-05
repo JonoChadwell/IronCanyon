@@ -70,7 +70,6 @@ double maxPhysicsStepLength = 0.005;
 bool spawnWave = false;
 bool gameStarted = false;
 bool gamePaused = false;
-bool dead = false;
 int waveNumber = 1;
 int turretCost = 1000;
 int turretsBuilt = 0;
@@ -124,9 +123,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             objects.push_back(t);
             turretsBuilt++;
             cout << "turret " << turretsBuilt << " built\n";
-            dead = turretsBuilt >= 10 ? true : false;
-            if (dead)
-                cout << "you win this 50% demo!\n";
         }
         else {
             cout << "Not enough scrap! You only have " << player->scrap << endl;
@@ -439,13 +435,11 @@ static void stepGameObjects(float dt) {
 	vector<GameObject *> qObjects;
 	quadtree->getObjects(player->xpos, player->zpos, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
-		if (dynamic_cast<Walker*>(qObjects[i]) != NULL && distance(vec2(player->xpos, player->zpos), vec2(qObjects[i]->pos.x, qObjects[i]->pos.z)) < 2) {
-			// Game over
-			dead = true;
-		}
-		else if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && distance(vec3(player->xpos, player->zpos, player->ypos), vec3(qObjects[i]->pos.x, qObjects[i]->pos.z, qObjects[i]->pos.y)) < 2) {
-			// Game over
-			dead = true;
+		Enemy* enemy = dynamic_cast<Enemy*>(qObjects[i]);
+		if (enemy != NULL && distance(vec3(player->xpos, player->ypos, player->zpos), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
+			enemy->hitPlayer = true;
+			enemy->toDelete = true;
+			player->health -= 1;
 		}
 	}
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
@@ -636,7 +630,7 @@ static void render()
 
 static void updateWorld()
 {
-	if (!dead && !gamePaused) {
+	if (player->health > 0 && !gamePaused) {
         Turret::quadtree = quadtree;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
@@ -659,9 +653,13 @@ static void updateObjectVector() {
             for (int j = 0; j < remains.size(); j++) {
                 objects.push_back(remains[j]);
             }
-            // do particles if object drops stuff
-            if (remains.size() > 0) {
+			// Spawn particles for enemy death
+			Enemy* enemy = dynamic_cast<Enemy*>(objects[i]);
+            if (enemy != NULL) {
                 pSystem->spawnBurstParticles(25, objects[i]->pos, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				if (enemy->hitPlayer) {
+					pSystem->spawnBurstParticles(50, objects[i]->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
+				}
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);

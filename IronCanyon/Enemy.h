@@ -14,6 +14,8 @@ class Enemy : public GameObject {
 
 public:
     bool active;
+	// more particle effects if an enemy runs into a player
+	bool hitPlayer;
     float vel;
     Enemy(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid);
     virtual ~Enemy();

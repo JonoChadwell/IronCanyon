@@ -10,7 +10,7 @@ in vec3 fragWorld;
 in vec3 viewDir;
 out vec4 color;
 
-void main(){
+void main() {
    vec3 lightColor = vec3(1, 1, 1);
    vec3 normLight = normalize(-sunDir);
    vec3 normal = normalize(fragNor);

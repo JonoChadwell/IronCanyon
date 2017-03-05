@@ -28,6 +28,7 @@ public:
 	float boosting; // positive when jumping
 	bool isPaused; // true when paused
     int scrap;
+	int health;
 	Player();
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();

@@ -45,7 +45,8 @@ Player::Player() :
 	velz(0),
 	bound(0),
 	ctheta(MATH_PI),
-    scrap(0)
+    scrap(0),
+	health(10)
 {
     firing = 0;
 }
@@ -69,7 +70,8 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     cphi(0),
     croll(0),
     scrap(0),
-    grid(grid)
+    grid(grid),
+	health(10)
 {
 	fireMode = 1;
     firing = 0;

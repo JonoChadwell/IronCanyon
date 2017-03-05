@@ -73,7 +73,8 @@ Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
 	grid(grid),
     animtime(0.0),
     pathAge(0.0),
-	spawn(25.0)
+	spawn(25.0),
+	hitPlayer(false)
 {
     currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
 }
