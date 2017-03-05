@@ -32,8 +32,8 @@ TypeDetails details[NUM_TYPES] = {
     {"drive/rockstack02.obj", vec3(4.0, 5.0, 4.0), -1.5, 3.5},
 	{"drive/ore01.obj", vec3(5.0, 5.0, 5.0), -1.5, 3.5},
 	{"drive/ore02.obj", vec3(5.0, 5.0, 5.0), -1.5, 3.5},
-	{"drive/ore01.obj", vec3(30.0, 30.0, 30.0), -5.5, 25},
-	{"drive/ore02.obj", vec3(30.0, 30.0, 30.0), -5.5, 25}
+	{"drive/ore01.obj", vec3(30.0, 30.0, 30.0), -5.5, 30},
+	{"drive/ore02.obj", vec3(30.0, 30.0, 30.0), -5.5, 30}
 };
 
 vector<Shape*> StaticTerrainObject::models;
