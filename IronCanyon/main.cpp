@@ -94,6 +94,13 @@ static void error_callback(int error, const char *description)
 	cerr << description << endl;
 }
 
+
+static void hurtPlayer(int amt)
+{
+    player->health -= 1;
+    pSystem->spawnBurstParticles(50, player->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
+}
+
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
@@ -417,7 +424,7 @@ static void projectileDetection() {
             float distance = dist(player->pos, projectiles[i]->pos);
             if (distance < projectiles[i]->bound + player->bound) {
                 projectiles[i]->toDelete = true;
-                player->health -= 1;
+                hurtPlayer(1);
             }
         }
     }
@@ -450,7 +457,7 @@ static void stepGameObjects(float dt) {
 		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
 			enemy->hitPlayer = true;
 			enemy->toDelete = true;
-			player->health -= 2;
+            hurtPlayer(2);
 		}
 	}
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
@@ -668,9 +675,6 @@ static void updateObjectVector() {
 			Enemy* enemy = dynamic_cast<Enemy*>(objects[i]);
             if (enemy != NULL) {
                 pSystem->spawnBurstParticles(25, objects[i]->pos, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				if (enemy->hitPlayer) {
-					pSystem->spawnBurstParticles(50, objects[i]->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
-				}
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
@@ -692,7 +696,6 @@ static void updateProjectileVector() {
     }
     newProjectiles.clear();
 }
-    
 
 int main(int argc, char **argv)
 {
