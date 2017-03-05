@@ -10,14 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+using namespace glm;
+
 Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid) :
-	xpos(xp),
-	ypos(yp),
-	zpos(zp),
-	xlook(xl),
-	ylook(yl),
-	zlook(zl),
-   grid(grid)
+    pos(vec3(xp, yp, zp)),
+    look(vec3(xl, yl, zl)),
+    grid(grid)
 {}
 
 // destructor
@@ -27,30 +25,28 @@ Camera::~Camera()
 
 // update function to change position
 void Camera::trackToPlayer(Player *player) {
-    xlook = player->xpos;
-    ylook = player->ypos;
-    zlook = player->zpos;
-    xpos = xlook + 20 * cos(-player->theta) * cos(-player->phi);
-    ypos = ylook + 20 * sin(-player->phi);
-    zpos = zlook + 20 * sin(-player->theta) * cos(-player->phi);
+    look = player->pos;
+    pos.x = look.x + 20 * cos(-player->theta) * cos(-player->phi);
+    pos.y = look.y + 20 * sin(-player->phi);
+    pos.z = look.z + 20 * sin(-player->theta) * cos(-player->phi);
     float i = 20;
-    while (!grid->inBounds(xpos, zpos) && i > 1) {
-      xpos = xlook + i * cos(-player->theta) * cos(-player->phi);
-      zpos = zlook + i * sin(-player->theta) * cos(-player->phi);
+    while (!grid->inBounds(pos.x, pos.z) && i > 1) {
+      pos.x = look.x + i * cos(-player->theta) * cos(-player->phi);
+      pos.z = look.z + i * sin(-player->theta) * cos(-player->phi);
       i -= .1;
     }
-    if (ypos < grid->height(xpos, zpos) + .5 ) {
-      ypos = grid->height(xpos, zpos) + .5;
+    if (pos.y < grid->height(pos.x, pos.z) + .5 ) {
+      pos.y = grid->height(pos.x, pos.z) + .5;
     }
 }
 
 // vector calculations
 glm::vec3 Camera::eyeVector() {
-    return glm::vec3(xpos, ypos, zpos);
+    return pos;
 }
 
 glm::vec3 Camera::wVector() {
-	return glm::normalize(glm::vec3(xlook, ylook, zlook));
+	return glm::normalize(look);
 }
 
 glm::vec3 Camera::uVector() {
@@ -62,5 +58,5 @@ glm::vec3 Camera::vVector() {
 }
 
 glm::vec3 Camera::lookAtPt() {
-	return glm::vec3(xlook, ylook, zlook);
+	return look;
 }

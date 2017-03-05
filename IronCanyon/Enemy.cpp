@@ -76,7 +76,7 @@ Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
 	spawn(25.0),
 	hitPlayer(false)
 {
-    currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
+    currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->pos.x, target->pos.z));
 }
 
 // destructor
@@ -165,9 +165,9 @@ void Enemy::step(float dt) {
 		return;
 	}
 
-    if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->xpos, target->zpos))) {
+    if (getLength(currentPath) - vel * pathAge < 2 * distance(currentPath.back(), vec2(target->pos.x, target->pos.z))) {
         pathAge = dt;
-        currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->xpos, target->zpos));
+        currentPath = grid->getPath(vec2(pos.x, pos.z), vec2(target->pos.x, target->pos.z));
     }
 
 	float oldx = pos.x;

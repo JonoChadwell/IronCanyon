@@ -24,6 +24,8 @@
 #define PAD_SCALE vec3(PAD_SCALE_FACTOR, PAD_SCALE_FACTOR, PAD_SCALE_FACTOR)
 #define PAD_SEARCH 0.2
 
+using namespace glm;
+
 Shape* Player::turret;
 Shape* Player::chassis;
 Shape* Player::laser;
@@ -31,40 +33,14 @@ Shape* Player::hover;
 Program* Player::shader;
 Texture* Player::texture;
 
-
-// default constructor
-Player::Player() :
-	xpos(0),
-	ypos(0),
-	zpos(0),
-	phi(0),
-	theta(0),
-	roll(0),
-	velx(0),
-	vely(0),
-	velz(0),
-	bound(0),
-	ctheta(MATH_PI),
-    scrap(0),
-	health(10)
-{
-    firing = 0;
-}
-
 // regular constructor
 Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float b, Grid* grid) :
-	xpos(xp),
-	ypos(yp),
-	zpos(zp),
+	pos(vec3(xp, yp, zp)),
 	phi(ph),
 	theta(th),
 	roll(rl),
-    xacc(0),
-    yacc(0),
-    zacc(0),
-	velx(0),
-	vely(0),
-	velz(0),
+    vel(vec3(0,0,0)),
+	acc(vec3(0,0,0)),
 	bound(b),
 	ctheta(MATH_PI),
     cphi(0),
@@ -105,11 +81,11 @@ void Player::step(float dt) {
     }
 	if (jumping == 1) {
 		//yacc = 20;
-		vely = 10;
+		vel.y = 10;
 		// state of jumping
 		jumping = 2;
 	}
-    yacc = -PLAYER_GRAVITY;
+    acc.y = -PLAYER_GRAVITY;
 
     if (boosting > 0) {
         boosting -= dt * .2;
@@ -119,43 +95,43 @@ void Player::step(float dt) {
     }
 
     // apply acceleration
-	velx = velx * (1 - dt * DRAG) + xacc * dt;
-	vely = vely * (1 - dt * VERT_DRAG) + yacc * dt;
-	velz = velz * (1 - dt * DRAG) + zacc * dt;
+	vel.x = vel.x * (1 - dt * DRAG) + acc.x * dt;
+	vel.y = vel.y * (1 - dt * VERT_DRAG) + acc.y * dt;
+	vel.z = vel.z * (1 - dt * DRAG) + acc.z * dt;
 
-    float sideAccel = sin(theta) * xacc + cos(theta) * zacc;
-    float frontAccel = -cos(theta) * xacc + sin(theta) * zacc;
+    float sideAccel = sin(theta) * acc.x + cos(theta) * acc.z;
+    float frontAccel = -cos(theta) * acc.x + sin(theta) * acc.z;
 
     cphi = cphi * (1 - 5 * dt) + (cbrt(frontAccel) / 30.0) * 5 * dt;
     croll = croll * (1 - 5 * dt) - (cbrt(sideAccel) / 30.0) * 5 * dt;
 
     // apply velocity to position
-    float oldx = xpos;
-    float oldz = zpos;
-	this->xpos += dt * velx;
-	this->ypos += dt * vely;
-	this->zpos += dt * velz;
-    if (!grid->inBounds(xpos, zpos)) {
-        xpos = oldx;
-        zpos = oldz;
-		velx = 0;
-		velz = 0;
+    float oldx = pos.x;
+    float oldz = pos.z;
+	this->pos.x += dt * vel.x;
+	this->pos.y += dt * vel.y;
+	this->pos.z += dt * vel.z;
+    if (!grid->inBounds(pos.x, pos.z)) {
+        pos.x = oldx;
+        pos.z = oldz;
+		vel.x = 0;
+		vel.z = 0;
     }
-    if (grid->inBounds(xpos, zpos) && ypos < grid->height(xpos, zpos) + 1.3) {
-        float offset = (grid->height(xpos, zpos) + 1.3 - ypos);
-        vely += pow(2, -vely) * offset * dt * 20;
-        float heightChange = grid->height(xpos, zpos) - grid->height(oldx, oldz);
+    if (grid->inBounds(pos.x, pos.z) && pos.y < grid->height(pos.x, pos.z) + 1.3) {
+        float offset = (grid->height(pos.x, pos.z) + 1.3 - pos.y);
+        vel.y += pow(2, -vel.y) * offset * dt * 20;
+        float heightChange = grid->height(pos.x, pos.z) - grid->height(oldx, oldz);
         if (heightChange > 0) {
-            ypos += heightChange;
-            vely += heightChange * 4;
+            pos.y += heightChange;
+            vel.y += heightChange * 4;
         }
-        if (vely < 0) {
+        if (vel.y < 0) {
 		    jumping = 0;
         }
     }
 	float cAngle = fmod(fmod(ctheta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
 	float tAngle = fmod(fmod(theta, MATH_PI * 2) + MATH_PI * 2, MATH_PI * 2);
-	if (!velx && !velz) {
+	if (!vel.x && !vel.z) {
 		return;
 	}
 	float cRot;
@@ -177,7 +153,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	MatrixStack *M = new MatrixStack();
 	// drawing
 
-	//printf("draw xpos: %f", xpos);
+	//printf("draw pos.x: %f", pos.x);
 	//render shit
 	Player::shader->bind();
 	glUniform3f(Player::shader->getUniform("sunDir"), SUN_DIR);
@@ -193,7 +169,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->pushMatrix();
 	M->loadIdentity();
     M->translate(vec3(.2*cos(ctheta), 0, -.2*sin(ctheta)));
-	M->translate(vec3(this->xpos, this->ypos, this->zpos));
+	M->translate(vec3(this->pos.x, this->pos.y, this->pos.z));
 	M->rotate(theta - MATH_PI/2, vec3(0, 1, 0));
 	M->rotate(-phi - .2, vec3(1, 0, 0));
     M->translate(vec3(0, 0, 0.5));
@@ -208,7 +184,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	//chassis
 	M->pushMatrix();
     	M->loadIdentity();
-    	M->translate(vec3(this->xpos, this->ypos - 0.25, this->zpos));
+    	M->translate(vec3(this->pos.x, this->pos.y - 0.25, this->pos.z));
     	M->rotate(ctheta - MATH_PI/2, vec3(0, 1, 0));
         M->rotate(cphi, vec3(1, 0, 0));
         M->rotate(croll, vec3(0, 0, 1));
@@ -259,7 +235,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     if (firing >= .5 && fireMode == 1) {
 	    M->pushMatrix();
 	    M->loadIdentity();
-	    M->translate(vec3(this->xpos, this->ypos, this->zpos));
+	    M->translate(vec3(this->pos.x, this->pos.y, this->pos.z));
 	    M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	    M->rotate(phi + 1.8, vec3(1, 0, 0));
         M->scale(vec3(0.5, 50, 0.5));
@@ -276,7 +252,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     else if (firing > 0 && fireMode == 1 && !isPaused) {
 	    M->pushMatrix();
 	    M->loadIdentity();
-	    M->translate(vec3(this->xpos, this->ypos, this->zpos));
+	    M->translate(vec3(this->pos.x, this->pos.y, this->pos.z));
 	    M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	    M->rotate(phi + 1.8, vec3(1, 0, 0));
         M->scale(vec3(0.1, 50, 0.1));
@@ -291,14 +267,14 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     }
 
 	// shadow
-    if (grid->inBounds(xpos, zpos)) {
+    if (grid->inBounds(pos.x, pos.z)) {
 	    glUniform3f(Player::shader->getUniform("MatAmb"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 
 	    M->pushMatrix();
 	    M->loadIdentity();
-	    M->translate(vec3(this->xpos, grid->height(xpos, zpos) + 0.1, this->zpos));
+	    M->translate(vec3(this->pos.x, grid->height(pos.x, pos.z) + 0.1, this->pos.z));
 	    M->scale(vec3(1, 0.01, 1));
 	    M->rotate(theta + MATH_PI / 2, vec3(0, 1, 0));
 	    M->rotate(phi + .2, vec3(1, 0, 0));
@@ -311,7 +287,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 	    M->pushMatrix();
 	    M->loadIdentity();
-	    M->translate(vec3(this->xpos, grid->height(xpos, zpos) + 0.1, this->zpos));
+	    M->translate(vec3(this->pos.x, grid->height(pos.x, pos.z) + 0.1, this->pos.z));
 	    M->scale(vec3(1, 0.01, 1));
 	    M->rotate(ctheta + MATH_PI, vec3(0, 1, 0));
         M->scale(vec3(1, 0.3, 0.5));
@@ -374,8 +350,8 @@ float Player::calcPadRotX(float padx, float padz) {
     float deltaTheta = atan(padz / padx);
     deltaTheta = padx > 0 ? deltaTheta - MATH_PI : deltaTheta;
 
-    realPadx = sin(deltaTheta) * padz + xpos;
-    realPadz = cos(deltaTheta) * padx + zpos;
+    realPadx = sin(deltaTheta) * padz + pos.x;
+    realPadz = cos(deltaTheta) * padx + pos.z;
     float x1 = realPadx + sin(realTheta) * PAD_SEARCH;
     float z1 = realPadz + cos(realTheta) * PAD_SEARCH;
     float x2 = realPadx - sin(realTheta) * PAD_SEARCH;
@@ -389,8 +365,8 @@ float Player::calcPadRotZ(float padx, float padz) {
     float deltaTheta = atan(padz / padx);
     deltaTheta = padx > 0 ? deltaTheta - MATH_PI : deltaTheta;
 
-    realPadx = sin(deltaTheta) * padz + xpos;
-    realPadz = cos(deltaTheta) * padx + zpos;
+    realPadx = sin(deltaTheta) * padz + pos.x;
+    realPadz = cos(deltaTheta) * padx + pos.z;
     float x1 = realPadx - cos(realTheta) * PAD_SEARCH;
     float z1 = realPadz + sin(realTheta) * PAD_SEARCH;
     float x2 = realPadx + cos(realTheta) * PAD_SEARCH;

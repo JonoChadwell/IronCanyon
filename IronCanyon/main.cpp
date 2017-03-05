@@ -118,7 +118,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         /* jank turret building for 50% demo */
         if (player->scrap >= turretCost) {
             player->scrap -= turretCost;
-            LaserTurret* t = new LaserTurret(vec3(player->xpos, 0, player->zpos + player->bound*3), 0, 5, grid);
+            LaserTurret* t = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 5, grid);
             grid->addToGrid(t);
             objects.push_back(t);
             turretsBuilt++;
@@ -233,7 +233,7 @@ static void init()
 
     grid = new Grid();
     player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
-    camera = new Camera(0, 3, 0, player->xpos, player->ypos, player->zpos, grid);
+    camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid);
     terrain = new Terrain();
 
     theta = MATH_PI;
@@ -324,7 +324,7 @@ static void createScrapPile(GameObject* enemy) {
 
 static void laserFire()
 {
-   vec3 playerPosition = vec3(player->xpos, player->ypos, player->zpos);
+   vec3 playerPosition = vec3(player->pos.x, player->pos.y, player->pos.z);
    vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
    for (unsigned int i = 0; i < objects.size(); i++) {
       float radius = objects[i]->bound;
@@ -338,7 +338,7 @@ static void laserFire()
 }
 
 static void missileFire() {
-	vec3 pos = vec3(player->xpos, player->ypos, player->zpos);
+	vec3 pos = vec3(player->pos.x, player->pos.y, player->pos.z);
 	Projectile* proj = new Projectile(pos, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, grid);
 	projectiles.push_back(proj);
     pSystem->spawnFocusParticles(3, proj->pos, glm::vec4(0.2f, 1.0f, 0.2f, 1.0f),
@@ -372,9 +372,9 @@ static void drawGameObjects() {
 
 static void scrapDetection() {
 	vector<GameObject *> qObjects;
-	quadtree->getObjects(player->xpos, player->zpos, &qObjects);
+	quadtree->getObjects(player->pos.x, player->pos.z, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
-		float objDist = dist(glm::vec3(player->xpos, player->ypos, player->zpos), qObjects[i]->pos);
+		float objDist = dist(glm::vec3(player->pos.x, player->pos.y, player->pos.z), qObjects[i]->pos);
         // check collision of scrap to begin magnet effect
         if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound + 10) {
             ((Scrap*)qObjects[i])->playerMagnet = true;
@@ -390,7 +390,7 @@ static void scrapDetection() {
 		if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
 			(((Scrap*)objects[i])->playerMagnet)) {
 			((Scrap*)objects[i])->vel =
-				glm::vec3(player->xpos, player->ypos, player->zpos) - objects[i]->pos;
+				glm::vec3(player->pos.x, player->pos.y, player->pos.z) - objects[i]->pos;
 			((Scrap*)objects[i])->vel *= 10;
 		}
 	}
@@ -415,7 +415,7 @@ static void projectileDetection() {
 static vec3 getSpawnLocation() {
     float x = randf() * 500 - 250;
     float z = randf() * 500 - 250;
-    while (!grid->inBounds(x, z) || (std::abs(x) < 100 && std::abs(z) < 100) || distance(vec2(x,z), vec2(player->xpos, player->zpos)) < 50) {
+    while (!grid->inBounds(x, z) || (std::abs(x) < 100 && std::abs(z) < 100) || distance(vec2(x,z), vec2(player->pos.x, player->pos.z)) < 50) {
         x = randf() * 500 - 250;
         z = randf() * 500 - 250;
     }
@@ -433,10 +433,10 @@ static void stepGameObjects(float dt) {
     }
 
 	vector<GameObject *> qObjects;
-	quadtree->getObjects(player->xpos, player->zpos, &qObjects);
+	quadtree->getObjects(player->pos.x, player->pos.z, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		Enemy* enemy = dynamic_cast<Enemy*>(qObjects[i]);
-		if (enemy != NULL && distance(vec3(player->xpos, player->ypos, player->zpos), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
+		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
 			enemy->hitPlayer = true;
 			enemy->toDelete = true;
 			player->health -= 1;
@@ -503,7 +503,7 @@ static void stepPlayer(float dt) {
     if (player->jumping == 1) {
         for (int i = 0; i < 20; i++) {
             pSystem->spawnStreamParticle(
-              glm::vec3(player->xpos, player->ypos, player->zpos),
+              glm::vec3(player->pos.x, player->pos.y, player->pos.z),
               glm::vec3(randf()*40 - 20, -10.0, randf()*40 - 20),
               playerStreamColor);
         }
@@ -514,12 +514,12 @@ static void stepPlayer(float dt) {
     }
     else  {
         if (player->boosting > .6) {
-            float px = player->xpos + cos(player->ctheta);
-            float py = player->ypos;
-            float pz = player->zpos - sin(player->ctheta);
+            float px = player->pos.x + cos(player->ctheta);
+            float py = player->pos.y;
+            float pz = player->pos.z - sin(player->ctheta);
             pSystem->spawnStreamParticle(
               glm::vec3(px, py, pz),
-              glm::vec3(-player->velx, player->vely, -player->velz),
+              glm::vec3(-player->vel.x, player->vel.y, -player->vel.z),
               playerStreamColor);
         }
         streamCooldown = 0.0;
@@ -542,16 +542,16 @@ static void stepPlayer(float dt) {
     // calculate relative angle in relation to the vehicle
 	angle += player->theta;
 	if (!forwards && !sideways) {
-		player->xacc = 0;
-		player->zacc = 0;
+		player->acc.x = 0;
+		player->acc.z = 0;
 	}
 	else {
-        player->xacc = -sin(angle) * PLAYER_ACCELERATION;
-        player->zacc = -cos(angle) * PLAYER_ACCELERATION;
+        player->acc.x = -sin(angle) * PLAYER_ACCELERATION;
+        player->acc.z = -cos(angle) * PLAYER_ACCELERATION;
     }
     if (player->boosting > .6) {
-      player->xacc += -sin(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
-      player->zacc += -cos(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
+      player->acc.x += -sin(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
+      player->acc.z += -cos(player->ctheta + MATH_PI / 2) * BOOST_ACCELERATION;
     }
 
     // handle weapon fire

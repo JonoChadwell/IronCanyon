@@ -9,15 +9,11 @@
 class Camera {
 
 public:
-	float xpos;
-	float ypos;
-	float zpos;
-	float xlook;
-	float ylook;
-	float zlook;
-   Grid* grid;
-	Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid);
-	virtual ~Camera();
+    vec3 pos;
+    vec3 look;
+    Grid* grid;
+    Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid);
+    virtual ~Camera();
 
 	// functions
 	void trackToPlayer(Player *player);

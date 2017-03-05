@@ -12,12 +12,12 @@ class Grid;
 class Player {
 
 public:
-	float xpos, ypos, zpos;
-    float xacc, yacc, zacc;
+	glm::vec3 pos;
+	glm::vec3 vel;
+	glm::vec3 acc;
 	float phi;
 	float theta;
 	float roll;
-	float velx, vely, velz;
 	float bound;
 	float ctheta;
     float cphi;
@@ -29,7 +29,7 @@ public:
 	bool isPaused; // true when paused
     int scrap;
 	int health;
-	Player();
+
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
 
