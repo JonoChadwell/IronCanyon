@@ -10,6 +10,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define ADDITIONAL_VEL_DRAG 0.5f
+
 Shape* Projectile::model;
 Program* Projectile::shader;
 
@@ -38,7 +40,13 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	glUniform3f(Projectile::shader->getUniform("lightPos"), 100, 100, 100);
 	glUniform3f(Projectile::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    glUniform3f(Projectile::shader->getUniform("MatAmb"), 0, 8, 3);
+    if (team == PLAYER_TEAM) {
+        glUniform3f(Projectile::shader->getUniform("MatAmb"), 0, 8, 3);
+    }
+    else {
+        glUniform3f(Projectile::shader->getUniform("MatAmb"), 8, 0, 0);
+    }
+    
     glUniform3f(Projectile::shader->getUniform("MatDif"), .1, .1, .1);
     glUniform3f(Projectile::shader->getUniform("MatSpec"), .2, .2, .2);
 	glUniform1f(Projectile::shader->getUniform("shine"), 3.5);
@@ -52,7 +60,13 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(-phi + MATH_PI / 2, vec3(1, 0, 0));
 	M->rotate(roll, vec3(0, 0, 1));
-	M->scale(vec3(0.3));
+    if (team == PLAYER_TEAM) {
+        M->scale(vec3(0.3));
+    }
+    else {
+        M->scale(vec3(0.8));
+    }
+	
     M->translate(vec3(0.4,0,0));
 	glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Projectile::model->draw(Projectile::shader);
@@ -91,6 +105,8 @@ void Projectile::step(float dt) {
     } else if (pos.y < grid->height(pos.x, pos.z)) {
         toDelete = true;
     }
+
+    additionalVelocity = additionalVelocity * (1.0f - dt * ADDITIONAL_VEL_DRAG);
 
 	pos.x += getXComp() * dt * vel;
 	pos.y += getYComp() * dt * vel;

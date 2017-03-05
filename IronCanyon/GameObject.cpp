@@ -9,7 +9,7 @@ GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
     theta(th),
     roll(rl),
     bound(b),
-    team(team)
+    team(t)
 {}
 
 // destructor

@@ -154,7 +154,7 @@ void Enemy::step(float dt) {
 	// do bob animation
 	if (grid->inBounds(pos.x, pos.z)) {
 	    pos.y = grid->height(pos.x, pos.z) + 1.6 + 0.4 * sin(animtime * 2.0);
-		phi = -cos(animtime * 2.0) / 12.0;
+        phi = -cos(animtime * 2.0) / 12.0;
 	}
 	else {
 		pos.y = -0.5;

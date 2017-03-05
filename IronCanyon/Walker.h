@@ -23,6 +23,8 @@ public:
     void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
     void step(float dt);
     static void setup();
+    // horrible hack, look away before it burns your eyes
+    static std::vector<GameObject*> *newProjectiles;
 
 private:
     float left_actual;
@@ -32,6 +34,7 @@ private:
 	float left_foot;
     float right_foot;
     float walk_time;
+    void fire();
     static Shape* body;
     static Shape* upper_leg;
     static Shape* lower_leg;

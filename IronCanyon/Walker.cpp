@@ -4,6 +4,9 @@
 #include "math.h"
 #include "Constants.h"
 #include "Grid.h"
+#include "Projectile.h"
+#include "Player.h"
+#include <cmath>
 #include <iostream>
 #include <algorithm>
 
@@ -16,6 +19,9 @@ Shape* Walker::upper_leg;
 Shape* Walker::lower_leg;
 Shape* Walker::foot;
 Program* Walker::shader;
+std::vector<GameObject*> *Walker::newProjectiles;
+
+#define FIRING_RANGE 60.0
 
 Walker::Walker(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid) :
     Enemy(p, ph, th, rl, v, b, grid)
@@ -158,6 +164,22 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     Walker::shader->unbind();
 }
 
+void Walker::fire() {
+    
+    vec3 projectilePos = pos;
+    projectilePos.y += HEIGHT - 1.5;
+    vec3 targetPos = target->pos;
+
+    if (distance(projectilePos, targetPos) < FIRING_RANGE) {
+        vec3 diff = targetPos - projectilePos;
+        float targetAngle = atan2(diff.z, diff.x);
+        float targetPhi = atan2(diff.y, sqrt(diff.x * diff.x + diff.z * diff.z));
+
+        Projectile *proj = new Projectile(projectilePos, vec3(0, 0, 0), targetPhi, targetAngle, 0, 40, 1, team, grid);
+        newProjectiles->push_back(proj);
+    }
+}
+
 void Walker::step(float dt) {
     Enemy::step(dt);
     phi = 0;
@@ -169,6 +191,7 @@ void Walker::step(float dt) {
     if (walk_time > STEP_TIME) {
         walk_time -= STEP_TIME;
         left_foot = STEP_FORWARD_DIST * vel;
+        fire();
     }
 
 	// do walk animation

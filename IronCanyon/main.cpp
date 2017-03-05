@@ -50,6 +50,7 @@ Terrain* terrain;
 // Vector holding all game objects
 vector<GameObject*> objects;
 vector<GameObject*> projectiles;
+vector<GameObject*> newProjectiles;
 QuadTree* quadtree;
 ParticleSystem *pSystem;
 
@@ -255,6 +256,7 @@ static void init()
 	Player::setup();
 	Enemy::setup();
     Enemy::target = player;
+    Walker::newProjectiles = &newProjectiles;
     Walker::setup();
     Scrap::setup();
     StaticTerrainObject::setup();
@@ -402,14 +404,23 @@ static void projectileDetection() {
 		quadtree->getObjects(projectiles[i]->pos.x, projectiles[i]->pos.z, &qObjects);
 		for (unsigned int j = 0; j < qObjects.size(); j++) {
 			vec3 objectPosition = vec3(qObjects[j]->pos.x, qObjects[j]->pos.y, qObjects[j]->pos.z);
-			vec3 projectilePosition = vec3(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z);
+			vec3 projectilePosition = projectiles[i]->pos;
 			float distance = dist(objectPosition, projectilePosition);
-			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL) {
+			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL && projectiles[i]->team != qObjects[j]->team) {
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
 		}
 	}
+    for (unsigned int i = 0; i < projectiles.size(); i++) {
+        if (projectiles[i]->team == ENEMY_TEAM && !projectiles[i]->toDelete) {
+            float distance = dist(player->pos, projectiles[i]->pos);
+            if (distance < projectiles[i]->bound + player->bound) {
+                projectiles[i]->toDelete = true;
+                player->health -= 1;
+            }
+        }
+    }
 }
 
 static vec3 getSpawnLocation() {
@@ -439,7 +450,7 @@ static void stepGameObjects(float dt) {
 		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
 			enemy->hitPlayer = true;
 			enemy->toDelete = true;
-			player->health -= 1;
+			player->health -= 2;
 		}
 	}
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
@@ -676,6 +687,10 @@ static void updateProjectileVector() {
 			i--;
 		}
 	}
+    for (int i = 0; i < newProjectiles.size(); i++) {
+        projectiles.push_back(newProjectiles[i]);
+    }
+    newProjectiles.clear();
 }
     
 
