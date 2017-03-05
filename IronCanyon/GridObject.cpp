@@ -11,7 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 GridObject::GridObject(glm::vec3 p, int rotation, float b, Grid* grid) :
-    GameObject(p, 0, rotation * MATH_PI / 2, 0, b),
+    GameObject(p, 0, rotation * MATH_PI / 2, 0, b, NO_TEAM),
     grid(grid)
 {
     glm::ivec2 gridPosition = grid->getGridCoords(p.x, p.z);

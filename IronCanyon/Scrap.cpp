@@ -24,7 +24,7 @@ Program* Scrap::shader;
 
 Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
   float b, Grid* grid, int worth) :
-    GameObject(pos, ph, th, rl, b),
+    GameObject(pos, ph, th, rl, b, NO_TEAM),
     worth(worth),
     vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
     acc( glm::vec3(0, -GRAVITY, 0) ),

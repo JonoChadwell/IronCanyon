@@ -339,7 +339,7 @@ static void laserFire()
 
 static void missileFire() {
 	vec3 pos = vec3(player->pos.x, player->pos.y, player->pos.z);
-	Projectile* proj = new Projectile(pos, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, grid);
+	Projectile* proj = new Projectile(pos, player->vel, player->phi + 0.2, -(player->theta) + MATH_PI, 0, MISSILE_VEL, 1, PLAYER_TEAM, grid);
 	projectiles.push_back(proj);
     pSystem->spawnFocusParticles(3, proj->pos, glm::vec4(0.2f, 1.0f, 0.2f, 1.0f),
       35.0f, proj->phi, proj->theta, 7.0f);

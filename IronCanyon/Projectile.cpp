@@ -13,12 +13,13 @@
 Shape* Projectile::model;
 Program* Projectile::shader;
 
-Projectile::Projectile(glm::vec3 p, float ph, float th, float rl,
-	float v, float b, Grid* grid) :
-	GameObject(p, ph, th, rl, b),
+Projectile::Projectile(glm::vec3 p, glm::vec3 additionalVelocity, float ph, float th, float rl,
+	float v, float b, TEAM t, Grid* grid) :
+	GameObject(p, ph, th, rl, b, t),
 	vel(v),
 	active(true),
-	grid(grid)
+	grid(grid),
+    additionalVelocity(additionalVelocity)
 {
 	animtime = 0.0;
 }
@@ -94,6 +95,7 @@ void Projectile::step(float dt) {
 	pos.x += getXComp() * dt * vel;
 	pos.y += getYComp() * dt * vel;
 	pos.z += getZComp() * dt * vel;
+    pos += dt * additionalVelocity;
 }
 
 void Projectile::setup() {

@@ -2,26 +2,6 @@
 #include <GL/glew.h>
 #include "math.h"
 
-// default constructor
-GameObject::GameObject() :
-    pos(glm::vec3(0, 0, 0)),
-    phi(0), 
-    theta(0), 
-    roll(0), 
-    bound(0)
-{}
-
-// regular constructor
-GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
-  float b) :
-    pos(p),
-    phi(ph),
-    theta(th),
-    roll(rl),
-    bound(b),
-    team(NO_TEAM)
-{}
-
 GameObject::GameObject(glm::vec3 p, float ph, float th, float rl,
   float b, TEAM t) :
     pos(p),

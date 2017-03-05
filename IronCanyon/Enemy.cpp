@@ -67,7 +67,7 @@ namespace {
 
 Enemy::Enemy(glm::vec3 p, float ph, float th, float rl,
   float v, float b, Grid* grid) :
-    GameObject(p, ph, th, rl, b),
+    GameObject(p, ph, th, rl, b, ENEMY_TEAM),
     vel(v),
     active(true),
 	grid(grid),

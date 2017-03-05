@@ -15,8 +15,6 @@ public:
     float bound;
     TEAM team;
 
-    GameObject();
-    GameObject(glm::vec3 p, float ph, float th, float rl, float b);
     GameObject(glm::vec3 p, float ph, float th, float rl, float b, TEAM t);
     virtual ~GameObject();
 

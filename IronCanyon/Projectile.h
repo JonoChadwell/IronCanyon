@@ -12,7 +12,8 @@ class Projectile : public GameObject {
 public:
 	bool active;
 	float vel;
-	Projectile(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid);
+    vec3 additionalVelocity;
+	Projectile(glm::vec3 p, glm::vec3 additionalVelocity, float ph, float th, float rl, float v, float b, TEAM t, Grid* grid);
 	virtual ~Projectile();
 
 	// functions
