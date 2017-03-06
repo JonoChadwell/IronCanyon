@@ -36,6 +36,7 @@ using namespace std;
 using namespace glm;
 
 #define LOOK_SENS (1 / 400.0)
+#define JOY_LOOK_SENS (1 / 50.0)
 #define PLAYER_ACCELERATION 50
 #define BOOST_ACCELERATION 100
 #define ENEMY_SPEED 6
@@ -71,6 +72,9 @@ double maxPhysicsStepLength = 0.005;
 bool spawnWave = false;
 bool gameStarted = false;
 bool gamePaused = false;
+bool joystickEnabled = false;
+bool invertLook = false;
+bool laserFired = false;
 int waveNumber = 1;
 int turretCost = 1000;
 int turretsBuilt = 0;
@@ -101,16 +105,97 @@ static void hurtPlayer(int amt)
     pSystem->spawnBurstParticles(50, player->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
 }
 
+static void pollJoysticks() {
+
+	int joyCount;
+	int buttonCount;
+	double lookx, looky;
+	const float* controllerAxes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &joyCount);
+	const unsigned char* controllerButtons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+	// Axes
+	// 0 : Left Stick Horizontal
+	// 1 : Left Stick Vertical
+	// 2 : Right Stick Horizontal
+	// 3: Right stick Vertical
+	// 4: Left Trigger (-1 to 1, -1 is at rest)
+	// 5: Right Trigger ^same
+	//cout << "Axis5 val: " << controllerAxes[4] << endl;
+	if (joystickEnabled == true) {
+		forwards = controllerAxes[1];
+		sideways = controllerAxes[0];
+		if (invertLook == false) {
+			lookx = controllerAxes[2];
+			looky = -controllerAxes[3];
+		}
+		else {
+			lookx = controllerAxes[2];
+			looky = controllerAxes[3];
+		}		
+
+		theta -= lookx * JOY_LOOK_SENS;
+		phi -= looky * JOY_LOOK_SENS;
+		phi = std::min(phi, (float)(.1));
+		phi = std::max(phi, (float)(-.5));
+		lastx = lookx;
+		lasty = looky;
+	
+		if (controllerAxes[5] >= -0.9 || controllerAxes[4] >= -0.9) {
+			if (controllerAxes[5] >= -0.9) {
+				player->fireMode = 2;
+			}
+			else if (controllerAxes[4] >= -0.9) {
+				player->fireMode = 1;
+			}
+
+			if (player->fireMode == 2) {
+				player->firing = 0.01;
+			}
+			else if (player->fireMode == 1 && player->firing == 0) {
+				player->firing = 0.01;
+			}
+		}
+		else if (controllerAxes[5] <= -0.9 && player->fireMode == 2) {
+			player->firing = 0;
+		}
+		else if (controllerAxes[4] <= -0.9 && player->fireMode == 1) {
+			player->firing = 0;
+		}
+	
+		if (controllerButtons[0] == GLFW_PRESS && player->jumping == 0) {
+			player->jumping = 1;
+		}
+		if (controllerButtons[8] == GLFW_PRESS && player->boosting == 0) {
+			player->boosting = 1;
+		}
+		if (controllerButtons[8] == GLFW_RELEASE && player->boosting > .6) {
+			player->boosting = 1.2 - player->boosting;
+		}
+		for (int i = 0; i < buttonCount; i++) {
+			if (controllerButtons[i] == GLFW_PRESS) {
+				//cout << "BUTTON PRESSED: " << i << endl;
+			}
+		}
+	}
+}
+
+static void joystick_callback(int joy, int event) {
+
+}
+
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-	int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-	//cout << present << endl;
     if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) && action == GLFW_PRESS) {
         mouseCaptured = false;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         gameStarted = true;
+	}
+	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+		if (joystickEnabled == false)
+			joystickEnabled = true;
+		else
+			joystickEnabled = false;
 	}
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		if (gamePaused == false) {
@@ -216,6 +301,8 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
     if (!mouseCaptured) {
         return;
     }
+	//cout << x << endl;
+	//cout << y << endl << endl;
     double changex = x - lastx;
     double changey = y - lasty;
 
@@ -730,9 +817,12 @@ int main(int argc, char **argv)
     glGetError();
 	cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
     cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+	cout << "GLFW version: " << glfwGetVersionString() << endl;
 
 	// Set vsync.
 	glfwSwapInterval(1);
+	// Set joystick callback.
+	glfwSetJoystickCallback(joystick_callback);
 	// Set keyboard callback.
 	glfwSetKeyCallback(window, key_callback);
     //set the mouse call back
@@ -765,6 +855,8 @@ int main(int argc, char **argv)
 		glfwSwapBuffers(window);
 		// Poll for and process events.
 		glfwPollEvents();
+		// Poll joystick input
+		pollJoysticks();
 		// Remove the QuadTree
 		delete quadtree;
 		// Update main object vector
