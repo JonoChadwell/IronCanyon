@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 //#include <GL/freeglut.h>
 #include <GLFW/glfw3.h>
+#include <SFML\Audio.hpp>
 
 #include "GLSL.h"
 #include "Program.h"
@@ -128,6 +129,7 @@ static void pollJoysticks() {
 	// 5: Right Trigger ^same
 	//cout << "Axis5 val: " << controllerAxes[4] << endl;
 	if (joystickEnabled == true) {
+		//if(p)
 		forwards = controllerAxes[1];
 		sideways = controllerAxes[0];
 		if (invertLook == false) {
@@ -851,13 +853,8 @@ int main(int argc, char **argv)
 	sf::SoundBuffer buffer;
 
 	sound = new sf::Sound();
-	//sound[1] = new sf::Sound();
-	//sound[2] = new sf::Sound();
 	buffer.loadFromFile("../resources/LaserShot.ogg");
 	sound->setBuffer(buffer);
-	//sound[1]->setBuffer(buffer);
-	//sound[2]->setBuffer(buffer);
-	//sound->play();
 
 	// Create a windowed mode window and its OpenGL context.
 	window = glfwCreateWindow(g_width, g_height, "Iron Canyon", NULL, NULL);
