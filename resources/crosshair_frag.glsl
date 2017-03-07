@@ -26,7 +26,7 @@ void main(){
       }
    }
    else if (hair == 4) {
-      if( distanceFromCenter > .05 ){
+      if( distanceFromCenter > .08 ){
          discard;
       }
    }
