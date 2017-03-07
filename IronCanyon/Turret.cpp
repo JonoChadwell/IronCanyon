@@ -12,12 +12,11 @@
 Shape* Turret::model;
 Program* Turret::shader;
 Program* Turret::conShader;
-QuadTree* Turret::quadtree;
+vector<GameObject*>* Turret::objects;
 float dist(glm::vec3 p1, glm::vec3 p2);
 
 Turret::Turret(glm::vec3 p, int rotation, float b, Grid *grid) :
     GridObject(p, rotation, b, grid),
-    quadTree(NULL),
     target(NULL),
     grid(grid)
 {
@@ -32,13 +31,11 @@ void Turret::step(float dt) {
     // if turret is built, run logic
     if (built) {
         if (target == NULL) {
-            vector<GameObject *> qObjects;
-            Turret::quadtree->getObjects(pos.x, pos.z, &qObjects);
-            for (unsigned int i = 0; i < qObjects.size(); i++) {
-                float objDist = dist(pos, qObjects[i]->pos);
+            for (unsigned int i = 0; i < objects->size(); i++) {
+                float objDist = dist(pos, objects->at(i)->pos);
                 /* lock */ 
-                if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
-                    target = (Enemy*)(qObjects[i]);
+                if (dynamic_cast<Enemy*>(objects->at(i)) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
+                    target = (Enemy*)(objects->at(i));
                     break;
                 }
             }
@@ -155,6 +152,4 @@ void Turret::setup() {
 	Turret::conShader->addAttribute("vertPos");
 	Turret::conShader->addAttribute("vertNor");
 	Turret::conShader->addAttribute("vertTex");
-
-    Turret::quadtree = NULL;
 }
