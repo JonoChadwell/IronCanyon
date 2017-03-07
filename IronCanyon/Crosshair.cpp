@@ -50,6 +50,7 @@ void Crosshair::draw() {
 
 	glUniformMatrix4fv(Crosshair::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniform3f(Crosshair::shader->getUniform("uniColor"), target, 1 - target, 0);
+	glUniform1i(Crosshair::shader->getUniform("hair"), hair);
 
 	P->popMatrix();
 	delete P;
@@ -58,6 +59,10 @@ void Crosshair::draw() {
 
 void Crosshair::updateHeight(int windowHeight) {
 	g_vertex_buffer_data[1] = windowHeight * .55 / windowHeight;
+}
+
+void Crosshair::updateHair(int type) {
+	hair = type;
 }
 
 void Crosshair::setup(int windowHeight) {
@@ -72,6 +77,7 @@ void Crosshair::setup(int windowHeight) {
 	Crosshair::shader->setShaderNames(RESOURCE_DIR + "crosshair_vert.glsl", RESOURCE_DIR + "crosshair_frag.glsl");
 	Crosshair::shader->init();
 	Crosshair::shader->addUniform("uniColor");
+	Crosshair::shader->addUniform("hair");
 	Crosshair::shader->addAttribute("vertPos");
 	Crosshair::shader->addUniform("P");
 

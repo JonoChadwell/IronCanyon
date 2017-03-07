@@ -272,10 +272,17 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		player->boosting = 1.2 - player->boosting;
 	}
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-		player->fireMode = 1;
+		crosshair->hair = 1;
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-		player->fireMode = 2;
+		crosshair->hair = 2;
+	}
+	if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+		crosshair->hair = 3;
+	}
+
+	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
+		crosshair->hair = 4;
 	}
 }
 
