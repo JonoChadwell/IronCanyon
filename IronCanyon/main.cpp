@@ -15,6 +15,7 @@
 #include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Crosshair.h"
 #include "Constants.h"
 #include "Grid.h"
 #include "Enemy.h"
@@ -45,6 +46,7 @@ GLFWwindow *window; // Main application window
 
 Camera* camera;
 Player* player;
+Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
 
@@ -328,6 +330,7 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
 static void resize_callback(GLFWwindow *window, int width, int height) {
    g_width = width;
    g_height = height;
+   crosshair->updateHeight(height);
    glViewport(0, 0, width, height);
 }
 
@@ -341,6 +344,7 @@ static void init()
     player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid);
     terrain = new Terrain();
+	crosshair = new Crosshair();
 
     theta = MATH_PI;
     phi = 0;
@@ -358,6 +362,7 @@ static void init()
 
     // initialize models and shaders
     Terrain::setup();
+	Crosshair::setup(g_height);
 	Player::setup();
 	Enemy::setup();
     Enemy::target = player;
@@ -431,7 +436,7 @@ static void createScrapPile(GameObject* enemy) {
 }
 
 static void crosshairColor() {
-	player->crosshairTarget = 0;
+	crosshair->target = 0;
 	vec3 playerPosition = vec3(player->pos.x, player->pos.y, player->pos.z);
 	vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
 	for (unsigned int i = 0; i < objects.size(); i++) {
@@ -440,7 +445,7 @@ static void crosshairColor() {
 		float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
 		// hit
 		if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
-			player->crosshairTarget = 1;
+			crosshair->target = 1;
 		}
 	}
 }
@@ -488,6 +493,7 @@ static void drawGameObjects() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
+	crosshair->draw();
 
     P->popMatrix();
     delete P;

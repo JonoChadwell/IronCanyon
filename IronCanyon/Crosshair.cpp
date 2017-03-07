@@ -20,16 +20,14 @@ using namespace glm;
 Program* Crosshair::shader;
 Shape* Crosshair::object;
 
-Crosshair::Crosshair(float ph, float th) :
-	phi(ph),
-    theta(th)
-{}
+Crosshair::Crosshair() {}
 
 Crosshair::~Crosshair() {}
 
-void Crosshair::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
+void Crosshair::draw() {
 	// variable declaration
 	// drawing
+	MatrixStack* P = new MatrixStack();
 	P->pushMatrix();
 	float aspect = 1.333333333;
 	P->ortho(-2 * aspect, 2 * aspect, -2, 2, -2, 100.0f);
@@ -54,10 +52,15 @@ void Crosshair::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	glUniform3f(Crosshair::shader->getUniform("uniColor"), target, 1 - target, 0);
 
 	P->popMatrix();
+	delete P;
 	Crosshair::shader->unbind();
 }
 
-void Crosshair::setup() {
+void Crosshair::updateHeight(int windowHeight) {
+	g_vertex_buffer_data[1] = windowHeight * .55 / windowHeight;
+}
+
+void Crosshair::setup(int windowHeight) {
 	Crosshair::object = new Shape();
 	Crosshair::object->loadMesh(RESOURCE_DIR + "drive/cube.obj");
 	Crosshair::object->resize();
@@ -73,7 +76,7 @@ void Crosshair::setup() {
 	Crosshair::shader->addUniform("P");
 
 	g_vertex_buffer_data[0] = 0;
-	g_vertex_buffer_data[1] = .25;
+	g_vertex_buffer_data[1] = windowHeight * .55 / windowHeight;
 	glGenBuffers(1, &vertexbuffer);
 	//set the current state to focus on our vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
