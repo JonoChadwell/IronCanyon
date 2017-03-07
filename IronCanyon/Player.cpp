@@ -158,9 +158,9 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	Player::shader->bind();
 	glUniform3f(Player::shader->getUniform("sunDir"), SUN_DIR);
 	glUniform3f(Player::shader->getUniform("eye"), eye.x, eye.y, eye.z);
-	glUniform3f(Player::shader->getUniform("MatAmb"), 0, .8, 1);
-	glUniform3f(Player::shader->getUniform("MatDif"), .5, .5, .1);
-	glUniform3f(Player::shader->getUniform("MatSpec"), .31, .16, .08);
+	glUniform3f(Player::shader->getUniform("MatAmb"), 1, 1, 1);
+	glUniform3f(Player::shader->getUniform("MatDif"), 1, 1, 1);
+	glUniform3f(Player::shader->getUniform("MatSpec"), 1, 1, 1);
 	glUniform1f(Player::shader->getUniform("shine"), 3.5);
 	glUniformMatrix4fv(Player::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniformMatrix4fv(Player::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
@@ -242,7 +242,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->translate(vec3(0, -1, 0));
 
 	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 30, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 	    Player::laser->draw(Player::shader);
@@ -259,7 +259,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->translate(vec3(0, -1, 0));
 
 	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	    glUniform3f(Player::shader->getUniform("MatAmb"), 10, 0, 0);
+	    glUniform3f(Player::shader->getUniform("MatAmb"), 20, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
 	    glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
 	    Player::laser->draw(Player::shader);
@@ -293,7 +293,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->scale(vec3(1, 0.3, 0.5));
 	    glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	    Player::chassis->draw(Player::shader);
-	   M->popMatrix();
+        M->popMatrix();
     }
 
 	// garbage collection
