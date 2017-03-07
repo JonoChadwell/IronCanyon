@@ -6,5 +6,5 @@ uniform int height;
 void main()
 {
    gl_Position = P * vertPos;
-   gl_Position.y += height * .0003;
+   gl_Position.y += height * .000003;
 }

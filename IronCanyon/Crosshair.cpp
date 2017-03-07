@@ -51,7 +51,7 @@ void Crosshair::draw() {
 	glUniformMatrix4fv(Crosshair::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniform3f(Crosshair::shader->getUniform("uniColor"), target, 1 - target, 0);
 	glUniform1i(Crosshair::shader->getUniform("hair"), hair);
-	glUniform1i(Crosshair::shader->getUniform("height"), g_vertex_buffer_data[1]);
+	glUniform1i(Crosshair::shader->getUniform("height"), (int)g_vertex_buffer_data[1]);
 
 	P->popMatrix();
 	delete P;
@@ -59,7 +59,7 @@ void Crosshair::draw() {
 }
 
 void Crosshair::updateHeight(int windowHeight) {
-	g_vertex_buffer_data[1] = windowHeight;
+	g_vertex_buffer_data[1] = 0;
 }
 
 void Crosshair::updateHair(int type) {
@@ -84,7 +84,7 @@ void Crosshair::setup(int windowHeight) {
 	Crosshair::shader->addUniform("P");
 
 	g_vertex_buffer_data[0] = 0;
-	g_vertex_buffer_data[1] = windowHeight;
+	g_vertex_buffer_data[1] = 0;
 	glGenBuffers(1, &vertexbuffer);
 	//set the current state to focus on our vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
