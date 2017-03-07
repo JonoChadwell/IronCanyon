@@ -138,6 +138,7 @@
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="StaticTerrainObject.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Turret.cpp" />
     <ClCompile Include="Walker.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="StaticTerrainObject.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Turret.h" />

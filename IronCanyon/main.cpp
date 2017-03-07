@@ -822,7 +822,7 @@ int main(int argc, char **argv)
 	// Set vsync.
 	glfwSwapInterval(1);
 	// Set joystick callback.
-	glfwSetJoystickCallback(joystick_callback);
+	//glfwSetJoystickCallback(joystick_callback);
 	// Set keyboard callback.
 	glfwSetKeyCallback(window, key_callback);
     //set the mouse call back
