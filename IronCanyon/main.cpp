@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 //#include <GL/freeglut.h>
 #include <GLFW/glfw3.h>
-#include <SFML\Audio.hpp>
 
 #include "GLSL.h"
 #include "Program.h"
@@ -33,7 +32,9 @@
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#ifdef AUDIO
 #include <SFML/Audio.hpp>
+#endif
 
 using namespace std;
 using namespace glm;
@@ -51,7 +52,9 @@ Player* player;
 Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
+#ifdef AUDIO
 sf::Sound* sound;
+#endif
 
 Turret* curTurret = NULL;
 
@@ -482,7 +485,9 @@ static void missileFire() {
 	projectiles.push_back(proj);
     pSystem->spawnFocusParticles(3, proj->pos, glm::vec4(0.2f, 1.0f, 0.2f, 1.0f),
       35.0f, proj->phi, proj->theta, 7.0f);
+#ifdef AUDIO
 	sound->play();
+#endif
 }
 
 
@@ -850,11 +855,13 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
+#ifdef AUDIO
 	sf::SoundBuffer buffer;
 
 	sound = new sf::Sound();
 	buffer.loadFromFile("../resources/LaserShot.ogg");
 	sound->setBuffer(buffer);
+#endif
 
 	// Create a windowed mode window and its OpenGL context.
 	window = glfwCreateWindow(g_width, g_height, "Iron Canyon", NULL, NULL);
