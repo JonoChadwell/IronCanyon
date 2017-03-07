@@ -47,6 +47,7 @@ void LaserTurret::step(float dt) {
             target->active = false;
             target->toDelete = true;
             target = NULL;
+            laserFire();
         }
     }
     // firing
@@ -62,8 +63,6 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // actual position of turret barrel
     glm::vec3 housePos = vec3(pos.x, pos.y + 1.0, pos.z);
     // housing angle (theta) and barrel angle (phi)
-    float hangle = 0.0;
-    float bangle = 0.0;
     if (target != NULL) {
         // soh cah toa shit
         float o = target->pos.x - this->pos.x;
@@ -160,6 +159,22 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // cleanup
     curShader->unbind();
     delete M;
+}
+
+void LaserTurret::laserFire()
+{
+    glm::vec3 housePos = vec3(pos.x, pos.y + 1.0, pos.z);
+    vec3 laserDirection = vec3(cos(phi + bangle) * -cos(theta + hangle), sin(phi + bangle),
+      cos(phi + bangle) * sin(theta + hangle));
+    for (unsigned int i = 0; i < objects->size(); i++) {
+        float radius = objects->at(i)->bound;
+        vec3 objectPosition = vec3(objects->at(i)->pos.x, objects->at(i)->pos.y, objects->at(i)->pos.z);
+        float det = pow(dot(laserDirection, (housePos - objectPosition)), 2) - pow(length(housePos - objectPosition), 2) + radius * radius;
+        // hit
+        if (det > 0 && dynamic_cast<Enemy*>(objects->at(i)) != NULL) {
+		    objects->at(i)->toDelete = true;
+        }
+    }
 }
 
 // model setup

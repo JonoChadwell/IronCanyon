@@ -378,6 +378,7 @@ static void init()
     Scrap::setup();
     StaticTerrainObject::setup();
     Turret::setup();
+    Turret::objects = &objects;
     LaserTurret::setup();
 	Projectile::setup();
     // Particles
@@ -782,7 +783,6 @@ static void render()
 static void updateWorld()
 {
 	if (player->health > 0 && !gamePaused) {
-        Turret::quadtree = quadtree;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
             timePassed -= maxPhysicsStepLength;
