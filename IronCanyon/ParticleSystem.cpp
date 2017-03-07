@@ -66,6 +66,18 @@ void ParticleSystem::initGeom() {
     assert(glGetError() == GL_NO_ERROR);
 }
 
+// spawn ground wave
+void ParticleSystem::spawnGroundParticles(int np, glm::vec3 at, glm::vec4 color,
+  float radius) {
+    for (int i = 0; i < np; i++) {
+        int fu = firstUnusedParticle();
+        particles[fu]->life = 1.0f;
+        particles[fu]->pos = at;
+        particles[fu]->vel = glm::vec3(RAND_VEL, 0, RAND_VEL);
+        particles[fu]->color = color;
+    }
+}
+
 // spawn directional blasts
 void ParticleSystem::spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
   float baseVel, float phi, float theta, float spread) {
