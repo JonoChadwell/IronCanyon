@@ -40,13 +40,13 @@ void LaserTurret::step(float dt) {
         firing = 0.01;
     }
     // else turn off laser
-    else if (target != NULL && firing > 0.1) {
-        target->active = false;
-        target->toDelete = true;
-    }
     else if (firing > 0.5) {
         firing = 0.0;
-        target = NULL;
+        if (target) {
+            target->active = false;
+            target->toDelete = true;
+            target = NULL;
+        }
     }
     // firing
     if (firing > 0.0) {

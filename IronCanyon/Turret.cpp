@@ -17,7 +17,8 @@ float dist(glm::vec3 p1, glm::vec3 p2);
 Turret::Turret(glm::vec3 p, int rotation, float b, Grid *grid) :
     GridObject(p, rotation, b, grid),
     quadTree(NULL),
-    target(NULL)
+    target(NULL),
+    grid(grid)
 {
 }
 
@@ -27,21 +28,32 @@ float dist(glm::vec3 p1, glm::vec3 p2) {
 }
 
 void Turret::step(float dt) {
-    if (target == NULL) {
-        vector<GameObject *> qObjects;
-        Turret::quadtree->getObjects(pos.x, pos.z, &qObjects);
-        for (unsigned int i = 0; i < qObjects.size(); i++) {
-            float objDist = dist(pos, qObjects[i]->pos);
-            /* lock */ 
-            if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
-                target = (Enemy*)(qObjects[i]);
-                break;
+    // if turret is built, run logic
+    if (built) {
+        if (target == NULL) {
+            vector<GameObject *> qObjects;
+            Turret::quadtree->getObjects(pos.x, pos.z, &qObjects);
+            for (unsigned int i = 0; i < qObjects.size(); i++) {
+                float objDist = dist(pos, qObjects[i]->pos);
+                /* lock */ 
+                if (dynamic_cast<Enemy*>(qObjects[i]) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
+                    target = (Enemy*)(qObjects[i]);
+                    break;
+                }
             }
         }
+        // 
+        else if (!target->active) {
+            target = NULL;
+        }
     }
-    // 
-    else if (!target->active) {
-        target = NULL;
+    // check if it is able to be built while building
+    else if (building) {
+        buildable = grid->inBounds(pos.x, pos.z);
+    }
+    // if no longer building and it wasn't built, get rid of it
+    else {
+        toDelete = true;
     }
 }
 
@@ -49,13 +61,13 @@ void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
     Turret::shader->bind();
-	glUniform3f(Turret::shader->getUniform("sunDir"), SUN_DIR);
+    glUniform3f(Turret::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Turret::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-	glUniform3f(Turret::shader->getUniform("MatAmb"), 0, .8, 1);
-	glUniform3f(Turret::shader->getUniform("MatDif"), .5, .5, .1);
-	glUniform3f(Turret::shader->getUniform("MatSpec"), .31, .16, .08);
-	glUniform1f(Turret::shader->getUniform("shine"), 3.5);
+    glUniform3f(Turret::shader->getUniform("MatAmb"), 0, .8, 1);
+    glUniform3f(Turret::shader->getUniform("MatDif"), .5, .5, .1);
+    glUniform3f(Turret::shader->getUniform("MatSpec"), .31, .16, .08);
+    glUniform1f(Turret::shader->getUniform("shine"), 3.5);
 
     glUniformMatrix4fv(Turret::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
     glUniformMatrix4fv(Turret::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
