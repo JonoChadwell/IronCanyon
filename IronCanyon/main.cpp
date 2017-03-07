@@ -222,7 +222,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
         if (player->scrap >= turretCost) {
-            curTurret = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 5, grid);
+            curTurret = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 3.5, grid);
             objects.push_back(curTurret);
         }
         else {
@@ -238,7 +238,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
                 curTurret->built = true; 
                 turretsBuilt++;
                 grid->addToGrid(curTurret);
-                pSystem->spawnGroundParticles(50, curTurret->pos, glm::vec4(0.6, 0.6, 0.6, 1.0), 5.0);
+                pSystem->spawnGroundParticles(50, curTurret->pos, glm::vec4(0.6, 0.6, 0.6, 1.0), 3.5);
                 cout << "turret " << turretsBuilt << " built\n";
             }
             curTurret = NULL;
@@ -685,6 +685,7 @@ static void stepPlayer(float dt) {
           0, player->pos.z + 3*player->bound*sin(player->theta));
         curTurret->pos.y = grid->height(curTurret->pos.x, curTurret->pos.z);
         curTurret->theta = player->theta + MATH_PI/2;
+        curTurret->snapToGrid();
     }
 
     // now do physics

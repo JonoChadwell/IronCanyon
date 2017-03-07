@@ -55,6 +55,12 @@ void Turret::step(float dt) {
     }
 }
 
+void Turret::snapToGrid() {
+    glm::ivec2 gridPosition = grid->getGridCoords(pos.x, pos.z);
+    glm::vec2 actualPosition = grid->getGameCoords(gridPosition);
+    pos = glm::vec3(actualPosition.x, grid->height(actualPosition.x, actualPosition.y), actualPosition.y);
+}
+
 void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
