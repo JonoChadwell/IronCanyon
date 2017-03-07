@@ -76,6 +76,7 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         o = target->pos.y - housePos.y;
         bangle = atan(o / a);
         bangle = (int)(a * 100) == 0 ? atan(o / abs(o)) : bangle;
+        hangle -= theta;
     }
     // variable declaration
     MatrixStack *M = new MatrixStack();
@@ -134,7 +135,7 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     M->popMatrix();
 
     // laser
-    if (built) {
+    if (built && target) {
         glUniform3f(curShader->getUniform("MatAmb"), 10, 0, 0);
         glUniform3f(curShader->getUniform("MatDif"), 0, 0, 0);
         glUniform3f(curShader->getUniform("MatSpec"), 0, 0, 0);
