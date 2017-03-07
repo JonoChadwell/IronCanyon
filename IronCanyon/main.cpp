@@ -358,7 +358,7 @@ static void init()
     player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid);
     terrain = new Terrain();
-	crosshair = new Crosshair();
+	crosshair = new Crosshair(g_height);
 
     theta = MATH_PI;
     phi = 0;

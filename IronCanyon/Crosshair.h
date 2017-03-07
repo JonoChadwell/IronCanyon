@@ -13,7 +13,8 @@ class Crosshair {
 public:
 	int target = 0;
 	int hair = 1;
-	Crosshair();
+   int height;
+	Crosshair(int height);
 	virtual ~Crosshair();
 
 	// functions

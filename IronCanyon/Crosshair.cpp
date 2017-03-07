@@ -20,7 +20,9 @@ using namespace glm;
 Program* Crosshair::shader;
 Shape* Crosshair::object;
 
-Crosshair::Crosshair() {}
+Crosshair::Crosshair(int height) :
+height(height)
+{}
 
 Crosshair::~Crosshair() {}
 
@@ -51,7 +53,7 @@ void Crosshair::draw() {
 	glUniformMatrix4fv(Crosshair::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniform3f(Crosshair::shader->getUniform("uniColor"), target, 1 - target, 0);
 	glUniform1i(Crosshair::shader->getUniform("hair"), hair);
-	glUniform1i(Crosshair::shader->getUniform("height"), (int)g_vertex_buffer_data[1]);
+	glUniform1i(Crosshair::shader->getUniform("height"), height);
 
 	P->popMatrix();
 	delete P;
@@ -59,7 +61,8 @@ void Crosshair::draw() {
 }
 
 void Crosshair::updateHeight(int windowHeight) {
-	g_vertex_buffer_data[1] = 0;
+	g_vertex_buffer_data[1] = .5;
+   height = windowHeight;
 }
 
 void Crosshair::updateHair(int type) {
@@ -84,7 +87,8 @@ void Crosshair::setup(int windowHeight) {
 	Crosshair::shader->addUniform("P");
 
 	g_vertex_buffer_data[0] = 0;
-	g_vertex_buffer_data[1] = 0;
+	g_vertex_buffer_data[1] = windowHeight * .01 * .1;
+	g_vertex_buffer_data[1] = 5;
 	glGenBuffers(1, &vertexbuffer);
 	//set the current state to focus on our vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
