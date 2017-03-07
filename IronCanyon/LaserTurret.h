@@ -27,4 +27,5 @@ private:
     static Shape* barrel;
     static Shape* laser;
     static Program* shader;
+    static Program* conShader;
 };

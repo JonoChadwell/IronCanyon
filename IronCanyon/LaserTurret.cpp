@@ -15,6 +15,7 @@ Shape* LaserTurret::housing;
 Shape* LaserTurret::barrel;
 Shape* LaserTurret::laser;
 Program* LaserTurret::shader;
+Program* LaserTurret::conShader;
 
 
 // constructor
@@ -40,13 +41,13 @@ void LaserTurret::step(float dt) {
         firing = 0.01;
     }
     // else turn off laser
-    else if (target != NULL && firing > 0.1) {
-        target->active = false;
-        target->toDelete = true;
-    }
     else if (firing > 0.5) {
         firing = 0.0;
-        target = NULL;
+        if (target) {
+            target->active = false;
+            target->toDelete = true;
+            target = NULL;
+        }
     }
     // firing
     if (firing > 0.0) {
@@ -78,17 +79,34 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     }
     // variable declaration
     MatrixStack *M = new MatrixStack();
-    LaserTurret::shader->bind();
-	glUniform3f(LaserTurret::shader->getUniform("sunDir"), SUN_DIR);
-    glUniform3f(LaserTurret::shader->getUniform("eye"), eye.x, eye.y, eye.z);
+    Program* curShader = built ? LaserTurret::shader : LaserTurret::conShader;
+    curShader->bind();
+	glUniform3f(curShader->getUniform("sunDir"), SUN_DIR);
+    glUniform3f(curShader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-	glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 0, .8, 1);
-	glUniform3f(LaserTurret::shader->getUniform("MatDif"), .5, .5, .1);
-	glUniform3f(LaserTurret::shader->getUniform("MatSpec"), .31, .16, .08);
-	glUniform1f(LaserTurret::shader->getUniform("shine"), 3.5);
+    if (built) {
+        glUniform3f(curShader->getUniform("MatAmb"), 0, .8, 1);
+        glUniform3f(curShader->getUniform("MatDif"), .5, .5, .1);
+        glUniform3f(curShader->getUniform("MatSpec"), .31, .16, .08);
+        glUniform1f(curShader->getUniform("shine"), 3.5);
+    }
+    else {
+        if (buildable) {
+            glUniform3f(curShader->getUniform("MatAmb"), 0, .6, 0);
+            glUniform3f(curShader->getUniform("MatDif"), .1, .5, .1);
+            glUniform3f(curShader->getUniform("MatSpec"), 0, .2, 0);
+        }
+        else {
+            glUniform3f(curShader->getUniform("MatAmb"), .6, 0, 0);
+            glUniform3f(curShader->getUniform("MatDif"), .5, .1, .1);
+            glUniform3f(curShader->getUniform("MatSpec"), 0.2, 0, 0);
+        }
+        glUniform1f(curShader->getUniform("shine"), 1.0);
+        glUniform1f(curShader->getUniform("opacity"), 0.75);
+    }
 
-    glUniformMatrix4fv(LaserTurret::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-    glUniformMatrix4fv(LaserTurret::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+    glUniformMatrix4fv(curShader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+    glUniformMatrix4fv(curShader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
 
     // render housing
@@ -99,8 +117,8 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(2, 2, 2));
-        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        LaserTurret::housing->draw(LaserTurret::shader);
+        glUniformMatrix4fv(curShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        LaserTurret::housing->draw(curShader);
     M->popMatrix();
 
     // render barrel
@@ -111,33 +129,35 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(phi + bangle, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(1, 1, 1));
-        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        LaserTurret::barrel->draw(LaserTurret::shader);
+        glUniformMatrix4fv(curShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        LaserTurret::barrel->draw(curShader);
     M->popMatrix();
 
     // laser
-	glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 10, 0, 0);
-	glUniform3f(LaserTurret::shader->getUniform("MatDif"), 0, 0, 0);
-	glUniform3f(LaserTurret::shader->getUniform("MatSpec"), 0, 0, 0);
-	glUniform1f(LaserTurret::shader->getUniform("shine"), 1);
+    if (built) {
+        glUniform3f(curShader->getUniform("MatAmb"), 10, 0, 0);
+        glUniform3f(curShader->getUniform("MatDif"), 0, 0, 0);
+        glUniform3f(curShader->getUniform("MatSpec"), 0, 0, 0);
+        glUniform1f(curShader->getUniform("shine"), 1);
 
-    M->pushMatrix();
-        M->loadIdentity();
-        M->translate(housePos);
-        M->rotate(theta + hangle, vec3(0, 1, 0));
-        M->rotate(phi + bangle, vec3(1, 0, 0));
-        M->rotate(roll, vec3(0, 0, 1));
-        if (firing > 0.0)
-            M->scale(vec3(0.5, 0.5, 50));
-        else
-            M->scale(vec3(0.1, 0.1, 50));
-        M->translate(vec3(0, 0, -1));
-        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        LaserTurret::laser->draw(LaserTurret::shader); 
-    M->popMatrix();
+        M->pushMatrix();
+            M->loadIdentity();
+            M->translate(housePos);
+            M->rotate(theta + hangle, vec3(0, 1, 0));
+            M->rotate(phi + bangle, vec3(1, 0, 0));
+            M->rotate(roll, vec3(0, 0, 1));
+            if (firing > 0.0)
+                M->scale(vec3(0.5, 0.5, 50));
+            else
+                M->scale(vec3(0.1, 0.1, 50));
+            M->translate(vec3(0, 0, -1));
+            glUniformMatrix4fv(curShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+            LaserTurret::laser->draw(curShader); 
+        M->popMatrix();
+    }
 
     // cleanup
-    LaserTurret::shader->unbind();
+    curShader->unbind();
     delete M;
 }
 
@@ -174,5 +194,24 @@ void LaserTurret::setup() {
     LaserTurret::shader->addAttribute("vertPos");
     LaserTurret::shader->addAttribute("vertNor");
     LaserTurret::shader->addAttribute("vertTex");
+
+	LaserTurret::conShader = new Program();
+	LaserTurret::conShader->setVerbose(true);
+	LaserTurret::conShader->setShaderNames(RESOURCE_DIR + "construction_vert.glsl", RESOURCE_DIR + "construction_frag.glsl");
+	LaserTurret::conShader->init();
+	LaserTurret::conShader->addUniform("P");
+	LaserTurret::conShader->addUniform("M");
+	LaserTurret::conShader->addUniform("V");
+	LaserTurret::conShader->addUniform("sunDir");
+	LaserTurret::conShader->addUniform("eye");
+	LaserTurret::conShader->addUniform("MatAmb");
+	LaserTurret::conShader->addUniform("MatDif");
+	LaserTurret::conShader->addUniform("MatSpec");
+	LaserTurret::conShader->addUniform("shine");
+	LaserTurret::conShader->addUniform("opacity");
+	LaserTurret::conShader->addAttribute("vertPos");
+	LaserTurret::conShader->addAttribute("vertNor");
+	LaserTurret::conShader->addAttribute("vertTex");
+
 }
 

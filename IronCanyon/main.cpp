@@ -48,6 +48,8 @@ Player* player;
 Grid* grid;
 Terrain* terrain;
 
+Turret* curTurret = NULL;
+
 // Vector holding all game objects
 vector<GameObject*> objects;
 vector<GameObject*> projectiles;
@@ -208,20 +210,28 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		}
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-        /* jank turret building for 50% demo */
         if (player->scrap >= turretCost) {
-            player->scrap -= turretCost;
-            LaserTurret* t = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 5, grid);
-            grid->addToGrid(t);
-            objects.push_back(t);
-            turretsBuilt++;
-            cout << "turret " << turretsBuilt << " built\n";
+            curTurret = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 5, grid);
+            objects.push_back(curTurret);
         }
         else {
             cout << "Not enough scrap! You only have " << player->scrap << endl;
         }
-        /* end jankness */
 	}
+    if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
+        if (curTurret != NULL) {
+            // If turret was buildable, it is built. otherwise it is deleted
+            curTurret->building = false;
+            if (curTurret->buildable) {
+                player->scrap -= turretCost;
+                curTurret->built = true; 
+                turretsBuilt++;
+                grid->addToGrid(curTurret);
+                cout << "turret " << turretsBuilt << " built\n";
+            }
+            curTurret = NULL;
+        }
+    }
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
@@ -628,6 +638,12 @@ static void stepPlayer(float dt) {
               playerStreamColor);
         }
         streamCooldown = 0.0;
+    }
+    // deal with current construction
+    if (curTurret) {
+        curTurret->pos = glm::vec3(player->pos.x - 3*player->bound*cos(player->theta),
+          0, player->pos.z + 3*player->bound*sin(player->theta));
+        curTurret->pos.y = grid->height(curTurret->pos.x, curTurret->pos.z);
     }
 
     // now do physics
