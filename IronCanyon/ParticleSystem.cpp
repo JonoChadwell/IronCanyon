@@ -78,8 +78,8 @@ void ParticleSystem::spawnGroundParticles(int np, glm::vec3 at, glm::vec4 color,
         outVelz = RANDF < 0.5 ? -outVelz : outVelz;
         particles[fu]->vel = glm::vec3(outVelx, 0, outVelz);
         // deal with radius start of particles based on their respective velocities
-        particles[fu]->pos.x += particles[fu]->vel.x * .08 * radius;
-        particles[fu]->pos.z += particles[fu]->vel.z * .08 * radius;
+        particles[fu]->pos.x += particles[fu]->vel.x * .114 * radius;
+        particles[fu]->pos.z += particles[fu]->vel.z * .114 * radius;
         particles[fu]->color = color;
     }
 }
