@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "MatrixStack.h"
 #include <string>
 #include <vector>
@@ -6,14 +7,15 @@
 
 class Shape;
 class Program;
-class Texture;
 
-class Text {
+class Crosshair {
 
 public:
-
-	Text();
-	virtual ~Text();
+	float phi;
+	float theta;
+	int target;
+	Crosshair(float ph, float th);
+	virtual ~Crosshair();
 
 	// functions
 	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
@@ -22,6 +24,5 @@ public:
 
 private:
 	static Program* shader;
-	static Texture* texture;
-
+	static Shape* object;
 };

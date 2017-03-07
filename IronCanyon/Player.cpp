@@ -5,6 +5,7 @@
 #include "math.h"
 #include "Constants.h"
 #include "Grid.h"
+#include "Crosshair.h"
 #include <iostream>
 #include <cmath>
 
@@ -53,6 +54,8 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     firing = 0;
 	jumping = 0;
 	boosting = 0;
+	crosshair = new Crosshair(ph, th);
+	crosshair->setup();
 }
 
 // destructor
@@ -299,6 +302,11 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	// garbage collection
 	delete M;
 	Player::shader->unbind();
+
+	Player::crosshair->phi = phi;
+	Player::crosshair->theta = theta;
+	Player::crosshair->target = crosshairTarget;
+	Player::crosshair->draw(P, lookAt, eye);
 }
 
 

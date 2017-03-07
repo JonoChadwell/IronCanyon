@@ -78,7 +78,7 @@ bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
 int waveNumber = 1;
-int turretCost = 1000;
+int turretCost = 000;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
@@ -428,6 +428,21 @@ static void createScrapPile(GameObject* enemy) {
     }
 }
 
+static void crosshairColor() {
+	player->crosshairTarget = 0;
+	vec3 playerPosition = vec3(player->pos.x, player->pos.y, player->pos.z);
+	vec3 laserDirection = vec3(cos(player->phi + 0.2) * -cos(player->theta), sin(player->phi + 0.2), cos(player->phi + 0.2) * sin(player->theta));
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		float radius = objects[i]->bound;
+		vec3 objectPosition = vec3(objects[i]->pos.x, objects[i]->pos.y, objects[i]->pos.z);
+		float det = pow(dot(laserDirection, (playerPosition - objectPosition)), 2) - pow(length(playerPosition - objectPosition), 2) + radius * radius;
+		// hit
+		if (det > 0 && dynamic_cast<Enemy*>(objects[i]) != NULL) {
+			player->crosshairTarget = 1;
+		}
+	}
+}
+
 static void laserFire()
 {
    vec3 playerPosition = vec3(player->pos.x, player->pos.y, player->pos.z);
@@ -687,7 +702,7 @@ static void stepPlayer(float dt) {
         missileFire();
         rifleCooldown = RIFLE_COOLDOWN;
     }
-
+	crosshairColor();
     player->step(dt);
 }
 
