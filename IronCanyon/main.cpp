@@ -32,6 +32,7 @@
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <SFML/Audio.hpp>
 
 using namespace std;
 using namespace glm;
@@ -49,6 +50,7 @@ Player* player;
 Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
+sf::Sound* sound;
 
 Turret* curTurret = NULL;
 
@@ -79,6 +81,7 @@ bool gamePaused = false;
 bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
+int curLaserSound = 0;
 int waveNumber = 1;
 int turretCost = 000;
 int turretsBuilt = 0;
@@ -145,6 +148,7 @@ static void pollJoysticks() {
 	
 		if (controllerAxes[5] >= -0.9 || controllerAxes[4] >= -0.9) {
 			if (controllerAxes[5] >= -0.9) {
+
 				player->fireMode = 2;
 			}
 			else if (controllerAxes[4] >= -0.9) {
@@ -321,8 +325,6 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
     if (!mouseCaptured) {
         return;
     }
-	//cout << x << endl;
-	//cout << y << endl << endl;
     double changex = x - lastx;
     double changey = y - lasty;
 
@@ -378,6 +380,7 @@ static void init()
     Scrap::setup();
     StaticTerrainObject::setup();
     Turret::setup();
+    Turret::objects = &objects;
     LaserTurret::setup();
 	Projectile::setup();
     // Particles
@@ -477,6 +480,7 @@ static void missileFire() {
 	projectiles.push_back(proj);
     pSystem->spawnFocusParticles(3, proj->pos, glm::vec4(0.2f, 1.0f, 0.2f, 1.0f),
       35.0f, proj->phi, proj->theta, 7.0f);
+	sound->play();
 }
 
 
@@ -782,7 +786,6 @@ static void render()
 static void updateWorld()
 {
 	if (player->health > 0 && !gamePaused) {
-        Turret::quadtree = quadtree;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
             timePassed -= maxPhysicsStepLength;
@@ -832,6 +835,7 @@ static void updateProjectileVector() {
 
 int main(int argc, char **argv)
 {
+
 	// Set error callback.
 	glfwSetErrorCallback(error_callback);
 	// Initialize the library.
@@ -843,6 +847,17 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+
+	sf::SoundBuffer buffer;
+
+	sound = new sf::Sound();
+	//sound[1] = new sf::Sound();
+	//sound[2] = new sf::Sound();
+	buffer.loadFromFile("../resources/LaserShot.ogg");
+	sound->setBuffer(buffer);
+	//sound[1]->setBuffer(buffer);
+	//sound[2]->setBuffer(buffer);
+	//sound->play();
 
 	// Create a windowed mode window and its OpenGL context.
 	window = glfwCreateWindow(g_width, g_height, "Iron Canyon", NULL, NULL);

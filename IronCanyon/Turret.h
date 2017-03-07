@@ -8,11 +8,10 @@
 
 class Turret : public GridObject {
 public:
-    static QuadTree* quadtree;
+    static vector<GameObject*>* objects;
     bool built = false;
     bool buildable = false;
     bool building = true;
-    QuadTree* quadTree;
     Enemy* target;
     Turret(glm::vec3 p, int rotation, float b, Grid *grid);
     ~Turret();

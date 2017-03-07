@@ -23,9 +23,12 @@ protected:
     Grid *grid;
 
 private:
+    float hangle = 0.0;
+    float bangle = 0.0;
     static Shape* housing;
     static Shape* barrel;
     static Shape* laser;
     static Program* shader;
     static Program* conShader;
+    void laserFire();
 };
