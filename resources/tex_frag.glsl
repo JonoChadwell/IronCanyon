@@ -24,6 +24,4 @@ void main(){
    vec4 tempColor = vec4(ambShade + diffShade + specShade, 1.0);
    //Texture + lighting
    color = vec4(texColor.r * tempColor.r, texColor.g * tempColor.g, texColor.b * tempColor.b, 1.0);
-   //Texture only
-   color = vec4(texColor.r, texColor.g, texColor.b, 1.0);
 }
