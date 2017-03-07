@@ -11,6 +11,7 @@
 
 Shape* Turret::model;
 Program* Turret::shader;
+Program* Turret::conShader;
 QuadTree* Turret::quadtree;
 float dist(glm::vec3 p1, glm::vec3 p2);
 
@@ -60,17 +61,37 @@ void Turret::step(float dt) {
 void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // variable declaration
     MatrixStack *M = new MatrixStack();
-    Turret::shader->bind();
-    glUniform3f(Turret::shader->getUniform("sunDir"), SUN_DIR);
-    glUniform3f(Turret::shader->getUniform("eye"), eye.x, eye.y, eye.z);
+    Program* curShader = built ? Turret::shader : Turret::conShader;
+    curShader->bind();
+    glUniform3f(curShader->getUniform("sunDir"), SUN_DIR);
+    glUniform3f(curShader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    glUniform3f(Turret::shader->getUniform("MatAmb"), 0, .8, 1);
-    glUniform3f(Turret::shader->getUniform("MatDif"), .5, .5, .1);
-    glUniform3f(Turret::shader->getUniform("MatSpec"), .31, .16, .08);
-    glUniform1f(Turret::shader->getUniform("shine"), 3.5);
+    // if built, draw normally
+    if (built) {
+        glUniform3f(curShader->getUniform("MatAmb"), 0, .8, 1);
+        glUniform3f(curShader->getUniform("MatDif"), .5, .5, .1);
+        glUniform3f(curShader->getUniform("MatSpec"), .31, .16, .08);
+        glUniform1f(curShader->getUniform("shine"), 3.5);
+    }
+    // else draw transparent fram based on buildability
+    else {
+        if (buildable) {
+            glUniform3f(curShader->getUniform("MatAmb"), 0.0, 0.6, 0.0);
+            glUniform3f(curShader->getUniform("MatDif"), .1, .5, .1);
+            glUniform3f(curShader->getUniform("MatSpec"), .0, .2, .0);
+        }
+        else {
+            glUniform3f(curShader->getUniform("MatAmb"), 0.6, 0.0, 0.0);
+            glUniform3f(curShader->getUniform("MatDif"), .5, .1, .1);
+            glUniform3f(curShader->getUniform("MatSpec"), .2, .0, .0);
+        }
+        glUniform1f(curShader->getUniform("shine"), 1.0);
+        glUniform1f(curShader->getUniform("opacity"), 0.75);
+    }
 
-    glUniformMatrix4fv(Turret::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-    glUniformMatrix4fv(Turret::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+    // back to constant stuff
+    glUniformMatrix4fv(curShader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+    glUniformMatrix4fv(curShader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
 
     // render shit
@@ -80,12 +101,12 @@ void Turret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
         M->scale(vec3(3, 3, 3));
-        glUniformMatrix4fv(Turret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Turret::model->draw(Turret::shader);
+        glUniformMatrix4fv(curShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+       Turret::model->draw(curShader);
     M->popMatrix();
 
     // cleanup
-    Turret::shader->unbind();
+    curShader->unbind();
     delete M;
 }
 
@@ -116,6 +137,24 @@ void Turret::setup() {
 	Turret::shader->addAttribute("vertPos");
 	Turret::shader->addAttribute("vertNor");
 	Turret::shader->addAttribute("vertTex");
+
+	Turret::conShader = new Program();
+	Turret::conShader->setVerbose(true);
+	Turret::conShader->setShaderNames(RESOURCE_DIR + "construction_vert.glsl", RESOURCE_DIR + "construction_frag.glsl");
+	Turret::conShader->init();
+	Turret::conShader->addUniform("P");
+	Turret::conShader->addUniform("M");
+	Turret::conShader->addUniform("V");
+	Turret::conShader->addUniform("sunDir");
+	Turret::conShader->addUniform("eye");
+	Turret::conShader->addUniform("MatAmb");
+	Turret::conShader->addUniform("MatDif");
+	Turret::conShader->addUniform("MatSpec");
+	Turret::conShader->addUniform("shine");
+	Turret::conShader->addUniform("opacity");
+	Turret::conShader->addAttribute("vertPos");
+	Turret::conShader->addAttribute("vertNor");
+	Turret::conShader->addAttribute("vertTex");
 
     Turret::quadtree = NULL;
 }

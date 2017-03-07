@@ -28,4 +28,5 @@ protected:
 private:
     static Shape* model;
     static Program* shader;
+    static Program* conShader;
 };
