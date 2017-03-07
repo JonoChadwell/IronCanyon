@@ -116,25 +116,27 @@ void LaserTurret::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     M->popMatrix();
 
     // laser
-	glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 10, 0, 0);
-	glUniform3f(LaserTurret::shader->getUniform("MatDif"), 0, 0, 0);
-	glUniform3f(LaserTurret::shader->getUniform("MatSpec"), 0, 0, 0);
-	glUniform1f(LaserTurret::shader->getUniform("shine"), 1);
+    if (built) {
+        glUniform3f(LaserTurret::shader->getUniform("MatAmb"), 10, 0, 0);
+        glUniform3f(LaserTurret::shader->getUniform("MatDif"), 0, 0, 0);
+        glUniform3f(LaserTurret::shader->getUniform("MatSpec"), 0, 0, 0);
+        glUniform1f(LaserTurret::shader->getUniform("shine"), 1);
 
-    M->pushMatrix();
-        M->loadIdentity();
-        M->translate(housePos);
-        M->rotate(theta + hangle, vec3(0, 1, 0));
-        M->rotate(phi + bangle, vec3(1, 0, 0));
-        M->rotate(roll, vec3(0, 0, 1));
-        if (firing > 0.0)
-            M->scale(vec3(0.5, 0.5, 50));
-        else
-            M->scale(vec3(0.1, 0.1, 50));
-        M->translate(vec3(0, 0, -1));
-        glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        LaserTurret::laser->draw(LaserTurret::shader); 
-    M->popMatrix();
+        M->pushMatrix();
+            M->loadIdentity();
+            M->translate(housePos);
+            M->rotate(theta + hangle, vec3(0, 1, 0));
+            M->rotate(phi + bangle, vec3(1, 0, 0));
+            M->rotate(roll, vec3(0, 0, 1));
+            if (firing > 0.0)
+                M->scale(vec3(0.5, 0.5, 50));
+            else
+                M->scale(vec3(0.1, 0.1, 50));
+            M->translate(vec3(0, 0, -1));
+            glUniformMatrix4fv(LaserTurret::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+            LaserTurret::laser->draw(LaserTurret::shader); 
+        M->popMatrix();
+    }
 
     // cleanup
     LaserTurret::shader->unbind();

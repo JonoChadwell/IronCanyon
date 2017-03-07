@@ -211,7 +211,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
         if (player->scrap >= turretCost) {
-            player->scrap -= turretCost;
             curTurret = new LaserTurret(vec3(player->pos.x, 0, player->pos.z + player->bound*3), 0, 5, grid);
             objects.push_back(curTurret);
         }
@@ -224,6 +223,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             // If turret was buildable, it is built. otherwise it is deleted
             curTurret->building = false;
             if (curTurret->buildable) {
+                player->scrap -= turretCost;
                 curTurret->built = true; 
                 turretsBuilt++;
                 grid->addToGrid(curTurret);
