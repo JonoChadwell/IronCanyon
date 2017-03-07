@@ -356,7 +356,7 @@ static void init()
 
     grid = new Grid();
     player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
-    camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid);
+    camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, 20);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
 

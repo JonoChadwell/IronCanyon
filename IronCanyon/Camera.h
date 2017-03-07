@@ -12,7 +12,8 @@ public:
     vec3 pos;
     vec3 look;
     Grid* grid;
-    Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid);
+	float distance;
+    Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid, float distance);
     virtual ~Camera();
 
 	// functions

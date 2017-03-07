@@ -12,10 +12,11 @@
 
 using namespace glm;
 
-Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid) :
+Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid, float distance) :
     pos(vec3(xp, yp, zp)),
     look(vec3(xl, yl, zl)),
-    grid(grid)
+    grid(grid),
+	distance(distance)
 {}
 
 // destructor
@@ -26,10 +27,10 @@ Camera::~Camera()
 // update function to change position
 void Camera::trackToPlayer(Player *player) {
     look = player->pos;
-    pos.x = look.x + 20 * cos(-player->theta) * cos(-player->phi);
-    pos.y = look.y + 20 * sin(-player->phi);
-    pos.z = look.z + 20 * sin(-player->theta) * cos(-player->phi);
-    float i = 20;
+    pos.x = look.x + distance * cos(-player->theta) * cos(-player->phi);
+    pos.y = look.y + distance * sin(-player->phi);
+    pos.z = look.z + distance * sin(-player->theta) * cos(-player->phi);
+    float i = distance;
     while (!grid->inBounds(pos.x, pos.z) && i > 1) {
       pos.x = look.x + i * cos(-player->theta) * cos(-player->phi);
       pos.z = look.z + i * sin(-player->theta) * cos(-player->phi);
