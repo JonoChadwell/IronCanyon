@@ -8,7 +8,6 @@ class Shape;
 class Program;
 class Texture;
 class Grid;
-class Crosshair;
 
 class Player {
 
@@ -30,7 +29,6 @@ public:
 	bool isPaused; // true when paused
     int scrap;
 	int health;
-	int crosshairTarget;
 
 	Player(float xp, float yp, float zp, float xr, float yr, float zr, float bound, Grid* grid);
 	virtual ~Player();
@@ -49,7 +47,6 @@ public:
 
 private:
     Grid* grid;
-	Crosshair* crosshair;
 	static Shape* turret;
 	static Shape* chassis;
 	static Shape* laser;

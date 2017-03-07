@@ -11,16 +11,15 @@ class Program;
 class Crosshair {
 
 public:
-	float phi;
-	float theta;
-	int target;
-	Crosshair(float ph, float th);
+	int target = 0;
+	Crosshair();
 	virtual ~Crosshair();
 
 	// functions
-	void draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye);
+	void draw();
+	void Crosshair::updateHeight(int windowHeight);
 
-	static void setup();
+	static void setup(int windowHeight);
 
 private:
 	static Program* shader;
