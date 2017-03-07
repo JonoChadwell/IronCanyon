@@ -18,8 +18,8 @@ public:
 
 	// functions
 	void draw();
-	void Crosshair::updateHeight(int windowHeight);
-	void Crosshair::updateHair(int type);
+	void updateHeight(int windowHeight);
+	void updateHair(int type);
 
 	static void setup(int windowHeight);
 
