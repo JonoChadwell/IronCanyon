@@ -63,7 +63,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	   M->rotate(-theta, vec3(0, 1, 0));
        M->rotate(phi, vec3(1, 0, 0));
        M->rotate(roll, vec3(0, 0, 1));
-       //M->scale(vec3(5, 1, 1));
+       M->scale(vec3(0.5, 0.5, 0.5));
        glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
        Scrap::bolt->draw(Scrap::shader);
     M->popMatrix();

@@ -9,11 +9,12 @@
 #define PART_VEL 50
 #define RAND_VEL ( (float)rand() / RAND_MAX * PART_VEL - PART_VEL/2 )
 #define RANDF ((float)rand() / RAND_MAX)
+#define RANDF_NEG (RANDF*2 - 1)
 #define DECEL_FACTOR 2.5f
 
 // constructor
 ParticleSystem::ParticleSystem(GLuint amount, Grid *grid)
-    : amount(amount),
+    : amount(300),
     grid(grid)
 {
     texture.setFilename(RESOURCE_DIR + "alpha.bmp");
@@ -100,13 +101,15 @@ void ParticleSystem::spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
     }
 }
 // spawn explosions
-void ParticleSystem::spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color) {
+void ParticleSystem::spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color,
+  float baseVel) {
     // for each particle, give it position and random velocity
     for (int i = 0; i < np; ++i) {
         int fu = firstUnusedParticle();
         particles[fu]->life = 1.0f;
         particles[fu]->pos = at;
-        particles[fu]->vel = glm::vec3(RAND_VEL, RAND_VEL, RAND_VEL);
+        particles[fu]->vel = glm::vec3(RANDF*baseVel-baseVel/2, RANDF*baseVel-baseVel/2, RANDF*baseVel-baseVel/2);
+        //particles[fu]->vel = glm::vec3(RAND_VEL, RAND_VEL, RAND_VEL);
         particles[fu]->color = color;
     }
 }

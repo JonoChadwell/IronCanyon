@@ -73,7 +73,7 @@ bool mouseCaptured = true;
 double lastx;
 double lasty;
 double lastScroll;
-float cameraDistance = 20;
+float cameraDistance = 10;
 
 // The time the last frame began rendering
 double lastFrameStartTime;
@@ -115,7 +115,7 @@ static void error_callback(int error, const char *description)
 static void hurtPlayer(int amt)
 {
     player->health -= 1;
-    pSystem->spawnBurstParticles(50, player->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
+    pSystem->spawnBurstParticles(50, player->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f), 50.0f);
 }
 
 static void pollJoysticks() {
@@ -377,7 +377,7 @@ static void init()
 
     grid = new Grid();
     player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
-    camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, 20);
+    camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, cameraDistance);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
 
@@ -839,7 +839,7 @@ static void updateObjectVector() {
 			// Spawn particles for enemy death
 			Enemy* enemy = dynamic_cast<Enemy*>(objects[i]);
             if (enemy != NULL) {
-                pSystem->spawnBurstParticles(25, objects[i]->pos, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                pSystem->spawnBurstParticles(25, objects[i]->pos, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 50.0f);
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);

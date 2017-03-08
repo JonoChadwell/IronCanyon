@@ -46,7 +46,7 @@ public:
     void spawnGroundParticles(int np, glm::vec3 at, glm::vec4 color, float radius);
     void spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
       float baseVel, float phi, float theta, float spread);
-    void spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color);
+    void spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color, float baseVel);
     void spawnStreamParticle(glm::vec3 at, glm::vec3 v, glm::vec4 color);
 private:
     Program *shader;
