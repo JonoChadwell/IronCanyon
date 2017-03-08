@@ -22,3 +22,6 @@
 #define NO_TEAM 0
 #define PLAYER_TEAM 1
 #define ENEMY_TEAM 2
+
+#define CAMERA_MIN 1
+#define CAMERA_MAX 25

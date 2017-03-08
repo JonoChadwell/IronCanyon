@@ -72,6 +72,8 @@ bool mouseInitialized = false;
 bool mouseCaptured = true;
 double lastx;
 double lasty;
+double lastScroll;
+float cameraDistance = 20;
 
 // The time the last frame began rendering
 double lastFrameStartTime;
@@ -339,6 +341,25 @@ static void cursor_callback(GLFWwindow *window, double x, double y)
     phi = std::max(phi, (float)(-.5));
     lastx = x;
     lasty = y;
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (!mouseInitialized) {
+		lastScroll = yoffset;
+		mouseInitialized = true;
+		return;
+	}
+	if (!mouseCaptured) {
+		return;
+	}
+	double changeScroll = yoffset - lastScroll;
+
+	cameraDistance -= lastScroll;
+	cameraDistance = std::min(cameraDistance, (float)CAMERA_MAX);
+	cameraDistance = std::max(cameraDistance, (float)CAMERA_MIN);
+	lastScroll = yoffset;
+	camera->distance = cameraDistance;
 }
 
 static void resize_callback(GLFWwindow *window, int width, int height) {
@@ -895,6 +916,8 @@ int main(int argc, char **argv)
     glfwSetMouseButtonCallback(window, mouse_callback);
     //set the scroll call back
     glfwSetCursorPosCallback(window, cursor_callback);
+	//Mouse scroll call back
+	glfwSetScrollCallback(window, scroll_callback);
     //set the window resize call back
     glfwSetFramebufferSizeCallback(window, resize_callback);
     //lock cursor
