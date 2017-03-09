@@ -575,6 +575,9 @@ static void projectileDetection() {
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
+            else if (distance < qObjects[j]->bound) {
+                projectiles[i]->toDelete = true;
+            }
 		}
 	}
     for (unsigned int i = 0; i < projectiles.size(); i++) {
