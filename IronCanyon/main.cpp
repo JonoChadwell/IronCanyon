@@ -410,7 +410,7 @@ static void init()
     LaserTurret::setup();
 	Projectile::setup();
     // Particles
-    pSystem = new ParticleSystem(300, grid);
+    pSystem = new ParticleSystem(grid);
 
 	forwards = 0;
 	sideways = 0;

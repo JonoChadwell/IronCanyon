@@ -13,8 +13,7 @@
 #define DECEL_FACTOR 2.5f
 
 // constructor
-ParticleSystem::ParticleSystem(GLuint amount, Grid *grid)
-    : amount(300),
+ParticleSystem::ParticleSystem(Grid *grid) :
     grid(grid)
 {
     texture.setFilename(RESOURCE_DIR + "alpha.bmp");
@@ -34,6 +33,7 @@ ParticleSystem::ParticleSystem(GLuint amount, Grid *grid)
     shader->addTexture(&texture);
     ParticleSystem::initGeom();
 
+    amount = PARTICLE_AMOUNT;
     // set up particles 
     for(int i = 0; i < amount; ++i) {
         particles.push_back(new Particle());
@@ -127,6 +127,9 @@ void ParticleSystem::step(float dt) {
     // do physics
     for(int i = 0; i < amount; i++) {
         // only do stuff if particle is alive
+        if (i >= particles.size()) {
+            printf("BAD STUFF, i = %d and particles has %d elements\n", i, particles.size());
+        }
         if (glm::length(particles[i]->vel) > 1.0f) {
             float gridHeight = grid->height(particles[i]->pos.x, particles[i]->pos.z);
             particles[i]->pos += particles[i]->vel * dt;
