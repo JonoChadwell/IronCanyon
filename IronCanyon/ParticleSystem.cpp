@@ -11,6 +11,7 @@
 #define RANDF ((float)rand() / RAND_MAX)
 #define RANDF_NEG (RANDF*2 - 1)
 #define DECEL_FACTOR 2.5f
+#define RGB_DIFF_FACTOR 0.15f
 
 // constructor
 ParticleSystem::ParticleSystem(Grid *grid) :
@@ -118,6 +119,9 @@ void ParticleSystem::spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
         float vz = baseVel * sin(theta) + RANDF*spread - spread/2;
         particles[fu]->vel = glm::vec3(vx, vy, vz);
         particles[fu]->color = color;
+        particles[fu]->color.r += RANDF_NEG * RGB_DIFF_FACTOR;
+        particles[fu]->color.g += RANDF_NEG * RGB_DIFF_FACTOR;
+        particles[fu]->color.b += RANDF_NEG * RGB_DIFF_FACTOR;
     }
 }
 // spawn explosions
@@ -131,6 +135,9 @@ void ParticleSystem::spawnBurstParticles(int np, glm::vec3 at, glm::vec4 color,
         particles[fu]->vel = glm::vec3(RANDF*baseVel-baseVel/2, RANDF*baseVel-baseVel/2, RANDF*baseVel-baseVel/2);
         //particles[fu]->vel = glm::vec3(RAND_VEL, RAND_VEL, RAND_VEL);
         particles[fu]->color = color;
+        particles[fu]->color.r += RANDF_NEG * RGB_DIFF_FACTOR;
+        particles[fu]->color.g += RANDF_NEG * RGB_DIFF_FACTOR;
+        particles[fu]->color.b += RANDF_NEG * RGB_DIFF_FACTOR;
     }
 }
 // spawn streams
