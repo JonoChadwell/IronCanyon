@@ -703,7 +703,7 @@ static void stepPlayer(float dt) {
     // dust
     if (particleChance < 1 || rand() % (int) particleChance == 0) {
         pSystem->spawnDustParticles(1, player->pos - player->vel / 15.0f,
-          glm::vec4(0.8f, 0.4, 0.1f, 1.0f), player->bound/2);
+          glm::vec4(0.82f, 0.695f, 0.52f, 1.0f), player->bound/2);
     }
 
     // deal with jump particles
@@ -876,7 +876,7 @@ static void updateObjectVector() {
 			// Spawn particles for enemy death
 			Enemy* enemy = dynamic_cast<Enemy*>(objects[i]);
             if (enemy != NULL) {
-                pSystem->spawnBurstParticles(50, objects[i]->pos, glm::vec4(1.0f, 0.8f, 0.0f, 1.0f), 50.0f);
+                pSystem->spawnBurstParticles(50, objects[i]->pos, glm::vec4(1.0f, 0.68f, 0.3f, 1.0f), 50.0f);
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
