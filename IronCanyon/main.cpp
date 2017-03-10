@@ -872,12 +872,11 @@ static void updateWorld()
 	//Win condition
 	if (rocket->stage == 3) {
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
-		int once = 0;
-		while (timePassed > maxPhysicsStepLength || !once) {
+		while (timePassed > maxPhysicsStepLength) {
 			timePassed -= maxPhysicsStepLength;
 			rocket->step(maxPhysicsStepLength);
-			once++;
 		}
+		rocket->step(maxPhysicsStepLength);
 	}
 }
 
