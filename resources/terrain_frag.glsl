@@ -23,7 +23,7 @@ void main() {
                     * MatSpec * lightColor;
 
    vec4 tempColor = vec4(ambShade + diffShade + specShade, 1.0);
-   vec4 texColor = texture(TerrainTexture, fragWorld.xz / 20);
+   vec4 texColor = texture(TerrainTexture, fragWorld.xz / 10);
    color = vec4(texColor.r * tempColor.r, texColor.g * tempColor.g, texColor.b * tempColor.b, 1.0);
    // color = vec4(normal, 1.0);
 }

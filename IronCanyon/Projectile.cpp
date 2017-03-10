@@ -100,9 +100,7 @@ void Projectile::step(float dt) {
 	//std::cout << animtime;
 	animtime += dt;
 
-    if (!grid->inBounds(pos.x, pos.z)) {
-        toDelete = true;
-    } else if (pos.y < grid->height(pos.x, pos.z)) {
+    if (pos.y < grid->height(pos.x, pos.z)) {
         toDelete = true;
     }
 

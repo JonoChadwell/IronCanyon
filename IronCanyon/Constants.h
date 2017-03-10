@@ -25,3 +25,5 @@
 
 #define CAMERA_MIN 1
 #define CAMERA_MAX 25
+
+#define PARTICLE_AMOUNT 600

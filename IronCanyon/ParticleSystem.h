@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Program.h"
 #include "GameObject.h"
+#include "Constants.h"
 #include "Grid.h"
 
 #define PARTICLE_FLOOR (-30.0f)
@@ -34,7 +35,7 @@ class ParticleSystem
 public:
     std::vector<Particle*> particles;
     // Constructor
-    ParticleSystem(GLuint amount, Grid *grid);
+    ParticleSystem(Grid *grid);
     virtual ~ParticleSystem();
     // Update all particles
     void update(GLfloat dt, GameObject *obj, GLuint newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
@@ -57,8 +58,8 @@ private:
     GLuint colorbuffer;
     GLuint VertexArrayID;
     GLuint amount;
-    GLfloat points[900];
-    GLfloat pointColors[1200];
+    GLfloat points[PARTICLE_AMOUNT*3];
+    GLfloat pointColors[PARTICLE_AMOUNT*4];
     int lastUsedParticle = 0;
     // Initializes buffer and vertex attributes
     void initGeom();

@@ -425,7 +425,7 @@ static void init()
     LaserTurret::setup();
 	Projectile::setup();
     // Particles
-    pSystem = new ParticleSystem(300, grid);
+    pSystem = new ParticleSystem(grid);
 
 	forwards = 0;
 	sideways = 0;
@@ -592,6 +592,9 @@ static void projectileDetection() {
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
+            else if (distance < qObjects[j]->bound) {
+                projectiles[i]->toDelete = true;
+            }
 		}
 	}
     for (unsigned int i = 0; i < projectiles.size(); i++) {
