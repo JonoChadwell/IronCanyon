@@ -67,6 +67,26 @@ void ParticleSystem::initGeom() {
     assert(glGetError() == GL_NO_ERROR);
 }
 
+// spawn dust trail
+void ParticleSystem::spawnDustParticles(int np, glm::vec3 at, glm::vec4 color,
+  float radius) {
+    for (int i = 0; i < np; i++) {
+        int fu = firstUnusedParticle();
+        particles[fu]->life = 1.0f;
+        particles[fu]->pos = at;
+        particles[fu]->pos.y = grid->height(particles[fu]->pos.x, particles[fu]->pos.z);
+        float dir = RANDF * 2 * M_PI;
+        float outVelx = cos(dir) * 5;
+        float outVelz = sin(dir) * 5;
+        float outVely = abs(RAND_VEL * .1);
+        particles[fu]->vel = glm::vec3(outVelx, outVely, outVelz);
+        // deal with radius start of particles based on their respective velocities
+        particles[fu]->pos.x += cos(dir) * radius;
+        particles[fu]->pos.z += sin(dir) * radius;
+        particles[fu]->color = color;
+    }
+}
+
 // spawn ground wave
 void ParticleSystem::spawnGroundParticles(int np, glm::vec3 at, glm::vec4 color,
   float radius) {

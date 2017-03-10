@@ -44,6 +44,7 @@ public:
     // update physics
     void step(float dt);
     // create particles
+    void spawnDustParticles(int np, glm::vec3 at, glm::vec4 color, float radius);
     void spawnGroundParticles(int np, glm::vec3 at, glm::vec4 color, float radius);
     void spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
       float baseVel, float phi, float theta, float spread);

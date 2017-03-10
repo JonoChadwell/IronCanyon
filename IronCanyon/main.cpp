@@ -695,6 +695,16 @@ static void drawPlayer() {
 
 static void stepPlayer(float dt) {
     glm::vec4 playerStreamColor = glm::vec4(0.0f, 0.8f, 1.0f, 1.0f);
+    float playerHeight =  (player->pos.y - grid->height(player->pos.x, player->pos.z)) + 1;
+    float particleChance = playerHeight * playerHeight * playerHeight * 10;
+    particleChance /= 8 + length(player->vel);
+
+    // dust
+    if (particleChance < 1 || rand() % (int) particleChance == 0) {
+        pSystem->spawnDustParticles(1, player->pos - player->vel / 15.0f,
+          glm::vec4(0.8f, 0.4, 0.1f, 1.0f), player->bound/2);
+    }
+
     // deal with jump particles
     if (player->jumping == 1) {
         for (int i = 0; i < 20; i++) {
