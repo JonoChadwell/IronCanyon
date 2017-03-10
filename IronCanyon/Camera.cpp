@@ -41,6 +41,10 @@ void Camera::trackToPlayer(Player *player) {
     }
 }
 
+void Camera::trackToRocket(float ypos) {
+	look = vec3(0, ypos, 0);
+}
+
 // vector calculations
 glm::vec3 Camera::eyeVector() {
     return pos;

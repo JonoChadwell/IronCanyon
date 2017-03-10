@@ -18,6 +18,7 @@ public:
 
 	// functions
 	void trackToPlayer(Player *player);
+	void trackToRocket(float ypos);
 	glm::vec3 eyeVector();
 	glm::vec3 uVector();
 	glm::vec3 wVector();

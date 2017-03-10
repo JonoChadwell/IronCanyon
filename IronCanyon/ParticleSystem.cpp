@@ -76,7 +76,7 @@ void ParticleSystem::spawnDustParticles(int np, glm::vec3 at, glm::vec4 color,
         particles[fu]->life = 1.0f;
         particles[fu]->pos = at;
         particles[fu]->pos.y = grid->height(particles[fu]->pos.x, particles[fu]->pos.z);
-        float dir = RANDF * 2 * M_PI;
+        float dir = RANDF * 2 * MATH_PI;
         float outVelx = cos(dir) * 5;
         float outVelz = sin(dir) * 5;
         float outVely = abs(RAND_VEL * .1);

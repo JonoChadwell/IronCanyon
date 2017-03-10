@@ -9,6 +9,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define LIFTOFF_ACC 1.0
+#define VERT_DRAG 0.2
+
 Shape* Rocket::pad;
 Shape* Rocket::bottom;
 Shape* Rocket::middle;
@@ -32,9 +35,10 @@ void Rocket::snapToGrid() {
 	pos = glm::vec3(actualPosition.x, grid->height(actualPosition.x, actualPosition.y), actualPosition.y);
 }
 
-// needed to make not abstract class
 void Rocket::step(float dt)
 {
+	yvel = yvel * (1 - dt * VERT_DRAG) + LIFTOFF_ACC * dt;
+	ypos += dt * yvel;
 }
 
 
@@ -68,7 +72,7 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	if (stage >= 1) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 2, 0));
+		M->translate(vec3(0, grid->height(0, 0) + 2 + ypos, 0));
 		M->scale(vec3(3, 3, 3));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 		Rocket::pad->draw(Rocket::shader);
@@ -78,7 +82,7 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	if (stage >= 2) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 8, 0));
+		M->translate(vec3(0, grid->height(0, 0) + 8 + ypos, 0));
 		M->scale(vec3(3, 3, 3));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 		Rocket::pad->draw(Rocket::shader);
@@ -88,7 +92,7 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	if (stage == 3) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 14, 0));
+		M->translate(vec3(0, grid->height(0, 0) + 14 + ypos, 0));
 		M->scale(vec3(3, 3, 3));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 		Rocket::pad->draw(Rocket::shader);

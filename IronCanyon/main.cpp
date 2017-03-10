@@ -91,7 +91,7 @@ bool invertLook = false;
 bool laserFired = false;
 int curLaserSound = 0;
 int waveNumber = 1;
-int rocketCost = 500;
+int rocketCost = 00;
 int turretCost = 500;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
@@ -300,11 +300,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-		if (player->scrap >= rocketCost) {
+		if (player->scrap >= rocketCost && rocket->stage < 3) {
 			rocket->stage++;
 			player->scrap -= rocketCost;
 		}
-		else {
+		else if (rocket->stage != 3) {
 			cout << "Not enough scrap! You only have " << player->scrap << endl;
 		}
 	}
@@ -833,11 +833,17 @@ static void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // update camera to track player
-    camera->trackToPlayer(player);
+	if (rocket->stage < 3) {
+		camera->trackToPlayer(player);
+		drawPlayer();
+	}
+	else {
+		camera->trackToRocket(rocket->ypos);
+	}
+
 
     // render things
 	drawGameObjects();
-	drawPlayer();
 	drawTerrain();
     // draw particles
     drawParticles();
@@ -860,9 +866,13 @@ static void updateWorld()
 	}
 	//Win condition
 	if (rocket->stage == 3) {
-		cout << "VICTORY";
-		// Stupid only print once line
-		rocket->stage = 4;
+		double timePassed = thisFrameStartTime - lastFrameStartTime;
+		int once = 0;
+		while (timePassed > maxPhysicsStepLength || !once) {
+			timePassed -= maxPhysicsStepLength;
+			rocket->step(maxPhysicsStepLength);
+			once++;
+		}
 	}
 }
 

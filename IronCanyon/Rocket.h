@@ -10,6 +10,7 @@ public:
 	bool buildable = false;
 	bool building = true;
 	int stage = 0;
+	float ypos = 0;
 	Rocket(Grid *grid);
 	~Rocket();
 
@@ -23,6 +24,7 @@ protected:
 	Grid *grid;
 
 private:
+	float yvel = 0;
 	static Shape* pad;
 	static Shape* bottom;
 	static Shape* middle;
