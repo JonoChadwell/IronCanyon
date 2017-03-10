@@ -588,11 +588,12 @@ static void projectileDetection() {
 			vec3 objectPosition = vec3(qObjects[j]->pos.x, qObjects[j]->pos.y, qObjects[j]->pos.z);
 			vec3 projectilePosition = projectiles[i]->pos;
 			float distance = dist(objectPosition, projectilePosition);
-			if (distance < 1.5 && dynamic_cast<Enemy*>(qObjects[j]) != NULL && projectiles[i]->team != qObjects[j]->team) {
+            Enemy *enemy = dynamic_cast<Enemy*>(qObjects[j]);
+			if (distance < 1.5 && enemy != NULL && projectiles[i]->team != qObjects[j]->team) {
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
-            else if (distance < qObjects[j]->bound) {
+            else if (enemy == NULL && distance < qObjects[j]->bound) {
                 projectiles[i]->toDelete = true;
             }
 		}
