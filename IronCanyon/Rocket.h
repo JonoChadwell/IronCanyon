@@ -25,6 +25,7 @@ protected:
 
 private:
 	float yvel = 0;
+	float ignition = 3.0;
 	static Shape* pad;
 	static Shape* bottom;
 	static Shape* middle;

@@ -9,8 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define LIFTOFF_ACC 1.0
-#define VERT_DRAG 0.2
+#define LIFTOFF_ACC 0.2
 
 Shape* Rocket::pad;
 Shape* Rocket::bottom;
@@ -37,8 +36,11 @@ void Rocket::snapToGrid() {
 
 void Rocket::step(float dt)
 {
-	yvel = yvel * (1 - dt * VERT_DRAG) + LIFTOFF_ACC * dt;
-	ypos += dt * yvel;
+	ignition -= dt;
+	if (ignition < 0) {
+		yvel = yvel + LIFTOFF_ACC * dt;
+		ypos += dt * yvel;
+	}
 }
 
 

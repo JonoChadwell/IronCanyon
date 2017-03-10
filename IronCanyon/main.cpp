@@ -301,8 +301,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		if (player->scrap >= rocketCost && rocket->stage < 3) {
-			rocket->stage++;
-			player->scrap -= rocketCost;
+			if (dist(player->pos, vec3(0, 0, 0)) < 20) {
+				rocket->stage++;
+				player->scrap -= rocketCost;
+			}
+			else {
+				cout << "Too far away from rocket to build";
+			}
 		}
 		else if (rocket->stage != 3) {
 			cout << "Not enough scrap! You only have " << player->scrap << endl;
