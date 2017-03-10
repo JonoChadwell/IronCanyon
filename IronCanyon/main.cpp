@@ -15,6 +15,7 @@
 #include "Terrain.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Rocket.h"
 #include "Crosshair.h"
 #include "Constants.h"
 #include "Grid.h"
@@ -52,6 +53,7 @@ Player* player;
 Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
+Rocket* rocket;
 #ifdef AUDIO
 sf::Sound* sound;
 #endif
@@ -89,7 +91,8 @@ bool invertLook = false;
 bool laserFired = false;
 int curLaserSound = 0;
 int waveNumber = 1;
-int turretCost = 000;
+int rocketCost = 500;
+int turretCost = 500;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
@@ -239,7 +242,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
                 player->scrap -= turretCost;
                 curTurret->built = true; 
                 turretsBuilt++;
-                grid->addToGrid(curTurret);
                 pSystem->spawnGroundParticles(50, curTurret->pos, glm::vec4(0.6, 0.6, 0.6, 1.0), 3.5);
                 cout << "turret " << turretsBuilt << " built\n";
             }
@@ -294,6 +296,17 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
 		crosshair->hair = 4;
+	}
+
+
+	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+		if (player->scrap >= rocketCost) {
+			rocket->stage++;
+			player->scrap -= rocketCost;
+		}
+		else {
+			cout << "Not enough scrap! You only have " << player->scrap << endl;
+		}
 	}
 }
 
@@ -376,10 +389,11 @@ static void init()
     srand(0);
 
     grid = new Grid();
-    player = new Player(0, 2, 0, 1, 0, 0, 3, grid);
+    player = new Player(-15, 2, 0, 1, 0, 0, 3, grid);
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, cameraDistance);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
+	rocket = new Rocket(grid);
 
     theta = MATH_PI;
     phi = 0;
@@ -399,6 +413,7 @@ static void init()
     Terrain::setup();
 	Crosshair::setup(g_height);
 	Player::setup();
+	Rocket::setup();
 	Enemy::setup();
     Enemy::target = player;
     Walker::newProjectiles = &newProjectiles;
@@ -459,6 +474,7 @@ static void init()
 		grid->addToGrid(r);
 		objects.push_back(r);
 	}
+	grid->addToGrid(rocket);
 }
 
 static void createScrapPile(GameObject* enemy) {
@@ -532,6 +548,7 @@ static void drawGameObjects() {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
 	crosshair->draw();
+	rocket->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
     delete P;
@@ -814,7 +831,7 @@ static void render()
 
 static void updateWorld()
 {
-	if (player->health > 0 && !gamePaused) {
+	if (player->health > 0 && !gamePaused && rocket->stage < 3) {
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
         while (timePassed > maxPhysicsStepLength) {
             timePassed -= maxPhysicsStepLength;
@@ -826,6 +843,12 @@ static void updateWorld()
         stepGameObjects(timePassed);
         stepPlayer(timePassed);
         pSystem->step(timePassed);
+	}
+	//Win condition
+	if (rocket->stage == 3) {
+		cout << "VICTORY";
+		// Stupid only print once line
+		rocket->stage = 4;
 	}
 }
 
