@@ -631,6 +631,17 @@ static void stepGameObjects(float dt) {
 		objects[i]->step(dt);
         if (dynamic_cast<Enemy*>(objects[i]) != NULL && dynamic_cast<Walker*>(objects[i]) == NULL) {
             wheelEnemiesAlive = true;
+            Enemy *enemy = (Enemy*)objects[i];
+            // roll enemy dust
+            float enemyHeight =  (enemy->pos.y - grid->height(enemy->pos.x, enemy->pos.z)) + 1;
+            float particleChance = enemyHeight * enemyHeight * enemyHeight * 10;
+            particleChance /= 8 + length(player->vel);
+
+            // dust
+            if (particleChance < 1 || rand() % (int) particleChance == 0) {
+                pSystem->spawnDustParticles(1, enemy->pos - enemy->vel / 15.0f,
+                  glm::vec4(0.82f, 0.695f, 0.52f, 1.0f), enemy->bound/2);
+            }
         }
     }
 
