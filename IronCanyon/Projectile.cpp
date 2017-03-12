@@ -73,7 +73,7 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         glUniform4f(Projectile::shader->getUniform("geomOffset"), 0, 0, 0, 0);
         glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
         Projectile::model->draw(Projectile::shader);
-        glUniform4f(Projectile::shader->getUniform("geomOffset"), 0, 0, -1, 0);
+        glUniform4f(Projectile::shader->getUniform("geomOffset"), 0, 0, -0.02, 0);
         glUniform3f(Projectile::shader->getUniform("MatAmb"), 8, 8, 8);
         M->scale(vec3(0.8));
         glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
