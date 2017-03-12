@@ -130,8 +130,8 @@ void Scrap::step(float dt) {
     float playerDistance = length(player->pos - this->pos);
     if (playerDistance < player->bound + MAGNET_RADIUS) {
         playerMagnet = true;
-        vel = 10.0f * (player->pos - this->pos);
     }
+    vel = playerMagnet ? 10.0f * (player->pos - this->pos) : vel;
     // and to delete
     if (playerDistance < player->bound + this->bound) {
         player->scrap += worth;

@@ -939,7 +939,7 @@ static void updateObjectVector() {
 			// Spawn particles for enemy death
 			Enemy* enemy = dynamic_cast<Enemy*>(objects[i]);
             if (enemy != NULL) {
-                pSystem->spawnBurstParticles(50, objects[i]->pos, glm::vec4(1.0f, 0.68f, 0.3f, 1.0f), 50.0f);
+                pSystem->spawnBurstParticles(100, objects[i]->pos, glm::vec4(1.0f, 0.68f, 0.3f, 1.0f), 100.0f);
             }
 			delete objects[i];
 			objects.erase(objects.begin() + i);
