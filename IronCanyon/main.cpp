@@ -306,7 +306,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		crosshair->hair = 4;
 	}
 
-
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		if (player->scrap >= rocketCost && rocket->stage < 3) {
 			if (dist(player->pos, vec3(0, 0, 0)) < 20) {
@@ -320,6 +319,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		else if (rocket->stage != 3) {
 			cout << "Not enough scrap! You only have " << player->scrap << endl;
 		}
+	}
+
+	if (key == GLFW_KEY_G && action == GLFW_PRESS) {
+		cameraDistance = 5.0;
+		camera->distance = cameraDistance;
 	}
 }
 
