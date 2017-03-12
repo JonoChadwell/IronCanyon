@@ -601,7 +601,7 @@ static void scrapDetection() {
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		float objDist = dist(glm::vec3(player->pos.x, player->pos.y, player->pos.z), qObjects[i]->pos);
         // check collision of scrap to begin magnet effect
-        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound + 10) {
+        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound + MAGNET_RADIUS) {
             ((Scrap*)qObjects[i])->playerMagnet = true;
         }
         // check collision with scrap to collect

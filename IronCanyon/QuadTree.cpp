@@ -87,24 +87,24 @@ void QuadTree::insert(GameObject * obj)
 	//We might put the object into multiple different leaves if it is near the edge
 	else if (size > QUADTREE_CAPACITY) {
 		//right
-		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound / 2) {
+		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound - MAGNET_RADIUS) {
 			//topright
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound / 2) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
 				topright->insert(obj);
 			}
 			//bottomright
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound / 2) {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
 				bottomright->insert(obj);
 			}
 		}
 		//left
-		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound / 2) {
+		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound + MAGNET_RADIUS) {
 			//topleft
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound / 2) {
+			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
 				topleft->insert(obj);
 			}
 			//bottomleft
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound / 2) {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound - MAGNET_RADIUS) {
 				bottomleft->insert(obj);
 			}
 		}
