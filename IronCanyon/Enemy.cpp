@@ -21,7 +21,7 @@ Program* Enemy::shader;
 Player* Enemy::target;
 
 #define FALL_SPEED 8.0
-#define SCRAP_AMT 4
+#define SCRAP_AMT 400
 
 // helper functions
 namespace {
@@ -88,7 +88,7 @@ Enemy::~Enemy()
 vector<GameObject*> Enemy::getRemains() {
     vector<GameObject*> result;
     for (int i = 0; i < SCRAP_AMT; i++) {
-        result.push_back(new Scrap(pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10));
+        result.push_back(new Scrap(pos, randf() * 2 * MATH_PI, randf() * 2 * MATH_PI, 0, 1, grid, 10));
     }
     return result;
 }

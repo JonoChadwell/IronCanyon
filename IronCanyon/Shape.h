@@ -14,6 +14,7 @@ public:
 	Shape();
 	virtual ~Shape();
 	void loadMesh(const std::string &meshName);
+    void loadMesh(const std::string &meshName, int shape);
 	void init();
 	void resize();
 	void draw(Program *prog);
@@ -27,7 +28,7 @@ private:
 	unsigned posBufID;
 	unsigned norBufID;
 	unsigned texBufID;
-   unsigned vaoID;
+    unsigned vaoID;
 };
 
 #endif

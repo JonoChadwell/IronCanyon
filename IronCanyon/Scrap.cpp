@@ -17,9 +17,11 @@
 #define FLOAT_HEIGHT 1.6;
 #define SPIN_SPEED 2.0;
 
-Shape* Scrap::nut;
-Shape* Scrap::bolt;
-Shape* Scrap::box;
+#define NUM_OBJECTS 6
+
+float objectScales[] = { 1, 1, 0.3, 0.5, 1, 1 };
+
+Shape* Scrap::objects[NUM_OBJECTS];
 Program* Scrap::shader;
 
 Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
@@ -33,6 +35,8 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     playerMagnet(false),
     grid(grid)
 {
+    object = rand() % NUM_OBJECTS;
+    scale = 1.0f +  (rand() % 100) / 100.0f - 0.5f; 
 }
 
 // destructor
@@ -44,7 +48,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     MatrixStack* M = new MatrixStack();
     Scrap::shader->bind();
 
-	//std::cout << "Scrap " << pos.x << " " << pos.z << " " << playerMagnet << '\n';
+    //std::cout << "Scrap " << pos.x << " " << pos.z << " " << playerMagnet << '\n';
 
     // render setup
     glUniform3f(Scrap::shader->getUniform("sunDir"), SUN_DIR);
@@ -58,15 +62,33 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     // render transforms
     M->pushMatrix();
-       M->loadIdentity();
-       M->translate(vec3(pos.x, pos.y, pos.z));
-	   M->rotate(-theta, vec3(0, 1, 0));
-       M->rotate(phi, vec3(1, 0, 0));
-       M->rotate(roll, vec3(0, 0, 1));
-       M->scale(vec3(0.5, 0.5, 0.5));
-       glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-       Scrap::bolt->draw(Scrap::shader);
+        M->loadIdentity();
+        M->translate(vec3(pos.x, pos.y, pos.z));
+        M->rotate(-theta, vec3(0, 1, 0));
+        M->rotate(phi, vec3(1, 0, 0));
+        M->rotate(roll, vec3(0, 0, 1));
+        M->scale(vec3(0.2, 0.2, 0.2) * scale * objectScales[object]);
+        glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Scrap::objects[object]->draw(Scrap::shader);
     M->popMatrix();
+
+    if (grid->inBounds(pos.x, pos.z)) {
+        M->pushMatrix();
+        M->loadIdentity();
+        M->translate(vec3(pos.x, grid->height(pos.x, pos.z) + .05, pos.z));
+        M->scale(vec3(1, 0.01, 1));
+        M->rotate(-theta, vec3(0, 1, 0));
+        M->rotate(phi, vec3(1, 0, 0));
+        M->rotate(roll, vec3(0, 0, 1));
+        M->scale(vec3(0.2, 0.2, 0.2) * scale * objectScales[object]);
+        glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        glUniform3f(Scrap::shader->getUniform("MatAmb"), 0, 0, 0);
+        glUniform3f(Scrap::shader->getUniform("MatDif"), 0, 0, 0);
+        glUniform3f(Scrap::shader->getUniform("MatSpec"), 0, 0, 0);
+        Scrap::objects[object]->draw(Scrap::shader);
+        M->popMatrix();
+    }
+   
 
     delete M;
     Scrap::shader->unbind();
@@ -107,20 +129,12 @@ void Scrap::step(float dt) {
 }
 
 void Scrap::setup() {
-	Scrap::nut = new Shape();
-	Scrap::nut->loadMesh(RESOURCE_DIR + std::string("drive/nut.obj"));
-	Scrap::nut->resize();
-	Scrap::nut->init();
-
-	Scrap::bolt = new Shape();
-	Scrap::bolt->loadMesh(RESOURCE_DIR + std::string("drive/bolt.obj"));
-	Scrap::bolt->resize();
-	Scrap::bolt->init();
-
-	Scrap::box = new Shape();
-	Scrap::box->loadMesh(RESOURCE_DIR + std::string("drive/box.obj"));
-	Scrap::box->resize();
-	Scrap::box->init();
+    for (int i = 0; i < NUM_OBJECTS; i++) {
+        Scrap::objects[i] = new Shape();
+        Scrap::objects[i]->loadMesh(RESOURCE_DIR + std::string("drive/bolts_ts.obj"), i);
+        Scrap::objects[i]->resize();
+        Scrap::objects[i]->init();
+    }
 
 	Scrap::shader = new Program();
 	Scrap::shader = new Program();

@@ -24,6 +24,11 @@ Shape::~Shape()
 
 void Shape::loadMesh(const string &meshName)
 {
+    loadMesh(meshName, 0);
+}
+
+void Shape::loadMesh(const string &meshName, int shape)
+{
 	// Load geometry
 	// Some obj files contain material information.
 	// We'll ignore them for this assignment.
@@ -34,10 +39,10 @@ void Shape::loadMesh(const string &meshName)
 	if(!rc) {
 		cerr << errStr << endl;
 	} else {
-		posBuf = shapes[0].mesh.positions;
-		norBuf = shapes[0].mesh.normals;
-		texBuf = shapes[0].mesh.texcoords;
-		eleBuf = shapes[0].mesh.indices;
+		posBuf = shapes[shape].mesh.positions;
+		norBuf = shapes[shape].mesh.normals;
+		texBuf = shapes[shape].mesh.texcoords;
+		eleBuf = shapes[shape].mesh.indices;
 	}
 }
 

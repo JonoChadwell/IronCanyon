@@ -24,8 +24,8 @@ public:
 
 private:
     Grid* grid;
-    static Shape* nut;
-    static Shape* box;
-    static Shape* bolt;
+    int object;
+    float scale;
+    static Shape* objects[];
     static Program* shader;
 };
