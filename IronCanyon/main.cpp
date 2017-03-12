@@ -100,7 +100,7 @@ bool laserFired = false;
 int curLaserSound = 0;
 int waveNumber = 1;
 int rocketCost = 00;
-int turretCost = 500;
+int turretCost = 2000;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
@@ -257,6 +257,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
                 curTurret->built = true; 
                 turretsBuilt++;
                 pSystem->spawnGroundParticles(50, curTurret->pos, glm::vec4(0.6, 0.6, 0.6, 1.0), 3.5);
+                grid->addToGrid(curTurret);
                 cout << "turret " << turretsBuilt << " built\n";
             }
             curTurret = NULL;
@@ -796,8 +797,8 @@ static void stepPlayer(float dt) {
     }
     // deal with current construction
     if (curTurret) {
-        curTurret->pos = glm::vec3(player->pos.x - 3*player->bound*cos(player->theta),
-          0, player->pos.z + 3*player->bound*sin(player->theta));
+        curTurret->pos = glm::vec3(player->pos.x - 6*player->bound*cos(player->theta),
+          0, player->pos.z + 6*player->bound*sin(player->theta));
         curTurret->pos.y = grid->height(curTurret->pos.x, curTurret->pos.z);
         curTurret->theta = player->theta + MATH_PI/2;
         curTurret->snapToGrid();
