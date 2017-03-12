@@ -131,6 +131,8 @@
     <ClCompile Include="GLSL.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="GridObject.cpp" />
+    <ClCompile Include="image_DXT.c" />
+    <ClCompile Include="image_helper.c" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
@@ -146,13 +148,21 @@
     <ClCompile Include="Scrap.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SOIL.c" />
     <ClCompile Include="StaticTerrainObject.cpp" />
+    <ClCompile Include="stb_image_aug.c" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Turret.cpp" />
     <ClCompile Include="Walker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\image_DXT.h" />
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\image_helper.h" />
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\SOIL.h" />
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\stbi_DDS_aug.h" />
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\stbi_DDS_aug_c.h" />
+    <ClInclude Include="..\..\..\..\Downloads\soil\Simple OpenGL Image Library\src\stb_image_aug.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Crosshair.h" />
