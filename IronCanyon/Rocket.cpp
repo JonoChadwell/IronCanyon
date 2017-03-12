@@ -68,7 +68,7 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	// render shit
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(0, grid->height(0, 0), 0));
+	M->translate(vec3(0, grid->height(0, 0) + 1, 0));
 	M->scale(vec3(5, .5, 5));
 	glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Rocket::pad->draw(Rocket::shader);
