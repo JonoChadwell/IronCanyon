@@ -764,9 +764,13 @@ static void stepPlayer(float dt) {
     }
     else  {
         if (player->boosting > .6) {
-            float px = player->pos.x + cos(player->ctheta);
+            // spawn boost particles along backside at random xs and zs
+            float horizontalOffset = randf() * 1.25 - .625;
+            float c = cos(player->ctheta);
+            float s = sin(player->ctheta);
+            float px = player->pos.x + c + horizontalOffset * s;
             float py = player->pos.y;
-            float pz = player->pos.z - sin(player->ctheta);
+            float pz = player->pos.z - s + horizontalOffset * c;
             pSystem->spawnStreamParticle(
               glm::vec3(px, py, pz),
               glm::vec3(-player->vel.x, player->vel.y, -player->vel.z),
