@@ -30,6 +30,12 @@
 #include "Projectile.h"
 #include "ParticleSystem.h"
 
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "imgui_impl_glfw_gl3.h"
+
+#define GUI
+
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,6 +51,8 @@ using namespace glm;
 #define PLAYER_ACCELERATION 50
 #define BOOST_ACCELERATION 100
 #define ENEMY_SPEED 6
+
+ImVec4 clear_color = ImColor(114, 144, 154);
 
 GLFWwindow *window; // Main application window
 
@@ -480,6 +488,22 @@ static void init()
 		objects.push_back(r);
 	}
 	grid->addToGrid(rocket);
+
+	ImGui_ImplGlfwGL3_Init(window, true);
+
+	
+
+	//ImGuiIO& io = ImGui::GetIO();
+	//io.DisplaySize.x = 1920.0f;
+	//io.DisplaySize.y = 1280.0f;
+	//io.IniFilename = "imgui.ini";
+	//io.RenderDrawListsFn = my_render_function;
+	//io.Fonts->AddFontDefault();
+
+	//unsigned char** pixels;
+	//int width, height;
+	//io.Fonts->GetTexDataAsRGBA32(pixels, &width, &height);
+	//io.Fonts->TexID
 }
 
 static void createScrapPile(GameObject* enemy) {
@@ -838,6 +862,28 @@ static void drawParticles() {
      delete P;
 }
 
+static void setUpGUI() {
+	ImGui_ImplGlfwGL3_NewFrame();
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontDefault();
+
+	static float f = 0.0f;
+	ImGui::Text("Test");
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::Text("Current Scrap: %d", player->scrap);
+	ImGui::Text("Current Health: %d", player->health);
+}
+
+static void renderGUI() {
+	/*int display_w, display_h;
+	glfwGetFramebufferSize(window, &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+	glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+	glClear(GL_COLOR_BUFFER_BIT);*/
+	ImGui::Render();
+	glfwSwapBuffers(window);
+}
+
 static void render()
 {
 	// Get current frame buffer size.
@@ -987,6 +1033,7 @@ int main(int argc, char **argv)
 
 	// Initialize scene. Note geometry initialized in init now
 	init();
+	setUpGUI();
 
     lastFrameStartTime = glfwGetTime();
 
@@ -998,6 +1045,11 @@ int main(int argc, char **argv)
 		}
         lastFrameStartTime = thisFrameStartTime;
         thisFrameStartTime = glfwGetTime();
+		
+		// Set up GUI
+        #ifdef GUI
+		setUpGUI();
+        #endif
         // Update game state
         updateWorld();
 		// Render scene.
@@ -1013,6 +1065,10 @@ int main(int argc, char **argv)
 		// Update main object vector
 		updateObjectVector();
         updateProjectileVector();
+		// Update GUI
+        #ifdef GUI
+		renderGUI();
+        #endif
 	}
 
 	// Quit program.

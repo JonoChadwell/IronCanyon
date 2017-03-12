@@ -131,6 +131,9 @@
     <ClCompile Include="GLSL.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="GridObject.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="LaserTurret.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixStack.cpp" />
@@ -159,6 +162,8 @@
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridObject.h" />
     <ClInclude Include="Head.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_glfw_gl3.h" />
     <ClInclude Include="LaserTurret.h" />
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="ParticleSystem.h" />
