@@ -498,6 +498,7 @@ static void init()
 		objects.push_back(r);
 	}
 	grid->addToGrid(rocket);
+	objects.push_back(rocket);
 
 	ImGui_ImplGlfwGL3_Init(window, true);
 
@@ -675,7 +676,16 @@ static void stepGameObjects(float dt) {
 	
     bool wheelEnemiesAlive = false;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->step(dt);
+		if (dynamic_cast<Rocket*>(objects[i]) != NULL) {
+			Rocket* rocket = (Rocket*)objects[i];
+			if (rocket->stage == 3) {
+				rocket->step(dt);
+				pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0), vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, MATH_PI / 4, 50.0);
+			}
+		}
+		else {
+			objects[i]->step(dt);
+		}
         if (dynamic_cast<Enemy*>(objects[i]) != NULL && dynamic_cast<Walker*>(objects[i]) == NULL) {
             wheelEnemiesAlive = true;
             Enemy *enemy = (Enemy*)objects[i];
@@ -948,12 +958,12 @@ static void updateWorld()
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
 		while (timePassed > maxPhysicsStepLength) {
 			timePassed -= maxPhysicsStepLength;
-			rocket->step(maxPhysicsStepLength);
 			stepPlayer(maxPhysicsStepLength);
+			stepGameObjects(maxPhysicsStepLength);
 			pSystem->step(maxPhysicsStepLength);
 		}
-		rocket->step(timePassed);
 		stepPlayer(timePassed);
+		stepGameObjects(timePassed);
 		pSystem->step(timePassed);
 	}
 }
