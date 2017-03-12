@@ -114,9 +114,9 @@ void ParticleSystem::spawnFocusParticles(int np, glm::vec3 at, glm::vec4 color,
         int fu = firstUnusedParticle();
         particles[fu]->life = 1.0f;
         particles[fu]->pos = at;
-        float vx = baseVel * cos(theta) + RANDF*spread - spread/2;
+        float vx = baseVel * cos(phi) * cos(theta) + RANDF*spread - spread/2;
         float vy = baseVel * sin(phi) + RANDF*spread - spread/2;
-        float vz = baseVel * sin(theta) + RANDF*spread - spread/2;
+        float vz = baseVel * cos(phi) * sin(theta) + RANDF*spread - spread/2;
         particles[fu]->vel = glm::vec3(vx, vy, vz);
         particles[fu]->color = color;
         particles[fu]->color.r += RANDF_NEG * RGB_DIFF_FACTOR;

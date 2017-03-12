@@ -886,16 +886,18 @@ static void drawParticles() {
 }
 
 static void setUpGUI() {
-	ImGui_ImplGlfwGL3_NewFrame();
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
+}
 
+static void guiLoopSetup() {
+	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
 	ImGui::Text("Test");
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::Text("Current Scrap: %d", player->scrap);
 	ImGui::Text("Current Health: %d", player->health);
-    ImGui::Text("Wave Spawning in %f", spawnWave);
+	ImGui::Text("Wave Spawning in %f", spawnWave);
 }
 
 static void renderGUI() {
@@ -905,7 +907,6 @@ static void renderGUI() {
 	glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 	glClear(GL_COLOR_BUFFER_BIT);*/
 	ImGui::Render();
-	//glfwSwapBuffers(window);
 }
 
 static void render()
@@ -1079,7 +1080,7 @@ int main(int argc, char **argv)
 		
 		// Set up GUI
 #ifdef GUI
-		setUpGUI();
+		guiLoopSetup();
 #endif
         // Update game state
         updateWorld();
