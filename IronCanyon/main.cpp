@@ -576,7 +576,8 @@ static void drawGameObjects() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
-	crosshair->draw();
+	if (rocket->stage < 3)
+		crosshair->draw();
 	rocket->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
@@ -928,12 +929,19 @@ static void updateWorld()
 	}
 	//Win condition
 	if (rocket->stage == 3) {
+		player->pos.y = -50;
+		player->pos.x = -190;
+		player->pos.z = -190;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
 		while (timePassed > maxPhysicsStepLength) {
 			timePassed -= maxPhysicsStepLength;
 			rocket->step(maxPhysicsStepLength);
+			stepPlayer(maxPhysicsStepLength);
+			pSystem->step(maxPhysicsStepLength);
 		}
-		rocket->step(maxPhysicsStepLength);
+		rocket->step(timePassed);
+		stepPlayer(timePassed);
+		pSystem->step(timePassed);
 	}
 }
 

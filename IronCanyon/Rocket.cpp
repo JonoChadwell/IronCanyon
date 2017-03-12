@@ -9,7 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define LIFTOFF_ACC 0.2
+#define LIFTOFF_ACC 5
 
 Shape* Rocket::pad;
 Shape* Rocket::bottom;
@@ -17,6 +17,7 @@ Shape* Rocket::middle;
 Shape* Rocket::top;
 Program* Rocket::shader;
 Program* Rocket::conShader;
+
 
 Rocket::Rocket(Grid* grid) :
 	GridObject(vec3(0, 0, 0), 0, 5, grid),

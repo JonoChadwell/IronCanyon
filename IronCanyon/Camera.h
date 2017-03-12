@@ -24,4 +24,8 @@ public:
 	glm::vec3 wVector();
 	glm::vec3 vVector();
 	glm::vec3 lookAtPt();
+
+private:
+	float shakyX;
+	float shakyZ;
 };

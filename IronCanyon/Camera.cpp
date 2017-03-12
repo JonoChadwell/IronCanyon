@@ -12,6 +12,11 @@
 
 using namespace glm;
 
+
+static float randf() {
+	return (rand() * 1.0) / (RAND_MAX);
+}
+
 Camera::Camera(float xp, float yp, float zp, float xl, float yl, float zl, Grid* grid, float distance) :
     pos(vec3(xp, yp, zp)),
     look(vec3(xl, yl, zl)),
@@ -42,7 +47,24 @@ void Camera::trackToPlayer(Player *player) {
 }
 
 void Camera::trackToRocket(float ypos) {
-	look = vec3(0, ypos, 0);
+	if (ypos <= 15) {
+		look = vec3(.2 * randf() - .1, ypos, .2 * randf() - .1);
+		pos.x = 10;
+		pos.z = 10;
+		pos.y = grid->height(pos.x, pos.z) + .5;
+	}
+	else if (ypos > 15 && ypos < 100) {
+		look = vec3(.2 * randf() - .1, ypos - 10.0, .2 * randf() - .1);
+		pos.y = ypos + 15;
+		pos.x = 10;
+		pos.z = 10;
+	}
+	else if (ypos > 100) {
+		look = vec3(.2 * randf() - .1, ypos, .2 * randf() - .1);
+		pos.y = ypos + 5;
+		pos.x = 15;
+		pos.z = 15;
+	}
 }
 
 // vector calculations
