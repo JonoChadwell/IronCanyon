@@ -91,7 +91,7 @@ double lastFrameStartTime;
 double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 
-bool spawnWave = false;
+float spawnWave = 1.0f;
 bool gameStarted = false;
 bool gamePaused = false;
 bool joystickEnabled = false;
@@ -683,12 +683,12 @@ static void stepGameObjects(float dt) {
 		projectiles[i]->step(dt);
 	}
     if (gameStarted && !wheelEnemiesAlive) {
-        spawnWave = true;
+        spawnWave -= dt;
     }
 	projectileDetection();
 	scrapDetection();
-	if (spawnWave) {
-		spawnWave = false;
+	if (spawnWave < 0) {
+		spawnWave = 20.0f;
         cout << "Spawning wave " << waveNumber++ << endl;
         for (int i = 0; i < 10 + waveNumber; i++) {
 			Enemy* enemy = new Enemy(
@@ -872,6 +872,7 @@ static void setUpGUI() {
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::Text("Current Scrap: %d", player->scrap);
 	ImGui::Text("Current Health: %d", player->health);
+    ImGui::Text("Wave Spawning in %f", spawnWave);
 }
 
 static void renderGUI() {
@@ -1047,9 +1048,9 @@ int main(int argc, char **argv)
         thisFrameStartTime = glfwGetTime();
 		
 		// Set up GUI
-        #ifdef GUI
+#ifdef GUI
 		setUpGUI();
-        #endif
+#endif
         // Update game state
         updateWorld();
 		// Render scene.

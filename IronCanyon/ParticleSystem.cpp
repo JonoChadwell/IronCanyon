@@ -84,7 +84,7 @@ void ParticleSystem::spawnDustParticles(int np, glm::vec3 at, glm::vec4 color,
         // deal with radius start of particles based on their respective velocities
         particles[fu]->pos.x += cos(dir) * radius;
         particles[fu]->pos.z += sin(dir) * radius;
-        particles[fu]->color = color;
+        particles[fu]->color = color + vec4((RANDF - 1) / 5.0f, (RANDF - 1) / 8.0f, (RANDF - 1) / 8.0f, 0.0f);
     }
 }
 
