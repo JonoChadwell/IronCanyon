@@ -157,7 +157,7 @@ void ParticleSystem::step(float dt) {
         if (i >= particles.size()) {
             printf("BAD STUFF, i = %d and particles has %d elements\n", i, particles.size());
         }
-        if (glm::length(particles[i]->vel) > 1.0f) {
+        if (glm::length(particles[i]->vel) > 0.1f) {
             float gridHeight = grid->height(particles[i]->pos.x, particles[i]->pos.z);
             particles[i]->pos += particles[i]->vel * dt;
             particles[i]->vel *= 1 - DECEL_FACTOR*dt;
