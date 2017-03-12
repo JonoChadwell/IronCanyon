@@ -12,7 +12,7 @@
 
 #define BOB_FREQ 2
 #define RANDF ((float)rand() / RAND_MAX)
-#define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
+#define RAND_VEL_Y ( ((float)rand() / RAND_MAX) * 50 + 10 )
 #define BOB_HEIGHT 0.6
 #define FLOAT_HEIGHT 1.0
 #define SPIN_SPEED 2.0
@@ -36,7 +36,7 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     heightOffset(RANDF - 0.5f)
 {
     float angle = RANDF * MATH_PI * 2;
-    float amt = RANDF * 10 + 3;
+    float amt = RANDF * 30 + 3;
     vel = vec3(sin(angle) * amt, RAND_VEL_Y, cos(angle) * amt);
     object = rand() % NUM_OBJECTS;
     scale = 1.0f +  (rand() % 100) / 100.0f - 0.5f; 

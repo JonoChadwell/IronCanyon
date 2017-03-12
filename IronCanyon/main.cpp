@@ -90,6 +90,7 @@ double lastFrameStartTime;
 // The time the current frame began rendering
 double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
+int maxPhysicsSteps = 12;
 
 float spawnWave = 1.0f;
 bool gameStarted = false;
@@ -631,11 +632,12 @@ static void projectileDetection() {
 			vec3 projectilePosition = projectiles[i]->pos;
 			float distance = dist(objectPosition, projectilePosition);
             Enemy *enemy = dynamic_cast<Enemy*>(qObjects[j]);
+            GridObject *go = dynamic_cast<GridObject*>(qObjects[j]);
 			if (distance < 1.5 && enemy != NULL && projectiles[i]->team != qObjects[j]->team) {
                 projectiles[i]->toDelete = true;
 				qObjects[j]->toDelete = true;
 			}
-            else if (enemy == NULL && distance < qObjects[j]->bound) {
+            else if (go != NULL && distance < qObjects[j]->bound) {
                 projectiles[i]->toDelete = true;
             }
 		}
@@ -939,34 +941,26 @@ static void render()
 
 static void updateWorld()
 {
-	if (player->health > 0 && !gamePaused && rocket->stage < 3) {
+	if (player->health > 0 && !gamePaused) {
+        if (rocket->stage >= 3) {
+            player->pos.y = -50;
+            player->pos.x = -190;
+            player->pos.z = -190;
+        }
+        int physicsSteps = 0;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
-        while (timePassed > maxPhysicsStepLength) {
+        while (timePassed > maxPhysicsStepLength && physicsSteps++ < maxPhysicsSteps) {
             timePassed -= maxPhysicsStepLength;
             stepGameObjects(maxPhysicsStepLength);
             stepPlayer(maxPhysicsStepLength);
             // particle steps
             pSystem->step(maxPhysicsStepLength);
         }
-        stepGameObjects(timePassed);
-        stepPlayer(timePassed);
-        pSystem->step(timePassed);
-	}
-	//Win condition
-	if (rocket->stage == 3) {
-		player->pos.y = -50;
-		player->pos.x = -190;
-		player->pos.z = -190;
-		double timePassed = thisFrameStartTime - lastFrameStartTime;
-		while (timePassed > maxPhysicsStepLength) {
-			timePassed -= maxPhysicsStepLength;
-			stepPlayer(maxPhysicsStepLength);
-			stepGameObjects(maxPhysicsStepLength);
-			pSystem->step(maxPhysicsStepLength);
-		}
-		stepPlayer(timePassed);
-		stepGameObjects(timePassed);
-		pSystem->step(timePassed);
+        if (physicsSteps < maxPhysicsSteps) {
+            stepGameObjects(timePassed);
+            stepPlayer(timePassed);
+            pSystem->step(timePassed);
+        }
 	}
 }
 
