@@ -681,7 +681,7 @@ static void stepGameObjects(float dt) {
 			Rocket* rocket = (Rocket*)objects[i];
 			if (rocket->stage == 3) {
 				rocket->step(dt);
-				pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0), vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, 0, 50.0);
+				pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0), vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, 0, 30.0);
 			}
 		}
 		else {

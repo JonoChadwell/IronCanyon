@@ -104,7 +104,7 @@ void QuadTree::insert(GameObject * obj)
 				topleft->insert(obj);
 			}
 			//bottomleft
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound - MAGNET_RADIUS) {
+			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
 				bottomleft->insert(obj);
 			}
 		}
