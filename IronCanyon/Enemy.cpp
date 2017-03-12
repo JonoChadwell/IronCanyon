@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "Player.h"
 #include "Scrap.h"
+#include "Texture.h"
 #include <iostream>
 #include <cmath>
 
@@ -102,9 +103,9 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     glUniform3f(Enemy::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Enemy::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    glUniform3f(Enemy::shader->getUniform("MatAmb"), 0, .8, 1);
-    glUniform3f(Enemy::shader->getUniform("MatDif"), .1, .5, .7);
-    glUniform3f(Enemy::shader->getUniform("MatSpec"), .31, .16, .08);
+    glUniform3f(Enemy::shader->getUniform("MatAmb"), 1, 1, 1);
+    glUniform3f(Enemy::shader->getUniform("MatDif"), 1, 1, 1);
+    glUniform3f(Enemy::shader->getUniform("MatSpec"), .3, .3, .3);
     glUniform1f(Enemy::shader->getUniform("shine"), 3.5);
 
     glUniformMatrix4fv(Enemy::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
@@ -191,9 +192,14 @@ void Enemy::step(float dt) {
 
 void Enemy::setup() {
 	Enemy::model = new Shape();
-	Enemy::model->loadMesh(RESOURCE_DIR + std::string("drive/wheelEnemy.obj"));
+	Enemy::model->loadMesh(RESOURCE_DIR + std::string("drive/as.obj"));
 	Enemy::model->resize();
 	Enemy::model->init();
+
+    Texture* texture = new Texture();
+    texture->setFilename(RESOURCE_DIR + "drive/as.bmp");
+    texture->setName("PlayerTexture");
+    texture->init();
 
 	Enemy::spawnModel = new Shape();
 	Enemy::spawnModel->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
@@ -202,7 +208,7 @@ void Enemy::setup() {
 
 	Enemy::shader = new Program();
 	Enemy::shader->setVerbose(true);
-	Enemy::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Enemy::shader->setShaderNames(RESOURCE_DIR + "tex_vert.glsl", RESOURCE_DIR + "tex_frag.glsl");
 	Enemy::shader->init();
 	Enemy::shader->addUniform("P");
 	Enemy::shader->addUniform("M");
@@ -216,5 +222,5 @@ void Enemy::setup() {
 	Enemy::shader->addAttribute("vertPos");
 	Enemy::shader->addAttribute("vertNor");
 	Enemy::shader->addAttribute("vertTex");
-
+    Enemy::shader->addTexture(texture);
 }
