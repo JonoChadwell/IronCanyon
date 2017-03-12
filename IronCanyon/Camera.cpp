@@ -55,13 +55,13 @@ void Camera::trackToRocket(float ypos) {
 		pos.z = 10;
 		pos.y = grid->height(pos.x, pos.z) + .5;
 	}
-	else if (ypos > 15 && ypos < 100) {
+	else if (ypos > 15 && ypos < 150) {
 		look = vec3(.2 * randf() - .1, ypos - 10.0, .2 * randf() - .1);
 		pos.y = ypos + 15;
 		pos.x = 10;
 		pos.z = 10;
 	}
-	else if (ypos > 100) {
+	else {
 		look = vec3(.2 * randf() - .1, ypos, .2 * randf() - .1);
 		pos.y = ypos + 5;
 		pos.x = 15;
