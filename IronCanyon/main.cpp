@@ -223,6 +223,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		else
 			joystickEnabled = false;
 	}
+	if (key == GLFW_KEY_H && action == GLFW_PRESS) {
+		if (player->scrap > 100) {
+			player->health++;
+			player->scrap -= 100;
+		}
+	}
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		if (gamePaused == false) {
 			gamePaused = true;
