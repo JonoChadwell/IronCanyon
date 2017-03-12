@@ -444,6 +444,7 @@ static void init()
     Walker::newProjectiles = &newProjectiles;
     Walker::setup();
     Scrap::setup();
+    Scrap::player = player;
     StaticTerrainObject::setup();
     Turret::setup();
     Turret::objects = &objects;
@@ -519,15 +520,6 @@ static void init()
 	//io.Fonts->TexID
 }
 
-static void createScrapPile(GameObject* enemy) {
-    for (int i = 0; i < 5; i++) {
-        // do scrap
-		Scrap* scrap = new Scrap(enemy->pos, 0, randf() * 2 * MATH_PI, 0, 1, grid, 10);
-        objects.push_back(scrap);
-		quadtree->insert(scrap);
-    }
-}
-
 static void crosshairColor() {
 	crosshair->target = 0;
 	vec3 playerPosition = vec3(player->pos.x, player->pos.y, player->pos.z);
@@ -595,32 +587,6 @@ static void drawGameObjects() {
 
     P->popMatrix();
     delete P;
-}
-
-static void scrapDetection() {
-	vector<GameObject *> qObjects;
-	quadtree->getObjects(player->pos.x, player->pos.z, &qObjects);
-	for (unsigned int i = 0; i < qObjects.size(); i++) {
-		float objDist = dist(glm::vec3(player->pos.x, player->pos.y, player->pos.z), qObjects[i]->pos);
-        // check collision of scrap to begin magnet effect
-        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound + MAGNET_RADIUS) {
-            ((Scrap*)qObjects[i])->playerMagnet = true;
-        }
-        // check collision with scrap to collect
-        if (dynamic_cast<Scrap*>(qObjects[i]) != NULL && objDist < player->bound) {
-            player->scrap += ((Scrap*)qObjects[i])->worth;
-			qObjects[i]->toDelete = true;
-        }
-	}
-	// seperate for loop for scrap to move to player
-	for (unsigned int i = 0; i < objects.size(); i++) {
-		if (dynamic_cast<Scrap*>(objects[i]) != NULL &&
-			(((Scrap*)objects[i])->playerMagnet)) {
-			((Scrap*)objects[i])->vel =
-				glm::vec3(player->pos.x, player->pos.y, player->pos.z) - objects[i]->pos;
-			((Scrap*)objects[i])->vel *= 10;
-		}
-	}
 }
 
 static void projectileDetection() {
@@ -715,7 +681,6 @@ static void stepGameObjects(float dt) {
         spawnWave -= dt;
     }
 	projectileDetection();
-	scrapDetection();
 	if (spawnWave < 0) {
 		spawnWave = 20.0f;
         cout << "Spawning wave " << waveNumber++ << endl;

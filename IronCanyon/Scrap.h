@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Player.h"
 #include "Shape.h"
 #include "Grid.h"
 #include <string>
@@ -14,6 +15,7 @@ public:
     double groundTime;
     double despawnTimer;
     bool playerMagnet;
+    static Player* player;
     Scrap(glm::vec3 pos, float ph, float th, float rl, float b, Grid* grid, int worth);
     virtual ~Scrap();
 

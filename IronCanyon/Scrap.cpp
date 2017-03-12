@@ -23,6 +23,7 @@ float objectScales[] = { 1, 1, 0.3, 0.5, 1, 1 };
 
 Shape* Scrap::objects[NUM_OBJECTS];
 Program* Scrap::shader;
+Player* Scrap::player;
 
 Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
   float b, Grid* grid, int worth) :
@@ -124,6 +125,19 @@ void Scrap::step(float dt) {
 			vel = vec3(0, -50, 0);
 		}
 	}
+
+    // check player collision on scrap to magnetize
+    float playerDistance = length(player->pos - this->pos);
+    if (playerDistance < player->bound + MAGNET_RADIUS) {
+        playerMagnet = true;
+        vel = 10.0f * (player->pos - this->pos);
+    }
+    // and to delete
+    if (playerDistance < player->bound + this->bound) {
+        player->scrap += worth;
+        toDelete = true;
+    }
+
     // update time the scrap has been out
     despawnTimer -= dt;
     if (despawnTimer < 0) {
@@ -158,3 +172,4 @@ void Scrap::setup() {
 	Scrap::shader->addAttribute("vertNor");
 	Scrap::shader->addAttribute("vertTex");
 }
+
