@@ -10,12 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define BOB_FREQ 4
-#define RAND_VEL ( (float)rand() / RAND_MAX * 20 - 10 )
+#define BOB_FREQ 2
+#define RANDF ((float)rand() / RAND_MAX)
 #define RAND_VEL_Y ( (float)rand() / RAND_MAX * 25 + 5 )
 #define BOB_HEIGHT 0.6
-#define FLOAT_HEIGHT 1.6;
-#define SPIN_SPEED 2.0;
+#define FLOAT_HEIGHT 1.0
+#define SPIN_SPEED 2.0
 
 #define NUM_OBJECTS 6
 
@@ -28,13 +28,16 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
   float b, Grid* grid, int worth) :
     GameObject(pos, ph, th, rl, b, NO_TEAM),
     worth(worth),
-    vel( glm::vec3(RAND_VEL, RAND_VEL_Y, RAND_VEL) ),
     acc( glm::vec3(0, -GRAVITY, 0) ),
-    groundTime(0.0),
-    despawnTimer(SCRAP_TIMER),
+    groundTime(RANDF * MATH_PI * 2),
+    despawnTimer(SCRAP_TIMER + RANDF * 10),
     playerMagnet(false),
-    grid(grid)
+    grid(grid),
+    heightOffset(RANDF - 0.5f)
 {
+    float angle = RANDF * MATH_PI * 2;
+    float amt = RANDF * 10 + 3;
+    vel = vec3(sin(angle) * amt, RAND_VEL_Y, cos(angle) * amt);
     object = rand() % NUM_OBJECTS;
     scale = 1.0f +  (rand() % 100) / 100.0f - 0.5f; 
 }
@@ -108,7 +111,7 @@ void Scrap::step(float dt) {
 	}
 	// helper height variable to avoid needless computation
 	float gridHeight = grid->height(pos.x, pos.z);
-	float desiredHeight = gridHeight + sin(groundTime * BOB_FREQ) * BOB_HEIGHT + FLOAT_HEIGHT;
+	float desiredHeight = gridHeight + sin(groundTime * BOB_FREQ) * BOB_HEIGHT + FLOAT_HEIGHT + heightOffset;
 
     // affected by gravity
     vel.y += dt * acc.y;

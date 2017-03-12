@@ -26,6 +26,7 @@ private:
     Grid* grid;
     int object;
     float scale;
+    float heightOffset;
     static Shape* objects[];
     static Program* shader;
 };
