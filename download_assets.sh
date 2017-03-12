@@ -28,4 +28,6 @@ wget https://s3-us-west-2.amazonaws.com/iron-canyon/shell.obj
 wget https://s3-us-west-2.amazonaws.com/iron-canyon/turret.obj
 wget https://s3-us-west-2.amazonaws.com/iron-canyon/terrain.bmp
 wget https://s3-us-west-2.amazonaws.com/iron-canyon/bolts_ts.obj
+wget https://s3-us-west-2.amazonaws.com/iron-canyon/as.obj
+wget https://s3-us-west-2.amazonaws.com/iron-canyon/as.bmp
 
