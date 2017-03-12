@@ -82,13 +82,13 @@ bool Grid::inBounds(float x, float z) {
 	int gridx = (x - minx) * (GRID_SIZE - 1) / (maxx - minx);
 	int gridz = (z - minz) * (GRID_SIZE - 1) / (maxz - minz);
 
-	int corners = 0;
-	if (bounds[gridx][gridz]) corners++;
-	if (bounds[gridx + 1][gridz]) corners++;
-	if (bounds[gridx][gridz + 1]) corners++;
-	if (bounds[gridx + 1][gridz + 1]) corners++;
+	//int corners = 0;
+	//if (bounds[gridx][gridz]) corners++;
+	//if (bounds[gridx + 1][gridz]) corners++;
+	//if (bounds[gridx][gridz + 1]) corners++;
+	//if (bounds[gridx + 1][gridz + 1]) corners++;
 	
-	return corners >= 3;
+	return bounds[gridx][gridz];
 }
 
 vector<vec2> Grid::getPath(vec2 from, vec2 to) {
