@@ -7,6 +7,7 @@ project(ironCanyon)
 
 # Use glob to get the list of all source files.
 file(GLOB_RECURSE SOURCES "IronCanyon/*.cpp")
+file(GLOB_RECURSE CSOURCES "IronCanyon/*.c")
 
 # We don't really need to include header and resource files to build, but it's
 # nice to have them show up in IDEs.
@@ -14,7 +15,7 @@ file(GLOB_RECURSE HEADERS "IronCanyon/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
 
 # Set the executable.
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
+add_executable(${CMAKE_PROJECT_NAME} ${CSOURCES} ${SOURCES} ${HEADERS} ${GLSL})
 
 # Get the GLM environment variable. Since GLM is a header-only library, we
 # just need to add it to the include directory.
