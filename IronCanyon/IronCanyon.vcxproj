@@ -145,9 +145,9 @@
     <ClCompile Include="Rocket.cpp" />
     <ClCompile Include="Scrap.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="StaticTerrainObject.cpp" />
     <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Turret.cpp" />
     <ClCompile Include="Walker.cpp" />
@@ -174,11 +174,11 @@
     <ClInclude Include="Rocket.h" />
     <ClInclude Include="Scrap.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="StaticTerrainObject.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
-    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Turret.h" />
