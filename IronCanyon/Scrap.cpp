@@ -70,7 +70,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(-theta, vec3(0, 1, 0));
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
-        M->scale(vec3(0.2, 0.2, 0.2) * scale * objectScales[object]);
+        M->scale(vec3(0.4, 0.4, 0.4) * scale * objectScales[object]);
         glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
         Scrap::objects[object]->draw(Scrap::shader);
     M->popMatrix();
@@ -83,7 +83,7 @@ void Scrap::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->rotate(-theta, vec3(0, 1, 0));
         M->rotate(phi, vec3(1, 0, 0));
         M->rotate(roll, vec3(0, 0, 1));
-        M->scale(vec3(0.2, 0.2, 0.2) * scale * objectScales[object]);
+        M->scale(vec3(0.4, 0.4, 0.4) * scale * objectScales[object]);
         glUniformMatrix4fv(Scrap::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
         glUniform3f(Scrap::shader->getUniform("MatAmb"), 0, 0, 0);
         glUniform3f(Scrap::shader->getUniform("MatDif"), 0, 0, 0);
