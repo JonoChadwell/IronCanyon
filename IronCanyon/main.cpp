@@ -83,7 +83,7 @@ bool mouseCaptured = true;
 double lastx;
 double lasty;
 double lastScroll;
-float cameraDistance = 10;
+float cameraDistance = 5;
 
 // The time the last frame began rendering
 double lastFrameStartTime;

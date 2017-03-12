@@ -33,7 +33,9 @@ Camera::~Camera()
 void Camera::trackToPlayer(Player *player) {
     look = player->pos;
     pos.x = look.x + distance * cos(-player->theta) * cos(-player->phi);
-    pos.y = look.y + distance * sin(-player->phi);
+    pos.y = look.y + distance * sin(-player->phi - MATH_PI / 512);
+	pos.y += .25;
+	look.y += .25;
     pos.z = look.z + distance * sin(-player->theta) * cos(-player->phi);
     float i = distance;
     while (!grid->inBounds(pos.x, pos.z) && i > 1) {
