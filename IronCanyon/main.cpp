@@ -881,7 +881,7 @@ static void renderGUI() {
 	glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 	glClear(GL_COLOR_BUFFER_BIT);*/
 	ImGui::Render();
-	glfwSwapBuffers(window);
+	//glfwSwapBuffers(window);
 }
 
 static void render()
@@ -1054,6 +1054,10 @@ int main(int argc, char **argv)
         updateWorld();
 		// Render scene.
 		render();
+        // Update GUI
+#ifdef GUI
+        renderGUI();
+#endif
 		// Swap front and back buffers.
 		glfwSwapBuffers(window);
 		// Poll for and process events.
@@ -1065,10 +1069,7 @@ int main(int argc, char **argv)
 		// Update main object vector
 		updateObjectVector();
         updateProjectileVector();
-		// Update GUI
-        #ifdef GUI
-		renderGUI();
-        #endif
+		
 	}
 
 	// Quit program.
