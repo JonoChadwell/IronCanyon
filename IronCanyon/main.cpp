@@ -406,7 +406,7 @@ static void init()
     srand(0);
 
     grid = new Grid();
-    player = new Player(-15, 2, 0, 1, 0, 0, 3, grid);
+    player = new Player(-15, 2, 0, 1, 0, 0, 1.5, grid);
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, cameraDistance);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);

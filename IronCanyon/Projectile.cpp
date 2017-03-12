@@ -40,13 +40,6 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	glUniform3f(Projectile::shader->getUniform("lightPos"), 100, 100, 100);
 	glUniform3f(Projectile::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    if (team == PLAYER_TEAM) {
-        glUniform3f(Projectile::shader->getUniform("MatAmb"), 0, 8, 3);
-    }
-    else {
-        glUniform3f(Projectile::shader->getUniform("MatAmb"), 8, 0, 0);
-    }
-    
     glUniform3f(Projectile::shader->getUniform("MatDif"), .1, .1, .1);
     glUniform3f(Projectile::shader->getUniform("MatSpec"), .2, .2, .2);
 	glUniform1f(Projectile::shader->getUniform("shine"), 3.5);
@@ -60,19 +53,33 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
 	M->rotate(-phi + MATH_PI / 2, vec3(1, 0, 0));
 	M->rotate(roll, vec3(0, 0, 1));
+    
     if (team == PLAYER_TEAM) {
         M->scale(vec3(0.3));
     }
     else {
-        M->scale(vec3(0.8));
+        M->scale(vec3(0.6));
     }
 	
-    M->translate(vec3(0.4,0,0));
-	glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Projectile::model->draw(Projectile::shader);
-    M->translate(vec3(-0.8,0,0));
-	glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Projectile::model->draw(Projectile::shader);
+    for (int i = -1; i < 2; i += 2) {
+        M->pushMatrix();
+        M->translate(vec3(i * 0.4, 0, 0));
+        if (team == PLAYER_TEAM) {
+            glUniform3f(Projectile::shader->getUniform("MatAmb"), 0, 8, 3);
+        }
+        else {
+            glUniform3f(Projectile::shader->getUniform("MatAmb"), 8, 0, 0);
+        }
+        glUniform4f(Projectile::shader->getUniform("geomOffset"), 0, 0, 0, 0);
+        glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Projectile::model->draw(Projectile::shader);
+        glUniform4f(Projectile::shader->getUniform("geomOffset"), 0, 0, -1, 0);
+        glUniform3f(Projectile::shader->getUniform("MatAmb"), 8, 8, 8);
+        M->scale(vec3(0.8));
+        glUniformMatrix4fv(Projectile::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        Projectile::model->draw(Projectile::shader);
+        M->popMatrix();
+    }
 	M->popMatrix();
 
 	if (grid->inBounds(pos.x, pos.z)) {
@@ -120,12 +127,13 @@ void Projectile::setup() {
 
 	Projectile::shader = new Program();
 	Projectile::shader->setVerbose(true);
-	Projectile::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Projectile::shader->setShaderNames(RESOURCE_DIR + "projectile_vert.glsl", RESOURCE_DIR + "projectile_frag.glsl");
 	Projectile::shader->init();
 	Projectile::shader->addUniform("P");
 	Projectile::shader->addUniform("M");
 	Projectile::shader->addUniform("V");
 	Projectile::shader->addUniform("lightPos");
+    Projectile::shader->addUniform("geomOffset");
 	Projectile::shader->addUniform("eye");
 	Projectile::shader->addUniform("MatAmb");
 	Projectile::shader->addUniform("MatDif");

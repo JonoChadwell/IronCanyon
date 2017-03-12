@@ -175,7 +175,7 @@ void Walker::fire() {
         float targetAngle = atan2(diff.z, diff.x);
         float targetPhi = atan2(diff.y, sqrt(diff.x * diff.x + diff.z * diff.z));
 
-        Projectile *proj = new Projectile(projectilePos, vec3(0, 0, 0), targetPhi, targetAngle, 0, 40, 1, team, grid);
+        Projectile *proj = new Projectile(projectilePos, vec3(0, 0, 0), targetPhi, targetAngle, 0, 40, 0.2, team, grid);
         newProjectiles->push_back(proj);
     }
 }
