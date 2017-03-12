@@ -91,7 +91,7 @@ double lastFrameStartTime;
 double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 
-bool spawnWave = false;
+float spawnWave = 1.0f;
 bool gameStarted = false;
 bool gamePaused = false;
 bool joystickEnabled = false;
@@ -649,6 +649,18 @@ static vec3 getSpawnLocation() {
     return vec3(x, 0, z);
 }
 
+// helper function to spawn dust
+static void createDust(glm::vec3 pos, glm::vec3 vel, float radius) {
+    float entityHeight = (pos.y - grid->height(pos.x, pos.z)) + 1;
+    float particleChance = entityHeight * entityHeight * entityHeight * 10;
+    particleChance /= 8 + length(player->vel);
+
+    if (particleChance < 1 || rand() % (int) particleChance == 0) {
+        pSystem->spawnDustParticles(1, pos - vel / 15.0f,
+          glm::vec4(0.82f, 0.695f, 0.52f, 1.0f), radius);
+    }
+}
+
 static void stepGameObjects(float dt) {
 	
     bool wheelEnemiesAlive = false;
@@ -657,16 +669,9 @@ static void stepGameObjects(float dt) {
         if (dynamic_cast<Enemy*>(objects[i]) != NULL && dynamic_cast<Walker*>(objects[i]) == NULL) {
             wheelEnemiesAlive = true;
             Enemy *enemy = (Enemy*)objects[i];
-            // roll enemy dust
-            float enemyHeight =  (enemy->pos.y - grid->height(enemy->pos.x, enemy->pos.z)) + 1;
-            float particleChance = enemyHeight * enemyHeight * enemyHeight * 10;
-            particleChance /= 8 + length(player->vel);
-
             // dust
-            if (particleChance < 1 || rand() % (int) particleChance == 0) {
-                pSystem->spawnDustParticles(1, enemy->pos - enemy->vel / 15.0f,
-                  glm::vec4(0.82f, 0.695f, 0.52f, 1.0f), enemy->bound/2);
-            }
+            glm::vec3 enemyVel = glm::vec3(enemy->vel*cos(enemy->theta), 0, enemy->vel*sin(enemy->theta));
+            createDust(enemy->pos, enemyVel, enemy->bound/2);
         }
     }
 
@@ -684,12 +689,12 @@ static void stepGameObjects(float dt) {
 		projectiles[i]->step(dt);
 	}
     if (gameStarted && !wheelEnemiesAlive) {
-        spawnWave = true;
+        spawnWave -= dt;
     }
 	projectileDetection();
 	scrapDetection();
-	if (spawnWave) {
-		spawnWave = false;
+	if (spawnWave < 0) {
+		spawnWave = 20.0f;
         cout << "Spawning wave " << waveNumber++ << endl;
         for (int i = 0; i < 10 + waveNumber; i++) {
 			Enemy* enemy = new Enemy(
@@ -737,16 +742,9 @@ static void drawPlayer() {
 
 static void stepPlayer(float dt) {
     glm::vec4 playerStreamColor = glm::vec4(0.0f, 0.8f, 1.0f, 1.0f);
-    float playerHeight =  (player->pos.y - grid->height(player->pos.x, player->pos.z)) + 1;
-    float particleChance = playerHeight * playerHeight * playerHeight * 10;
-    particleChance /= 8 + length(player->vel);
 
     // dust
-    if (particleChance < 1 || rand() % (int) particleChance == 0) {
-        pSystem->spawnDustParticles(1, player->pos - player->vel / 15.0f,
-          glm::vec4(0.82f, 0.695f, 0.52f, 1.0f), player->bound/2);
-    }
-
+    createDust(player->pos, player->vel, player->bound/2);
     // deal with jump particles
     if (player->jumping == 1) {
         for (int i = 0; i < 20; i++) {
@@ -873,6 +871,7 @@ static void setUpGUI() {
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::Text("Current Scrap: %d", player->scrap);
 	ImGui::Text("Current Health: %d", player->health);
+    ImGui::Text("Wave Spawning in %f", spawnWave);
 }
 
 static void renderGUI() {
@@ -1055,9 +1054,9 @@ int main(int argc, char **argv)
         thisFrameStartTime = glfwGetTime();
 		
 		// Set up GUI
-        #ifdef GUI
+#ifdef GUI
 		setUpGUI();
-        #endif
+#endif
         // Update game state
         updateWorld();
 		// Render scene.
