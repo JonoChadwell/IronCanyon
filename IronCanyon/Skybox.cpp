@@ -84,7 +84,9 @@ GLuint loadCubemap(vector<const GLchar*> faces)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	for (GLuint i = 0; i < faces.size(); i++)
 	{
+		std::cout << &faces << "YES\n";
 		image = SOIL_load_image(faces[i], &width, &height, 0, SOIL_LOAD_RGB);
+		std::cout << "NO\n";
 		glTexImage2D(
 			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
 			GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
@@ -109,7 +111,7 @@ void Skybox::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	glUniformMatrix4fv(Skybox::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(Skybox::shader->getUniform("skybox"), 0);
+	//glUniform1i(Skybox::shader->getUniform("skybox"), 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
@@ -119,7 +121,6 @@ void Skybox::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Skybox::setup() {
-
 	Skybox::shader = new Program();
 	Skybox::shader->setVerbose(true);
 	Skybox::shader->setShaderNames(RESOURCE_DIR + "skybox_vert.glsl", RESOURCE_DIR + "skybox_frag.glsl");
@@ -127,7 +128,7 @@ void Skybox::setup() {
 	Skybox::shader->addAttribute("vertPos");
 	Skybox::shader->addUniform("P");
 	Skybox::shader->addUniform("V");
-	Skybox::shader->addUniform("skybox");
+	//Skybox::shader->addUniform("skybox");
 
 	glGenVertexArrays(1, &skyboxVAO);
 	glGenBuffers(1, &skyboxVBO);
