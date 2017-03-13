@@ -65,7 +65,12 @@ Grid::Grid() {
                 heights[x][z] = 0.0f;
 			}
 			else {
-				bounds[x][z] = true;
+                if (x < 6 || z < 6 || GRID_SIZE - x < 8 || GRID_SIZE - z < 8) {
+                    bounds[x][z] = false;
+                }
+                else {
+                    bounds[x][z] = true;
+                }
 				heights[x][z] = stof(token);
 			}
 		}
