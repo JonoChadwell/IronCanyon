@@ -6,6 +6,7 @@
 
 class Shape;
 class Program;
+class Texture;
 
 class Skybox {
 
@@ -20,5 +21,5 @@ public:
 
 private:
 	static Program* shader;
-	static Shape* object;
+	static Texture* texture;
 };

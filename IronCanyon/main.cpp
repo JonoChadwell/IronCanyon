@@ -17,6 +17,7 @@
 #include "Player.h"
 #include "Rocket.h"
 #include "Crosshair.h"
+#include "Skybox.h"
 #include "Constants.h"
 #include "Grid.h"
 #include "Enemy.h"
@@ -59,6 +60,7 @@ GLFWwindow *window; // Main application window
 Camera* camera;
 Player* player;
 Crosshair* crosshair;
+Skybox* skybox;
 Grid* grid;
 Terrain* terrain;
 Rocket* rocket;
@@ -418,6 +420,8 @@ static void init()
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, cameraDistance);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
+
+	skybox = new Skybox();
 	rocket = new Rocket(grid);
 
     theta = MATH_PI;
@@ -437,6 +441,7 @@ static void init()
     // initialize models and shaders
     Terrain::setup();
 	Crosshair::setup(g_height);
+	Skybox::setup();
 	Player::setup();
 	Rocket::setup();
 	Enemy::setup();
@@ -584,6 +589,7 @@ static void drawGameObjects() {
 	if (rocket->stage < 3)
 		crosshair->draw();
 	rocket->draw(P, lookAt, camera->eyeVector());
+	skybox->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
     delete P;
