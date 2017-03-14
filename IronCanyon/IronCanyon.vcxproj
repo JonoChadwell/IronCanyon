@@ -127,6 +127,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Crosshair.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GLSL.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLSL.h" />
     <ClInclude Include="Grid.h" />

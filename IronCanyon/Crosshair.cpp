@@ -61,7 +61,7 @@ void Crosshair::draw() {
 }
 
 void Crosshair::updateHeight(int windowHeight) {
-	g_vertex_buffer_data[1] = .5;
+	g_vertex_buffer_data[1] = windowHeight * .5 * .00007;
    height = windowHeight;
 }
 

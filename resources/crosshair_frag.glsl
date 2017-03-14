@@ -6,10 +6,16 @@ out vec4 color;
 void main(){
    float distanceFromCenter = distance( vec2( .5, .5 ),
                          vec2( gl_PointCoord.x, gl_PointCoord.y ) );
-   if( distanceFromCenter > .2 ){
+   if( distanceFromCenter > .3 ){
       discard;
    }
-   if (hair == 1 || hair == 2 || hair == 3) {
+   if (hair == 3) {
+      if ((gl_PointCoord.x < .36 || gl_PointCoord.x > .66) && (gl_PointCoord.y > .66 || gl_PointCoord.y < .36))
+         discard;
+      if ((gl_PointCoord.x > .42 && gl_PointCoord.x < .58) || (gl_PointCoord.y <= .58 && gl_PointCoord.y > .42))
+         discard;
+   }
+   if (hair == 1 || hair == 2) {
       if ((gl_PointCoord.x < .45 || gl_PointCoord.x > .55) && (gl_PointCoord.y > .55 || gl_PointCoord.y < .45)) {
          discard;
       }
@@ -17,12 +23,6 @@ void main(){
          if (gl_PointCoord.x > .45 && gl_PointCoord.x < .55 && gl_PointCoord.y < .55 && gl_PointCoord.y > .45) {
             discard;
          }
-      }
-      else if (hair == 3) {
-         if ((gl_PointCoord.x > .48 && gl_PointCoord.x < .52) || (gl_PointCoord.y < .52 && gl_PointCoord.y > .48)) {
-            discard;
-         }
-
       }
    }
    else if (hair == 4) {
