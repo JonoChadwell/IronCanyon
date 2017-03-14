@@ -855,17 +855,25 @@ static void drawParticles() {
 
 static void setUpGUI() {
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontDefault();
+	io.Fonts->AddFontFromFileTTF("../resources/DS-DIGII.ttf", 18.0, NULL, io.Fonts->GetGlyphRangesDefault());
 }
 
 static void guiLoopSetup() {
 	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
-	ImGui::Text("Test");
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 150);
+	ImVec2 size = ImVec2::ImVec2(350,100);
+	
+	ImGui::SetNextWindowPos(pos, 0);
+	ImGui::Begin("VEHICLE STATISTICS", NULL, 0.0);
+	ImGui::SetWindowSize(size, 1);
+	//ImGui::Text("Average Frametime %.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
+	//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 	ImGui::Text("Current Scrap: %d", player->scrap);
 	ImGui::Text("Current Health: %d", player->health);
-	ImGui::Text("Wave Spawning in %f", spawnWave);
+	ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
+	ImGui::End();
 }
 
 static void renderGUI() {

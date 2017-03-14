@@ -353,6 +353,16 @@ void ImGui_ImplGlfwGL3_Shutdown()
 
 void ImGui_ImplGlfwGL3_NewFrame()
 {
+	ImGuiStyle& idx = ImGui::GetStyle();
+	idx.Colors[ImGuiCol_WindowBg]         = ImVec4(0.0, 0.0, 0.0, 1.0);
+	idx.Colors[ImGuiCol_CloseButton]      = ImVec4(0.0, 0.0, 0.0, 0.0);
+	idx.Colors[ImGuiCol_TitleBg]          = ImVec4(0.2, 0.2, 0.2, 1.0);
+	idx.Colors[ImGuiCol_TitleBgActive]    = ImVec4(0.2, 0.2, 0.2, 1.0);
+	idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
+	idx.Colors[ImGuiCol_ResizeGrip]       = ImVec4(0.0, 0.0, 0.0, 0.0);
+	idx.Colors[ImGuiCol_Text]             = ImVec4(0.0, 1.0, 0.0, 1.0);
+	idx.Colors[ImGuiCol_Border]           = ImVec4(1.0, 1.0, 0.0, 1.0);
+
     if (!g_FontTexture)
         ImGui_ImplGlfwGL3_CreateDeviceObjects();
 
