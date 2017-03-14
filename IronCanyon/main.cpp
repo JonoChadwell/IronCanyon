@@ -30,6 +30,7 @@
 #include "Projectile.h"
 #include "ParticleSystem.h"
 #include "VFC.h"
+#include "EnemySpawner.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -62,6 +63,7 @@ Player* player;
 Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
+EnemySpawner* spawner;
 Rocket* rocket;
 VFC* vfc;
 #ifdef AUDIO
@@ -95,7 +97,6 @@ double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 int maxPhysicsSteps = 12;
 
-float spawnWave = 1.0f;
 bool gameStarted = false;
 bool gamePaused = false;
 bool joystickEnabled = false;
@@ -104,7 +105,6 @@ bool laserFired = false;
 bool showSpawnTimer = false;
 bool showUpgradeMenu = false;
 int curLaserSound = 0;
-int waveNumber = 1;
 int rocketCost = 00;
 int turretCost = 2000;
 int turretsBuilt = 0;
@@ -136,7 +136,7 @@ static void error_callback(int error, const char *description)
 
 static void hurtPlayer(int amt)
 {
-    player->health -= 1;
+    player->health -= amt;
     pSystem->spawnBurstParticles(50, player->pos, glm::vec4(1.0f, 0.5f, 0.5f, 1.0f), 50.0f);
 }
 
@@ -227,6 +227,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         gameStarted = true;
+        spawner->active = true;
 	}
 	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
 		if (joystickEnabled == false)
@@ -437,6 +438,7 @@ static void init()
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
 	rocket = new Rocket(grid);
+    spawner = new EnemySpawner(grid, player);
 
     theta = MATH_PI;
     phi = 0;
