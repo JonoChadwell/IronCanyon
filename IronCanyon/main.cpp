@@ -29,6 +29,7 @@
 #include "QuadTree.h"
 #include "Projectile.h"
 #include "ParticleSystem.h"
+#include "VFC.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -62,6 +63,7 @@ Crosshair* crosshair;
 Grid* grid;
 Terrain* terrain;
 Rocket* rocket;
+VFC* vfc;
 #ifdef AUDIO
 sf::Sound* sound;
 sf::Sound* sound2;
@@ -100,6 +102,7 @@ bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
 bool showSpawnTimer = false;
+bool showUpgradeMenu = false;
 int curLaserSound = 0;
 int waveNumber = 1;
 int rocketCost = 00;
@@ -235,6 +238,14 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		if (player->scrap >= 100) {
 			player->health++;
 			player->scrap -= 100;
+		}
+	}
+	if (key == GLFW_KEY_U && action == GLFW_PRESS) {
+		if (!showUpgradeMenu && !gamePaused) {
+			showUpgradeMenu = true;
+		}
+		else if (showUpgradeMenu && !gamePaused) {
+			showUpgradeMenu = false;
 		}
 	}
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
@@ -886,11 +897,13 @@ static void getInputs(GLFWwindow* window) {
 static void guiLoopSetup(GLFWwindow* window) {
 	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
-	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 110);
+	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 100);
 	ImVec2 alert = ImVec2::ImVec2(g_width - 350, -30.0f);
-	ImVec2 size = ImVec2::ImVec2(350,100);
+	ImVec2 upgrades = ImVec2::ImVec2(g_width - 350, g_height - 100);
+	ImVec2 size = ImVec2::ImVec2(350,90);
 	ImVec2 alertSize = ImVec2::ImVec2(350, 80);
 	ImVec2 alertSizeNoComplete = ImVec2::ImVec2(350, 60);
+	ImVec2 upgradeSize = ImVec2::ImVec2(350, 80);
 
 	
 	
@@ -912,7 +925,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::Text("Current Scrap: %d", player->scrap);
 		ImGui::Text("Current Health: %d", player->health);
-		ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
+		//ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
 		ImGui::End();
 	}
 	else if (player->isPaused) {
@@ -928,7 +941,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::End();
 	}
 
-	if (spawnWave > 0 && !compDoubles(spawnWave, 20.0f, 0.1f)) {
+	if (spawnWave > 0 && !compDoubles(spawnWave, 20.0f, 0.1f) && gameStarted) {
 
 		ImGuiStyle& idx = ImGui::GetStyle();
 		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
@@ -954,6 +967,23 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::Text("NEXT WAVE SPAWNING IN %f SECONDS", spawnWave);
 		ImGui::End();
 
+	}
+
+	if (showUpgradeMenu) {
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImGui::SetNextWindowPos(upgrades, 0);
+		ImGui::Begin("SHIP UPGRADES", NULL, 0.0);
+		ImGui::SetWindowSize(upgradeSize, 1);
+		ImGui::End();
 	}
 	getInputs(window);
 }
