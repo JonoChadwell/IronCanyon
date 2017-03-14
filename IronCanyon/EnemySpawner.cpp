@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Walker.h"
 #include "GameObject.h"
+#include "Player.h"
 #include <vector>
 #include <glm/vec3.hpp>
 #include <algorithm>
@@ -20,34 +21,44 @@
 using namespace std;
 using namespace glm;
 
+struct enemy_spawn_info {
+    ENEMY_T type;
+    float speed;
+    float spawnTime;
+    int amount;
+};
+
+struct wave_spawn_info {
+    float waveDuration;
+    vector<enemy_spawn_info> spawns;
+};
+
 vector<wave_spawn_info> waves = 
 {
     // wave 1
     {
-        20.0f,
+        15.0f,
         {
             {FLOATER, 6.0f, 20.0f, 5},
         }
     },
-}
+    //wave 2
+    {
+        20.0f,
+        {
+            {FLOATER, 8.0f, 20.0f, 5},
+            {FLOATER, 8.0f, 18.0f, 5},
+            {FLOATER, 8.0f, 16.0f, 5},
+            {FLOATER, 8.0f, 14.0f, 5},
+        }
+    },
+};
 
 namespace {
     float randf()
     {
         return (rand() * 1.0f) / (RAND_MAX);
     }
-
-    struct enemy_spawn_info {
-        ENEMY_T type;
-        float speed;
-        float spawnTime;
-        int amount;
-    };
-
-    struct wave_spawn_info {
-        float waveDuration;
-        vector<enemy_spawn_info> spawns;
-    };
 
     wave_spawn_info generateWave(int wave)
     {
@@ -93,7 +104,7 @@ vec3 EnemySpawner::getSpawnLocation()
 }
 
 // returns all entities spawned during a game tick
-vector<GameObject*> update(float dt)
+vector<GameObject*> EnemySpawner::update(float dt)
 {
     if (!active) return {};
     
@@ -103,6 +114,7 @@ vector<GameObject*> update(float dt)
         wave_spawn_info wi = generateWave(waveNumber);
         nextWaveTimer = wi.waveDuration;
         wave = wi.spawns;
+        waveNumber++;
     }
 
     vector<GameObject*> newEnemies = {};
@@ -110,7 +122,7 @@ vector<GameObject*> update(float dt)
     for (int i = 0; i < wave.size(); i++)
     {
         enemy_spawn_info ei = wave[i];
-        if (ei.spawnTime <= nextWaveTimer)
+        if (ei.spawnTime >= nextWaveTimer)
         {
             for (int j = 0; j < ei.amount; j++)
             {
@@ -129,6 +141,7 @@ vector<GameObject*> update(float dt)
                             new Walker(getSpawnLocation(),
                             0, 0, 0,
                             ei.speed,
+                            2,
                             grid));
                 }
             }

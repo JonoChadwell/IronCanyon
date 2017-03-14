@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <glm/vec3.hpp>
 
 // forwards declarations
 class Player;
@@ -23,7 +24,7 @@ public:
 private:
     Grid* grid;
     Player* player;
-    vector<enemy_spawn_info> wave;
+    std::vector<enemy_spawn_info> wave;
 
     glm::vec3 getSpawnLocation();
 

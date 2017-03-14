@@ -697,33 +697,12 @@ static void stepGameObjects(float dt) {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->step(dt);
 	}
-    if (gameStarted && !wheelEnemiesAlive) {
-        spawnWave -= dt;
-    }
 	projectileDetection();
-	if (spawnWave < 0) {
-		spawnWave = 20.0f;
-        cout << "Spawning wave " << waveNumber++ << endl;
-        for (int i = 0; i < 10 + waveNumber; i++) {
-			Enemy* enemy = new Enemy(
-				getSpawnLocation(),
-				0, 0, 0, // rotations
-				ENEMY_SPEED * (1.0 + waveNumber / 2.0), // speed
-				2, // bounding radius
-				grid);
-		    objects.push_back(enemy);
-        }
-        for (int i = 0; i < 5 + waveNumber; i++) {
-			Walker* walker = new Walker(
-				getSpawnLocation(),
-				0, 0, 0, // rotations
-				ENEMY_SPEED, // speed
-				2, // bounding radius
-				grid);
-		    objects.push_back(walker);
 
-        }
-	}
+    vector<GameObject*> spawnedObjects = spawner->update(dt);
+    for (int i = 0; i < spawnedObjects.size(); i++) {
+        objects.push_back(spawnedObjects[i]);
+    }
 }
 
 static void drawPlayer() {
@@ -943,7 +922,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::End();
 	}
 
-	if (spawnWave > 0 && !compDoubles(spawnWave, 20.0f, 0.1f) && gameStarted) {
+	if (gameStarted) {
 
 		ImGuiStyle& idx = ImGui::GetStyle();
 		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
@@ -958,15 +937,15 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::SetNextWindowPos(alert, 0);
 		ImGui::Begin("", NULL, 0.0);
 		
-		if (waveNumber > 1) {
+		if (spawner->waveNumber > 1) {
 			ImGui::SetWindowSize(alertSize, 1);
-			ImGui::Text("Wave %d Complete!", waveNumber - 1);
+			ImGui::Text("Wave %d Complete!", spawner->waveNumber - 1);
 		}
 		else {
 			ImGui::SetWindowSize(alertSizeNoComplete, 1);
 		}
 		
-		ImGui::Text("NEXT WAVE SPAWNING IN %f SECONDS", spawnWave);
+		ImGui::Text("NEXT WAVE SPAWNING IN %.1f SECONDS", spawner->nextWaveTimer);
 		ImGui::End();
 
 	}
@@ -1205,6 +1184,6 @@ int main(int argc, char **argv)
 	}
     cout << "GAME OVER\n";
     cout << "Scrap: " << player->scrap << endl;
-    cout << "Waves Survived: " << (waveNumber - 2) << endl;
+    cout << "Waves Survived: " << (spawner->waveNumber) << endl;
 	return 0;
 }
