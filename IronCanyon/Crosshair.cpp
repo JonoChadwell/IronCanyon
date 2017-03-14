@@ -39,16 +39,16 @@ void Crosshair::draw() {
 	Crosshair::shader->bind();
 
 	//we need to set up the vertex array
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	//key function to get up how many elements to pull out at a time (3)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 
 	//actually draw from vertex 0, 3 vertices
 	glPointSize(34.0);
 	glDrawArrays(GL_POINTS, 0, 1);
-	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	glUniformMatrix4fv(Crosshair::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniform3f(Crosshair::shader->getUniform("uniColor"), target, 1 - target, 0);
