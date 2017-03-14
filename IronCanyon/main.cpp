@@ -897,13 +897,13 @@ static void getInputs(GLFWwindow* window) {
 static void guiLoopSetup(GLFWwindow* window) {
 	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
-	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 100);
-	ImVec2 alert = ImVec2::ImVec2(g_width - 350, -30.0f);
-	ImVec2 upgrades = ImVec2::ImVec2(g_width - 350, g_height - 100);
-	ImVec2 size = ImVec2::ImVec2(350,90);
-	ImVec2 alertSize = ImVec2::ImVec2(350, 80);
-	ImVec2 alertSizeNoComplete = ImVec2::ImVec2(350, 60);
-	ImVec2 upgradeSize = ImVec2::ImVec2(350, 80);
+	ImVec2 pos = ImVec2(g_width/g_width, g_height - 100);
+	ImVec2 alert = ImVec2(g_width - 350, -30.0f);
+	ImVec2 upgrades = ImVec2(g_width - 350, g_height - 100);
+	ImVec2 size = ImVec2(350,90);
+	ImVec2 alertSize = ImVec2(350, 80);
+	ImVec2 alertSizeNoComplete = ImVec2(350, 60);
+	ImVec2 upgradeSize = ImVec2(350, 80);
 
 	
 	
