@@ -64,6 +64,7 @@ Terrain* terrain;
 Rocket* rocket;
 #ifdef AUDIO
 sf::Sound* sound;
+sf::Sound* sound2;
 #endif
 
 Turret* curTurret = NULL;
@@ -98,6 +99,7 @@ bool gamePaused = false;
 bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
+bool showSpawnTimer = false;
 int curLaserSound = 0;
 int waveNumber = 1;
 int rocketCost = 00;
@@ -115,6 +117,11 @@ static float dist(glm::vec3 p1, glm::vec3 p2) {
 
 static float randf() {
 	return (rand() * 1.0) / (RAND_MAX);
+}
+static bool compDoubles(double A, double B, double epsilon)
+{
+	int diff = A - B;
+	return (diff < epsilon) && (-diff < epsilon);
 }
 
 /* BEGIN MAIN STUFF */
@@ -225,7 +232,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			joystickEnabled = false;
 	}
 	if (key == GLFW_KEY_H && action == GLFW_PRESS) {
-		if (player->scrap > 100) {
+		if (player->scrap >= 100) {
 			player->health++;
 			player->scrap -= 100;
 		}
@@ -806,12 +813,21 @@ static void stepPlayer(float dt) {
         rifleCooldown = 0;
     }
     if (player->firing >= .5 && player->fireMode == 1) {
+#ifdef AUDIO
+		if (!laserFired) {
+			sound2->play();
+			laserFired = true;
+		}
+#endif
         laserFire();
     }
     else if (player->firing > 0 && player->fireMode == 2 && rifleCooldown == 0) {
         missileFire();
         rifleCooldown = RIFLE_COOLDOWN;
     }
+	if (player->firing == 0) {
+		laserFired = false;
+	}
 	crosshairColor();
     player->step(dt);
 }
@@ -859,21 +875,87 @@ static void setUpGUI() {
 	io.Fonts->AddFontFromFileTTF("../resources/DS-DIGII.ttf", 18.0, NULL, io.Fonts->GetGlyphRangesDefault());
 }
 
-static void guiLoopSetup() {
+static void getInputs(GLFWwindow* window) {
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, cursor_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetFramebufferSizeCallback(window, resize_callback);
+}
+
+static void guiLoopSetup(GLFWwindow* window) {
 	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
-	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 150);
+	ImVec2 pos = ImVec2::ImVec2(g_width/g_width, g_height - 110);
+	ImVec2 alert = ImVec2::ImVec2(g_width - 350, -30.0f);
 	ImVec2 size = ImVec2::ImVec2(350,100);
+	ImVec2 alertSize = ImVec2::ImVec2(350, 80);
+	ImVec2 alertSizeNoComplete = ImVec2::ImVec2(350, 60);
+
 	
-	ImGui::SetNextWindowPos(pos, 0);
-	ImGui::Begin("VEHICLE STATISTICS", NULL, 0.0);
-	ImGui::SetWindowSize(size, 1);
-	//ImGui::Text("Average Frametime %.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
-	//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
-	ImGui::Text("Current Scrap: %d", player->scrap);
-	ImGui::Text("Current Health: %d", player->health);
-	ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
-	ImGui::End();
+	
+	if (!player->isPaused) {
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImGui::SetNextWindowPos(pos, 0);
+		ImGui::Begin("VEHICLE STATISTICS", NULL, 0.0);
+		ImGui::SetWindowSize(size, 1);
+		//ImGui::Text("Average Frametime %.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
+		//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+		ImGui::Text("Current Scrap: %d", player->scrap);
+		ImGui::Text("Current Health: %d", player->health);
+		ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
+		ImGui::End();
+	}
+	else if (player->isPaused) {
+		ImGui_ImplGlfwGL3_GetInput(window);
+		ImGui::SetNextWindowPosCenter(0);
+		ImGui::Begin("PAUSED", NULL, 0.0);
+		//ImGui::SetWindowSize(size, 1);
+		//ImGui::Text("Average Frametime %.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
+		//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+		//ImGui::Text("Current Scrap: %d", player->scrap);
+		//ImGui::Text("Current Health: %d", player->health);
+		//ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
+		ImGui::End();
+	}
+
+	if (spawnWave > 0 && !compDoubles(spawnWave, 20.0f, 0.1f)) {
+
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.2, 0.2, 0.2, 0.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 0.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 0.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImGui::SetNextWindowPos(alert, 0);
+		ImGui::Begin("", NULL, 0.0);
+		
+		if (waveNumber > 1) {
+			ImGui::SetWindowSize(alertSize, 1);
+			ImGui::Text("Wave %d Complete!", waveNumber - 1);
+		}
+		else {
+			ImGui::SetWindowSize(alertSizeNoComplete, 1);
+		}
+		
+		ImGui::Text("NEXT WAVE SPAWNING IN %f SECONDS", spawnWave);
+		ImGui::End();
+
+	}
+	getInputs(window);
 }
 
 static void renderGUI() {
@@ -987,10 +1069,15 @@ int main(int argc, char **argv)
 
 #ifdef AUDIO
 	sf::SoundBuffer buffer;
+	sf::SoundBuffer buffer2;
 
 	sound = new sf::Sound();
 	buffer.loadFromFile("../resources/LaserShot.ogg");
 	sound->setBuffer(buffer);
+
+	sound2 = new sf::Sound();
+	buffer2.loadFromFile("../resources/ChargeLaser.ogg");
+	sound2->setBuffer(buffer2);
 #endif
 
 	// Create a windowed mode window and its OpenGL context.
@@ -1019,15 +1106,17 @@ int main(int argc, char **argv)
 	// Set joystick callback.
 	//glfwSetJoystickCallback(joystick_callback);
 	// Set keyboard callback.
-	glfwSetKeyCallback(window, key_callback);
+//	glfwSetKeyCallback(window, key_callback);
     //set the mouse call back
-    glfwSetMouseButtonCallback(window, mouse_callback);
+//    glfwSetMouseButtonCallback(window, mouse_callback);
     //set the scroll call back
-    glfwSetCursorPosCallback(window, cursor_callback);
+//    glfwSetCursorPosCallback(window, cursor_callback);
 	//Mouse scroll call back
-	glfwSetScrollCallback(window, scroll_callback);
+//	glfwSetScrollCallback(window, scroll_callback);
     //set the window resize call back
-    glfwSetFramebufferSizeCallback(window, resize_callback);
+//    glfwSetFramebufferSizeCallback(window, resize_callback);
+
+	getInputs(window);
     //lock cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -1048,7 +1137,7 @@ int main(int argc, char **argv)
 		
 		// Set up GUI
 #ifdef GUI
-		guiLoopSetup();
+		guiLoopSetup(window);
 #endif
         // Update game state
         updateWorld();
