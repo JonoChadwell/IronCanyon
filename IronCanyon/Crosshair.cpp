@@ -61,7 +61,6 @@ void Crosshair::draw() {
 }
 
 void Crosshair::updateHeight(int windowHeight) {
-	g_vertex_buffer_data[1] = windowHeight * .5 * .00007;
    height = windowHeight;
 }
 
@@ -87,7 +86,7 @@ void Crosshair::setup(int windowHeight) {
 	Crosshair::shader->addUniform("P");
 
 	g_vertex_buffer_data[0] = 0;
-	g_vertex_buffer_data[1] = windowHeight * .5 * .00007;
+	g_vertex_buffer_data[1] = .0336;
 	glGenBuffers(1, &vertexbuffer);
 	//set the current state to focus on our vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
