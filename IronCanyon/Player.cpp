@@ -123,7 +123,6 @@ void Player::step(float dt) {
     if (grid->inBounds(pos.x, pos.z) && pos.y < grid->height(pos.x, pos.z) + 1.3) {
         float offset = (grid->height(pos.x, pos.z) + 1.3 - pos.y);
 
-        std::cout << "Bouncing " << pow(2, -vel.y) * offset * dt * 20 << std::endl;
         vel.y += std::min(128.0, pow(2, -vel.y)) * offset * dt * 20;
         float heightChange = grid->height(pos.x, pos.z) - grid->height(oldx, oldz);
         if (heightChange > 0) {
