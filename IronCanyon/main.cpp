@@ -683,6 +683,16 @@ static void stepGameObjects(float dt) {
             createDust(enemy->pos, enemyVel, enemy->bound/2);
         }
     }
+    // get rid of extraneous scrap
+    unsigned int curScrapCount = 0;
+    for (unsigned int i = objects.size() - 1; i > 0; i--) {
+        if (dynamic_cast<Scrap*>(objects[i]) != NULL) {
+            curScrapCount++;
+            if (curScrapCount > SCRAP_CAP) {
+                objects[i]->toDelete = true;
+            }
+        }
+    }
 
 	vector<GameObject *> qObjects;
 	quadtree->getObjects(player->pos.x, player->pos.z, &qObjects);
