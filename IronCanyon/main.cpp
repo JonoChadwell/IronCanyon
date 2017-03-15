@@ -110,6 +110,7 @@ int turretCost = 2000;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
+float rocketCooldown = 0.0;
 
 #define RIFLE_COOLDOWN 0.3
 
@@ -668,8 +669,14 @@ static void stepGameObjects(float dt) {
 		if (dynamic_cast<Rocket*>(objects[i]) != NULL) {
 			Rocket* rocket = (Rocket*)objects[i];
 			if (rocket->stage == 3) {
+                rocketCooldown += dt;
 				rocket->step(dt);
-				pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0), vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, 0, 30.0);
+                // time based exhaust
+                if (rocketCooldown > ROCKET_PARTICLE_TIMER) {
+                    rocketCooldown = 0.0;
+                    pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0),
+                      vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, 0, 30.0);
+                }
 			}
 		}
 		else {
