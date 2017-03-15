@@ -53,6 +53,7 @@ using namespace glm;
 #define PLAYER_ACCELERATION 50
 #define BOOST_ACCELERATION 100
 #define ENEMY_SPEED 6
+#define PURGATORY glm::vec3(-190, -50, -190)
 
 ImVec4 clear_color = ImColor(114, 144, 154);
 
@@ -705,7 +706,8 @@ static void stepGameObjects(float dt) {
 	quadtree->getObjects(player->pos.x, player->pos.z, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		Enemy* enemy = dynamic_cast<Enemy*>(qObjects[i]);
-		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos) < (player->bound + enemy->bound) && !enemy->hitPlayer) {
+		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos)
+          < (player->bound + enemy->bound) && !enemy->hitPlayer && player->health > 0) {
 			enemy->hitPlayer = true;
 			enemy->toDelete = true;
             hurtPlayer(2);
@@ -1006,13 +1008,16 @@ static void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // update camera to track player
-	if (rocket->stage < 3) {
+	if (rocket->stage < 3 && player->health > 0) {
 		camera->trackToPlayer(player);
 		drawPlayer();
 	}
-	else {
+	else if (rocket->stage >= 3) {
 		camera->trackToRocket(rocket->ypos);
 	}
+    else {
+        player->pos = PURGATORY;
+    }
 
 
     // render things
@@ -1024,11 +1029,9 @@ static void render()
 
 static void updateWorld()
 {
-	if (player->health > 0 && !gamePaused) {
+	if (!gamePaused) {
         if (rocket->stage >= 3) {
-            player->pos.y = -50;
-            player->pos.x = -190;
-            player->pos.z = -190;
+            player->pos = PURGATORY;
         }
         int physicsSteps = 0;
 		double timePassed = thisFrameStartTime - lastFrameStartTime;
