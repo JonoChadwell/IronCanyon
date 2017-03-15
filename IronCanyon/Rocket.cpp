@@ -21,7 +21,7 @@ Program* Rocket::conShader;
 
 
 Rocket::Rocket(Grid* grid) :
-	GridObject(vec3(0, 0, 0), 0, 5, grid),
+	GridObject(vec3(0, 0, 0), 0, 6, grid),
 	grid(grid)
 {
 }
@@ -68,39 +68,44 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	// render shit
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(0, grid->height(0, 0) + 1, 0));
-	M->scale(vec3(5, .5, 5));
+	M->translate(vec3(0, grid->height(0, 0) - .5, 0));
+	M->scale(vec3(7, 6, 7));
 	glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	Rocket::pad->draw(Rocket::shader);
 	M->popMatrix();
 
-	if (stage >= 1) {
+	if (stage == 1) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 2 + ypos, 0));
-		M->scale(vec3(3, 3, 3));
+		M->translate(vec3(0, grid->height(0, 0) + 2, 0));
+		M->rotate(-2 * MATH_PI / 3, vec3(0, 1, 0));
+		M->scale(vec3(2, 5, 8));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::pad->draw(Rocket::shader);
+		Rocket::bottom->draw(Rocket::shader);
 		M->popMatrix();
 	}
 
-	if (stage >= 2) {
+	if (stage == 2) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 8 + ypos, 0));
-		M->scale(vec3(3, 3, 3));
+		M->translate(vec3(0, grid->height(0, 0) + 9 + ypos, 0));
+		M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
+		M->rotate(- 2 * MATH_PI / 3, vec3(0, 0, 1));
+		M->scale(vec3(10, 10, 10));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::pad->draw(Rocket::shader);
+		Rocket::middle->draw(Rocket::shader);
 		M->popMatrix();
 	}
 
 	if (stage == 3) {
 		M->pushMatrix();
 		M->loadIdentity();
-		M->translate(vec3(0, grid->height(0, 0) + 14 + ypos, 0));
-		M->scale(vec3(3, 3, 3));
+		M->translate(vec3(0, grid->height(0, 0) + 9 + ypos, 0));
+		M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
+		M->rotate(- 2 * MATH_PI / 3, vec3(0, 0, 1));
+		M->scale(vec3(10, 10, 10));
 		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::pad->draw(Rocket::shader);
+		Rocket::top->draw(Rocket::shader);
 		M->popMatrix();
 	}
 
@@ -113,22 +118,22 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 // model setup
 void Rocket::setup() {
 	Rocket::pad = new Shape();
-	Rocket::pad->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
+	Rocket::pad->loadMesh(RESOURCE_DIR + std::string("drive/IronCanyon_TurretBase.obj"));
 	Rocket::pad->resize();
 	Rocket::pad->init();
 
 	Rocket::bottom = new Shape();
-	Rocket::bottom->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
+	Rocket::bottom->loadMesh(RESOURCE_DIR + std::string("drive/ship_stage1.obj"));
 	Rocket::bottom->resize();
 	Rocket::bottom->init();
 
 	Rocket::middle = new Shape();
-	Rocket::middle->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
+	Rocket::middle->loadMesh(RESOURCE_DIR + std::string("drive/ship_stage2.obj"));
 	Rocket::middle->resize();
 	Rocket::middle->init();
 
 	Rocket::top = new Shape();
-	Rocket::top->loadMesh(RESOURCE_DIR + std::string("drive/sphere.obj"));
+	Rocket::top->loadMesh(RESOURCE_DIR + std::string("drive/ship_complete.obj"));
 	Rocket::top->resize();
 	Rocket::top->init();
 

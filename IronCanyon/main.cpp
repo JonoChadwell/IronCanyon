@@ -675,7 +675,7 @@ static void stepGameObjects(float dt) {
                 // time based exhaust
                 if (rocketCooldown > ROCKET_PARTICLE_TIMER) {
                     rocketCooldown = 0.0;
-                    pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 10.0, 0),
+                    pSystem->spawnFocusParticles(5, vec3(0, rocket->ypos - 3.0, 0),
                       vec4(.8, .3, .3, 1.0), 100.0, -MATH_PI / 2, 0, 30.0);
                 }
 			}
