@@ -253,7 +253,7 @@ int ParticleSystem::firstUnusedParticle()
             return i;
         }
     }
-    // All particles are taken, override the first one 
-    lastUsedParticle = 0;
-    return 0;
+    // All particles are taken, overwrite a random one 
+    lastUsedParticle = rand() % PARTICLE_AMOUNT;
+    return lastUsedParticle;
 }
