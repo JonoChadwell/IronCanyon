@@ -120,6 +120,9 @@ float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
 float rocketCooldown = 0.0;
 
+vec4 planes[6];
+int culled = 0;
+
 #define RIFLE_COOLDOWN 0.3
 
 /* MATH HELPERS */
@@ -604,6 +607,69 @@ static void missileFire() {
 #endif
 }
 
+static float distToPlane(vec4 plane, vec3 point) {
+    return plane.x * point.x + plane.y * point.y + plane.z * point.z + plane.w;
+}
+
+static bool shouldCull(GameObject* obj) {
+    float dist;
+    for (int i = 0; i < 6; i++) {
+        dist = distToPlane(planes[i], obj->pos);
+        if (dist + obj->bound < 0) {
+            culled++;
+            return true;
+        }
+    }
+    return false;
+}
+
+static void setupVfc(mat4 comp) {
+    vec3 normal;
+    vec4 plane;
+    culled = 0;
+
+    plane.x = comp[0][3] + comp[0][0];
+    plane.y = comp[1][3] + comp[1][0];
+    plane.z = comp[2][3] + comp[2][0];
+    plane.w = comp[3][3] + comp[3][0];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[0] = plane / length(normal);
+
+    plane.x = comp[0][3] - comp[0][0];
+    plane.y = comp[1][3] - comp[1][0];
+    plane.z = comp[2][3] - comp[2][0];
+    plane.w = comp[3][3] - comp[3][0];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[1] = plane / length(normal);
+
+    plane.x = comp[0][3] + comp[0][1];
+    plane.y = comp[1][3] + comp[1][1];
+    plane.z = comp[2][3] + comp[2][1];
+    plane.w = comp[3][3] + comp[3][1];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[2] = plane / length(normal);
+
+    plane.x = comp[0][3] - comp[0][1];
+    plane.y = comp[1][3] - comp[1][1];
+    plane.z = comp[2][3] - comp[2][1];
+    plane.w = comp[3][3] - comp[3][1];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[3] = plane / length(normal);
+
+    plane.x = comp[0][3] + comp[0][2];
+    plane.y = comp[1][3] + comp[1][2];
+    plane.z = comp[2][3] + comp[2][2];
+    plane.w = comp[3][3] + comp[3][2];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[4] = plane / length(normal);
+
+    plane.x = comp[0][3] - comp[0][2];
+    plane.y = comp[1][3] - comp[1][2];
+    plane.z = comp[2][3] - comp[2][2];
+    plane.w = comp[3][3] - comp[3][2];
+    normal = vec3(plane.x, plane.y, plane.z);
+    planes[5] = plane / length(normal);
+}
 
 static void drawGameObjects() {
    int width, height;
@@ -617,13 +683,20 @@ static void drawGameObjects() {
    glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
      camera->lookAtPt(), glm::vec3(0, 1, 0));
 
+   setupVfc(P->topMatrix() * lookAt);
+
     // draw and time based movement
     for (unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->draw(P, lookAt, camera->eyeVector());
+        if (!shouldCull(objects[i])) {
+		    objects[i]->draw(P, lookAt, camera->eyeVector());
+        }
     }
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		projectiles[i]->draw(P, lookAt, camera->eyeVector());
+        if (!shouldCull(projectiles[i])) {
+		    projectiles[i]->draw(P, lookAt, camera->eyeVector());
+        }
 	}
+    //cout << culled << endl;
 	if (rocket->stage < 3 && player->health > 0)
 		crosshair->draw();
 	rocket->draw(P, lookAt, camera->eyeVector());
