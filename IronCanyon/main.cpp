@@ -1014,15 +1014,10 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::SetNextWindowPos(alert, 0);
 		ImGui::Begin("", NULL, 0.0);
 		
-		if (spawner->waveNumber > 1) {
-			ImGui::SetWindowSize(alertSize, 1);
-			ImGui::Text("Wave %d Complete!", spawner->waveNumber - 1);
-		}
-		else {
-			ImGui::SetWindowSize(alertSizeNoComplete, 1);
-		}
+        ImGui::SetWindowSize(alertSizeNoComplete, 1);
 		
 		ImGui::Text("NEXT WAVE SPAWNING IN %.1f SECONDS", spawner->nextWaveTimer);
+		ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::End();
 
 	}
