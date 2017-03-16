@@ -238,8 +238,8 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
             if (boosting > 0) {
 	            M->pushMatrix();
                 M->rotate(-MATH_PI / 2, vec3(0, 1, 0));
-                M->translate(vec3(-1, 0, 0));
-                M->scale(vec3(.09, 0.3, 0.49));
+                M->translate(vec3(-0.9, -.05, 0));
+                M->scale(vec3(.04, 0.03, 0.4));
                 glUniformMatrix4fv(Player::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
                 if (!shadow) {
                     if (boosting > 0.6) {
@@ -250,7 +250,7 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
                 }
                 glUniform3f(Player::shader->getUniform("MatDif"), 0, 0, 0);
                 glUniform3f(Player::shader->getUniform("MatSpec"), 0, 0, 0);
-                Player::chassis->draw(Player::shader);
+                Player::laser->draw(Player::shader);
                 M->popMatrix();
             }
 	    M->popMatrix();
