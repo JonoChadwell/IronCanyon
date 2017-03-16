@@ -115,6 +115,7 @@ bool laserFired = false;
 int curLaserSound = 0;
 int rocketCost = 4000;
 int turretCost = 1500;
+int healthCost = 500;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
@@ -248,9 +249,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			joystickEnabled = false;
 	}
 	if (key == GLFW_KEY_H && action == GLFW_PRESS) {
-		if (player->scrap >= 100) {
+		if (player->scrap >= healthCost && player->health < PLAYER_HEALTH_CAP) {
 			player->health++;
-			player->scrap -= 100;
+			player->scrap -= healthCost;
 		}
 	}
 	if (key == GLFW_KEY_U && action == GLFW_PRESS) {

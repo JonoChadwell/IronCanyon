@@ -48,7 +48,7 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     croll(0),
     scrap(0),
     grid(grid),
-	health(25)
+	health(PLAYER_HEALTH_CAP)
 {
 	fireMode = 1;
     firing = 0;
