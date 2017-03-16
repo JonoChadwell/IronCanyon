@@ -81,6 +81,8 @@ vector<GameObject*> newProjectiles;
 QuadTree* quadtree;
 ParticleSystem *pSystem;
 
+vector<string> actionLog;
+
 int g_width = 640*2, g_height = 480*2;
 float theta, phi;
 float forwards, sideways;
@@ -98,13 +100,16 @@ double thisFrameStartTime;
 double maxPhysicsStepLength = 0.005;
 int maxPhysicsSteps = 12;
 
+bool showSpawnTimer = false;
+bool showUpgradeMenu = false;
+bool showTextBox = true;
+bool showActionLog = true;
+
 bool gameStarted = false;
 bool gamePaused = false;
 bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
-bool showSpawnTimer = false;
-bool showUpgradeMenu = false;
 int curLaserSound = 0;
 int rocketCost = 00;
 int turretCost = 2000;
@@ -267,7 +272,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             objects.push_back(curTurret);
         }
         else {
-            cout << "Not enough scrap! You only have " << player->scrap << endl;
+			string str = "Not enough scrap! You only have ";
+            //cout << str << player->scrap << endl;
+			str += std::to_string(player->scrap);
+			cout << str << endl;
+			actionLog.push_back(str);
         }
 	}
     if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
@@ -280,7 +289,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
                 turretsBuilt++;
                 pSystem->spawnGroundParticles(50, curTurret->pos, glm::vec4(0.6, 0.6, 0.6, 1.0), 3.5);
                 grid->addToGrid(curTurret);
-                cout << "turret " << turretsBuilt << " built\n";
+                //cout << "turret " << turretsBuilt << " built\n";
+				string str;
+				str = +"turret ";
+				str += std::to_string(turretsBuilt);
+				str += " built\n";
+				actionLog.push_back(str);
             }
             curTurret = NULL;
         }
@@ -342,11 +356,16 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 				player->scrap -= rocketCost;
 			}
 			else {
-				cout << "Too far away from rocket to build";
+				//cout << "Too far away from rocket to build";
+				actionLog.push_back("Too far away from rocket to build");
 			}
 		}
 		else if (rocket->stage != 3) {
-			cout << "Not enough scrap! You only have " << player->scrap << endl;
+			string str = "Not enough scrap! You only have ";
+			//cout << str << player->scrap << endl;
+			str += std::to_string(player->scrap);
+			cout << str << endl;
+			actionLog.push_back(str);
 		}
 	}
 
@@ -477,6 +496,11 @@ static void init()
 
 	forwards = 0;
 	sideways = 0;
+	actionLog.push_back("");
+	actionLog.push_back("");
+	actionLog.push_back("");
+	actionLog.push_back("-------------------");
+	actionLog.push_back("VH.OS initialized");
 
     // add some rocks to the world
     srand(0);
@@ -900,10 +924,17 @@ static void guiLoopSetup(GLFWwindow* window) {
 	ImVec2 pos = ImVec2(g_width/g_width, g_height - 100);
 	ImVec2 alert = ImVec2(g_width - 350, -30.0f);
 	ImVec2 upgrades = ImVec2(g_width - 350, g_height - 100);
+	ImVec2 text = ImVec2(g_width / 2, g_height / 2);
+	ImVec2 log = ImVec2(g_width - 500, g_height - 200);
+
 	ImVec2 size = ImVec2(350,90);
 	ImVec2 alertSize = ImVec2(350, 80);
 	ImVec2 alertSizeNoComplete = ImVec2(350, 60);
 	ImVec2 upgradeSize = ImVec2(350, 80);
+	ImVec2 popupSize = ImVec2(150, 80);
+	ImVec2 logSize = ImVec2(350, 150);
+
+	ImVec2 testImageSize = ImVec2(100.0, 100.0);
 
 	
 	
@@ -930,12 +961,21 @@ static void guiLoopSetup(GLFWwindow* window) {
 	}
 	else if (player->isPaused) {
 		ImGui_ImplGlfwGL3_GetInput(window);
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
 		ImGui::SetNextWindowPosCenter(0);
 		ImGui::Begin("PAUSED", NULL, 0.0);
 		//ImGui::SetWindowSize(size, 1);
 		//ImGui::Text("Average Frametime %.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
 		//ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
-		//ImGui::Text("Current Scrap: %d", player->scrap);
+		ImGui::Text("PRESS [P] to unpause");
 		//ImGui::Text("Current Health: %d", player->health);
 		//ImGui::Text("Next alien horde approaching in %.4f", spawnWave);
 		ImGui::End();
@@ -984,6 +1024,47 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::Begin("SHIP UPGRADES", NULL, 0.0);
 		ImGui::SetWindowSize(upgradeSize, 1);
 		ImGui::End();
+	}
+
+	//intentionally not rendering at the moment
+	if (!showTextBox) {
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImGui::SetNextWindowPos(text, 0);
+		ImGui::Begin("--- WARNING ---", NULL, 0.0);
+		ImGui::SetWindowSize(upgradeSize, 1);
+		ImGui::End();
+	}
+
+	if (showActionLog) {
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		//idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImGui::SetNextWindowPos(log, 0);
+
+		ImGui::Begin("", NULL, 0.0);
+		ImGui::SetWindowSize(logSize, 1);
+		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)5).c_str());
+		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)4).c_str());
+		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)3).c_str());
+		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)2).c_str());
+		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)1).c_str());
+		ImGui::End();
+
 	}
 	getInputs(window);
 }
