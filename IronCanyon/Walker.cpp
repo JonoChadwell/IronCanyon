@@ -6,6 +6,7 @@
 #include "Grid.h"
 #include "Projectile.h"
 #include "Player.h"
+#include "Texture.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -45,7 +46,7 @@ Walker::~Walker()
 void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
     // solve leg positions
-    float L1 = 2.0;
+    float L1 = 3.0;
     float L2 = 5.0;
     float height_l = -left_height;
     float height_r = -right_height;
@@ -74,8 +75,8 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // for real and for shadows
     for (int i = 0; i < 2; i++) {
         if (i == 0) {
-            glUniform3f(Walker::shader->getUniform("MatAmb"), .8, 0, 1);
-            glUniform3f(Walker::shader->getUniform("MatDif"), .5, .1, .7);
+            glUniform3f(Walker::shader->getUniform("MatAmb"), 0.7, 0.5, 0.7);
+            glUniform3f(Walker::shader->getUniform("MatDif"), .5, .3, .7);
             glUniform3f(Walker::shader->getUniform("MatSpec"), .16, .31, .08);
             glUniform1f(Walker::shader->getUniform("shine"), 3.5);
         } else {
@@ -97,9 +98,23 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
             M->pushMatrix();
                 M->rotate(phi, vec3(1, 0, 0));
                 M->rotate(roll, vec3(0, 0, 1));
-    	        M->scale(vec3(0.5, 0.5, 1.0));
-                glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-                Walker::body->draw(Walker::shader);
+                M->pushMatrix();
+    	            M->scale(vec3(0.7, 0.6, 1));
+                    glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                    Walker::body->draw(Walker::shader);
+                M->popMatrix();
+                M->pushMatrix();
+                    M->translate(vec3(0.75, 0.4, 0.6));
+                    M->scale(vec3(0.4, 0.4, 0.8));
+                    glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                    Walker::body->draw(Walker::shader);
+                M->popMatrix();
+                M->pushMatrix();
+                    M->translate(vec3(-0.75, 0.4, 0.6));
+                    M->scale(vec3(0.4, 0.4, 0.8));
+                    glUniformMatrix4fv(Walker::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                    Walker::body->draw(Walker::shader);
+                M->popMatrix();
             M->popMatrix();
             // left upper leg
             M->pushMatrix();
@@ -219,28 +234,33 @@ void Walker::step(float dt) {
 
 void Walker::setup() {
 	Walker::body = new Shape();
-	Walker::body->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
+	Walker::body->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
 	Walker::body->resize();
 	Walker::body->init();
 
 	Walker::upper_leg = new Shape();
-	Walker::upper_leg->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
+	Walker::upper_leg->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
 	Walker::upper_leg->resize();
 	Walker::upper_leg->init();
 
 	Walker::lower_leg = new Shape();
-	Walker::lower_leg->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
+	Walker::lower_leg->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
 	Walker::lower_leg->resize();
 	Walker::lower_leg->init();
 
 	Walker::foot = new Shape();
-	Walker::foot->loadMesh(RESOURCE_DIR + std::string("drive/cube.obj"));
+	Walker::foot->loadMesh(RESOURCE_DIR + std::string("cube.obj"));
 	Walker::foot->resize();
 	Walker::foot->init();
 
+    Texture* texture = new Texture();
+    texture->setFilename(RESOURCE_DIR + "walker_robot.bmp");
+    texture->setName("PlayerTexture");
+    texture->init();
+
 	Walker::shader = new Program();
 	Walker::shader->setVerbose(true);
-	Walker::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
+	Walker::shader->setShaderNames(RESOURCE_DIR + "tex_vert.glsl", RESOURCE_DIR + "tex_frag.glsl");
 	Walker::shader->init();
 	Walker::shader->addUniform("P");
 	Walker::shader->addUniform("M");
@@ -253,4 +273,6 @@ void Walker::setup() {
 	Walker::shader->addUniform("shine");
 	Walker::shader->addAttribute("vertPos");
 	Walker::shader->addAttribute("vertNor");
+    Walker::shader->addAttribute("vertTex");
+    Walker::shader->addTexture(texture);
 }
