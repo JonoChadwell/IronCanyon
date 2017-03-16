@@ -32,7 +32,6 @@
 #include "VFC.h"
 #include "EnemySpawner.h"
 #include "GUI.h"
-#include "Sound.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -43,6 +42,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #ifdef AUDIO
 #include <SFML/Audio.hpp>
+#include "Sound.h"
 #endif
 
 using namespace std;

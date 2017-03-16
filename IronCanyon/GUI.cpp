@@ -66,7 +66,7 @@ void GUI::setup() {
 
 	GUI::shader = new Program();
 	GUI::shader->setVerbose(true);
-	GUI::shader->setShaderNames(RESOURCE_DIR + "tex_vert.glsl", RESOURCE_DIR + "tex_frag.glsl");
+	GUI::shader->setShaderNames(RESOURCE_DIR + "gui_vert.glsl", RESOURCE_DIR + "gui_frag.glsl");
 	GUI::shader->init();
 	GUI::shader->addAttribute("vertTex");
 	GUI::shader->addUniform("P");
