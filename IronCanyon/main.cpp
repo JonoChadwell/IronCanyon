@@ -33,6 +33,7 @@
 #include "EnemySpawner.h"
 #include "GUI.h"
 
+#define AUDIO
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_glfw_gl3.h"

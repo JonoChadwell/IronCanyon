@@ -53,18 +53,18 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	// variable declaration
 	MatrixStack *M = new MatrixStack();
 	// drawing
-	Rocket::shader->bind();
-	glUniform3f(Rocket::shader->getUniform("sunDir"), SUN_DIR);
-	glUniform3f(Rocket::shader->getUniform("eye"), eye.x, eye.y, eye.z);
+	Rocket::texShader->bind();
 
-	glUniform3f(Rocket::shader->getUniform("MatAmb"), 0, .8, 1);
-	glUniform3f(Rocket::shader->getUniform("MatDif"), .5, .5, .1);
-	glUniform3f(Rocket::shader->getUniform("MatSpec"), .31, .16, .08);
-	glUniform1f(Rocket::shader->getUniform("shine"), 3.5);
+	glUniform3f(Rocket::texShader->getUniform("sunDir"), SUN_DIR);
+	glUniform3f(Rocket::texShader->getUniform("eye"), eye.x, eye.y, eye.z);
+	glUniform3f(Rocket::texShader->getUniform("MatAmb"), 1, 1, 1);
+	glUniform3f(Rocket::texShader->getUniform("MatDif"), 1, 1, 1);
+	glUniform3f(Rocket::texShader->getUniform("MatSpec"), 1, 1, 1);
+	glUniform1f(Rocket::texShader->getUniform("shine"), 3.5);
 
 	// back to constant stuff
-	glUniformMatrix4fv(Rocket::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-	glUniformMatrix4fv(Rocket::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
+	glUniformMatrix4fv(Rocket::texShader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+	glUniformMatrix4fv(Rocket::texShader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 
 
 	// render shit
@@ -72,8 +72,8 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	M->loadIdentity();
 	M->translate(vec3(0, grid->height(0, 0) - .5, 0));
 	M->scale(vec3(7, 6, 7));
-	glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	Rocket::pad->draw(Rocket::shader);
+	glUniformMatrix4fv(Rocket::texShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+	Rocket::pad->draw(Rocket::texShader);
 	M->popMatrix();
 
 	if (stage == 1) {
@@ -82,8 +82,8 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 		M->translate(vec3(0, grid->height(0, 0) + 2, 0));
 		M->rotate(-2 * MATH_PI / 3, vec3(0, 1, 0));
 		M->scale(vec3(2, 5, 8));
-		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::bottom->draw(Rocket::shader);
+		glUniformMatrix4fv(Rocket::texShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+		Rocket::bottom->draw(Rocket::texShader);
 		M->popMatrix();
 	}
 
@@ -94,10 +94,11 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 		M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
 		M->rotate(- 2 * MATH_PI / 3, vec3(0, 0, 1));
 		M->scale(vec3(10, 10, 10));
-		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::middle->draw(Rocket::shader);
+		glUniformMatrix4fv(Rocket::texShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+		Rocket::middle->draw(Rocket::texShader);
 		M->popMatrix();
 	}
+
 
 	if (stage == 3) {
 		glUniform3f(Rocket::texShader->getUniform("sunDir"), SUN_DIR);
@@ -119,8 +120,8 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 		M->popMatrix();
 	}
 
+	Rocket::texShader->unbind();
 	// cleanup
-	Rocket::shader->unbind();
 	delete M;
 }
 
