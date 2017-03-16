@@ -907,7 +907,6 @@ static void render()
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	drawSkybox();
     // update camera to track player
 	if (rocket->stage < 3) {
 		camera->trackToPlayer(player);
@@ -916,6 +915,7 @@ static void render()
 	else {
 		camera->trackToRocket(rocket->ypos);
 	}
+	drawSkybox();
 
 
     // render things

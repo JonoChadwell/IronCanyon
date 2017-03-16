@@ -157,7 +157,6 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 
 	//printf("draw pos.x: %f", pos.x);
 	//render shit
-	glDepthFunc(GL_ALWAYS);
 	Player::shader->bind();
 	glUniform3f(Player::shader->getUniform("sunDir"), SUN_DIR);
 	glUniform3f(Player::shader->getUniform("eye"), eye.x, eye.y, eye.z);
@@ -294,7 +293,6 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	delete M;
 	Player::shader->unbind();
 
-	glDepthFunc(GL_LESS);
 }
 
 
