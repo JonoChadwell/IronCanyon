@@ -31,5 +31,6 @@ private:
 	static Shape* middle;
 	static Shape* top;
 	static Program* shader;
-	static Program* conShader;
+	static Program* texShader;
+	static Texture* texture;
 };

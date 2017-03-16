@@ -22,6 +22,7 @@
 #include "Enemy.h"
 #include "Walker.h"
 #include "Scrap.h"
+#include "Sound.h"
 #include "GridObject.h"
 #include "StaticTerrainObject.h"
 #include "Turret.h"

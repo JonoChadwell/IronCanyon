@@ -17,7 +17,8 @@ Shape* Rocket::bottom;
 Shape* Rocket::middle;
 Shape* Rocket::top;
 Program* Rocket::shader;
-Program* Rocket::conShader;
+Program* Rocket::texShader;
+Texture* Rocket::texture;
 
 
 Rocket::Rocket(Grid* grid) :
@@ -99,14 +100,22 @@ void Rocket::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	}
 
 	if (stage == 3) {
+		glUniform3f(Rocket::texShader->getUniform("sunDir"), SUN_DIR);
+		glUniform3f(Rocket::texShader->getUniform("eye"), eye.x, eye.y, eye.z);
+		glUniform3f(Rocket::texShader->getUniform("MatAmb"), 1, 1, 1);
+		glUniform3f(Rocket::texShader->getUniform("MatDif"), 1, 1, 1);
+		glUniform3f(Rocket::texShader->getUniform("MatSpec"), 1, 1, 1);
+		glUniform1f(Rocket::texShader->getUniform("shine"), 3.5);
+		glUniformMatrix4fv(Rocket::texShader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+		glUniformMatrix4fv(Rocket::texShader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
 		M->pushMatrix();
 		M->loadIdentity();
 		M->translate(vec3(0, grid->height(0, 0) + 9 + ypos, 0));
 		M->rotate(-MATH_PI / 2, vec3(1, 0, 0));
 		M->rotate(- 2 * MATH_PI / 3, vec3(0, 0, 1));
 		M->scale(vec3(10, 10, 10));
-		glUniformMatrix4fv(Rocket::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-		Rocket::top->draw(Rocket::shader);
+		glUniformMatrix4fv(Rocket::texShader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+		Rocket::top->draw(Rocket::texShader);
 		M->popMatrix();
 	}
 
@@ -138,6 +147,12 @@ void Rocket::setup() {
 	Rocket::top->resize();
 	Rocket::top->init();
 
+
+	Rocket::texture = new Texture();
+	Rocket::texture->setFilename(RESOURCE_DIR + "drive/ship_complete.bmp");
+	Rocket::texture->setName("PlayerTexture");
+	Rocket::texture->init();
+
 	Rocket::shader = new Program();
 	Rocket::shader->setVerbose(true);
 	Rocket::shader->setShaderNames(RESOURCE_DIR + "phong_vert.glsl", RESOURCE_DIR + "phong_frag.glsl");
@@ -155,21 +170,21 @@ void Rocket::setup() {
 	Rocket::shader->addAttribute("vertNor");
 	Rocket::shader->addAttribute("vertTex");
 
-	Rocket::conShader = new Program();
-	Rocket::conShader->setVerbose(true);
-	Rocket::conShader->setShaderNames(RESOURCE_DIR + "construction_vert.glsl", RESOURCE_DIR + "construction_frag.glsl");
-	Rocket::conShader->init();
-	Rocket::conShader->addUniform("P");
-	Rocket::conShader->addUniform("M");
-	Rocket::conShader->addUniform("V");
-	Rocket::conShader->addUniform("sunDir");
-	Rocket::conShader->addUniform("eye");
-	Rocket::conShader->addUniform("MatAmb");
-	Rocket::conShader->addUniform("MatDif");
-	Rocket::conShader->addUniform("MatSpec");
-	Rocket::conShader->addUniform("shine");
-	Rocket::conShader->addUniform("opacity");
-	Rocket::conShader->addAttribute("vertPos");
-	Rocket::conShader->addAttribute("vertNor");
-	Rocket::conShader->addAttribute("vertTex");
+	Rocket::texShader = new Program();
+	Rocket::texShader->setVerbose(true);
+	Rocket::texShader->setShaderNames(RESOURCE_DIR + "tex_vert.glsl", RESOURCE_DIR + "tex_frag.glsl");
+	Rocket::texShader->init();
+	Rocket::texShader->addUniform("P");
+	Rocket::texShader->addUniform("M");
+	Rocket::texShader->addUniform("V");
+	Rocket::texShader->addUniform("sunDir");
+	Rocket::texShader->addUniform("eye");
+	Rocket::texShader->addUniform("MatAmb");
+	Rocket::texShader->addUniform("MatDif");
+	Rocket::texShader->addUniform("MatSpec");
+	Rocket::texShader->addUniform("shine");
+	Rocket::texShader->addAttribute("vertPos");
+	Rocket::texShader->addAttribute("vertNor");
+	Rocket::texShader->addAttribute("vertTex");
+	Rocket::texShader->addTexture(Rocket::texture);
 }

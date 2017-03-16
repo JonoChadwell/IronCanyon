@@ -316,7 +316,7 @@ void Player::setup() {
 	Player::hover->resize();
 	Player::hover->init();
 	Player::texture = new Texture();
-	Player::texture->setFilename(RESOURCE_DIR + "crate.bmp");
+	Player::texture->setFilename(RESOURCE_DIR + "drive/ship_complete.bmp");
 	Player::texture->setName("PlayerTexture");
 	Player::texture->init();
 
