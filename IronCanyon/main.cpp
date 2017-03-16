@@ -33,7 +33,6 @@
 #include "EnemySpawner.h"
 #include "GUI.h"
 
-#define AUDIO
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_glfw_gl3.h"
@@ -68,8 +67,8 @@ EnemySpawner* spawner;
 Rocket* rocket;
 GUI* gui;
 VFC* vfc;
-Sound* sound;
 #ifdef AUDIO
+Sound* sound;
 sf::Sound* Lsound;
 sf::Sound* sound2;
 #endif
@@ -463,7 +462,6 @@ static void init()
 	crosshair = new Crosshair(g_height);
 	rocket = new Rocket(grid);
     spawner = new EnemySpawner(grid, player);
-	sound = new Sound();
 
     theta = MATH_PI;
     phi = 0;
@@ -497,6 +495,7 @@ static void init()
 	Projectile::setup();
 	GUI::setup();
 #ifdef AUDIO
+	sound = new Sound();
 	sound->setup(sound);
 #endif
     // Particles
