@@ -114,7 +114,7 @@ bool joystickEnabled = false;
 bool invertLook = false;
 bool laserFired = false;
 int curLaserSound = 0;
-int rocketCost = 00;
+int rocketCost = 5000;
 int turretCost = 2000;
 int turretsBuilt = 0;
 float rifleCooldown = 0.0;
@@ -625,7 +625,7 @@ static void drawGameObjects() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		projectiles[i]->draw(P, lookAt, camera->eyeVector());
 	}
-	if (rocket->stage < 3)
+	if (rocket->stage < 3 && player->health > 0)
 		crosshair->draw();
 	rocket->draw(P, lookAt, camera->eyeVector());
 
@@ -845,7 +845,7 @@ static void stepPlayer(float dt) {
     if (rifleCooldown < 0) {
         rifleCooldown = 0;
     }
-    if (player->firing >= .5 && player->fireMode == 1) {
+    if (player->firing >= .5 && player->fireMode == 1 && player->health > 0 && rocket->stage != 3) {
 #ifdef AUDIO
 		if (!laserFired) {
 			sound2->play();
@@ -854,7 +854,7 @@ static void stepPlayer(float dt) {
 #endif
         laserFire();
     }
-    else if (player->firing > 0 && player->fireMode == 2 && rifleCooldown == 0) {
+    else if (player->firing > 0 && player->fireMode == 2 && rifleCooldown == 0 && player->health > 0 && rocket->stage != 3) {
         missileFire();
         rifleCooldown = RIFLE_COOLDOWN;
     }
