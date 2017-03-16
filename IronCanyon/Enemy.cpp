@@ -103,8 +103,8 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     glUniform3f(Enemy::shader->getUniform("sunDir"), SUN_DIR);
     glUniform3f(Enemy::shader->getUniform("eye"), eye.x, eye.y, eye.z);
 
-    glUniform3f(Enemy::shader->getUniform("MatAmb"), 1, 1, 1);
-    glUniform3f(Enemy::shader->getUniform("MatDif"), 1, 1, 1);
+    glUniform3f(Enemy::shader->getUniform("MatAmb"), 1.5, 1, 1.5);
+    glUniform3f(Enemy::shader->getUniform("MatDif"), 1.5, 1, 1.5);
     glUniform3f(Enemy::shader->getUniform("MatSpec"), .3, .3, .3);
     glUniform1f(Enemy::shader->getUniform("shine"), 3.5);
 
