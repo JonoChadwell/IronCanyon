@@ -22,7 +22,6 @@
 #include "Enemy.h"
 #include "Walker.h"
 #include "Scrap.h"
-#include "Sound.h"
 #include "GridObject.h"
 #include "StaticTerrainObject.h"
 #include "Turret.h"
@@ -37,7 +36,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_glfw_gl3.h"
-
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
