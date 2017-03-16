@@ -22,7 +22,9 @@ Shape* Crosshair::object;
 
 Crosshair::Crosshair(int height) :
 height(height)
-{}
+{
+	hair = 3;
+}
 
 Crosshair::~Crosshair() {}
 

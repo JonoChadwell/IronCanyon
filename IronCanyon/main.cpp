@@ -39,6 +39,7 @@
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#define AUDIO
 #ifdef AUDIO
 #include <SFML/Audio.hpp>
 #include "Sound.h"
@@ -563,6 +564,7 @@ static void init()
 	ImGui_ImplGlfwGL3_Init(window, true);
 
 #ifdef AUDIO
+	sound->theme.setLoop(true);
 	sound->theme.play();
 #endif
 }
