@@ -21,5 +21,6 @@ public:
 
 private:
 	static Program* shader;
+	static Shape* cube;
 	static Texture* texture;
 };

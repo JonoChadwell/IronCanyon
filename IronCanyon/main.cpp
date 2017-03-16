@@ -566,6 +566,20 @@ static void missileFire() {
 #endif
 }
 
+static void drawSkybox() {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	float aspect = width / (float)height;
+	MatrixStack *P = new MatrixStack();
+	// Apply perspective projection.
+	P->pushMatrix();
+	P->perspective(45.0f, aspect, 0.01f, 500.0f);
+
+	glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
+		camera->lookAtPt(), glm::vec3(0, 1, 0));
+
+	skybox->draw(P, lookAt, camera->eyeVector());
+}
 
 static void drawGameObjects() {
    int width, height;
@@ -579,6 +593,7 @@ static void drawGameObjects() {
    glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
      camera->lookAtPt(), glm::vec3(0, 1, 0));
 
+   skybox->draw(P, lookAt, camera->eyeVector());
     // draw and time based movement
     for (unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->draw(P, lookAt, camera->eyeVector());
@@ -589,7 +604,6 @@ static void drawGameObjects() {
 	if (rocket->stage < 3)
 		crosshair->draw();
 	rocket->draw(P, lookAt, camera->eyeVector());
-	skybox->draw(P, lookAt, camera->eyeVector());
 
     P->popMatrix();
     delete P;
@@ -893,6 +907,7 @@ static void render()
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	drawSkybox();
     // update camera to track player
 	if (rocket->stage < 3) {
 		camera->trackToPlayer(player);
