@@ -43,7 +43,8 @@ void Rocket::step(float dt)
 		yvel = yvel + LIFTOFF_ACC * dt;
 		ypos += dt * yvel;
 	}
-	ypos = min(ypos, float(500));
+	ypos = min(ypos, float(1000));
+	glClearColor(.5f - ypos / 2500.0, .7f - ypos / 1666.6, .9f - ypos / 1428.0, 1.0f);
 }
 
 
