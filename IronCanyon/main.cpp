@@ -355,7 +355,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
 		crosshair->hair = 4;
 	}
-
+	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
+		rocketCost = 100;
+	}
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		if (player->scrap >= rocketCost && rocket->stage < 3) {
 			if (dist(player->pos, vec3(0, 0, 0)) < 20) {
