@@ -92,6 +92,7 @@ double lastx;
 double lasty;
 double lastScroll;
 float cameraDistance = 5;
+char* flavorTitle = new char[50];
 
 // The time the last frame began rendering
 double lastFrameStartTime;
@@ -922,6 +923,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 	ImGui_ImplGlfwGL3_NewFrame();
 	static float f = 0.0f;
 	ImVec2 pos = ImVec2(g_width/g_width, g_height - 100);
+    
 	ImVec2 alert = ImVec2(g_width - 350, -30.0f);
 	ImVec2 upgrades = ImVec2(g_width - 350, g_height - 100);
 	ImVec2 text = ImVec2(g_width / 2, g_height / 2);
@@ -936,7 +938,26 @@ static void guiLoopSetup(GLFWwindow* window) {
 
 	ImVec2 testImageSize = ImVec2(100.0, 100.0);
 
-	
+    if (spawner->flavorTextDisplayTime > 0.0 && rocket->stage < 3) {
+        ImGuiStyle& idx = ImGui::GetStyle();
+        idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+        idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+        idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.2, 0.2, 0.2, 1.0);
+        idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 1.0);
+        idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
+        idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+        idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+        idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+        ImVec2 flavorSize = ImVec2(400, 60);
+        ImVec2 flavorPos = ImVec2(g_width / 2 - flavorSize.x / 2, g_height / 8 - flavorSize.y / 2);
+        ImGui::SetNextWindowPos(flavorPos, 0);
+        sprintf(flavorTitle, "WAVE %d", spawner->waveNumber);
+        ImGui::Begin(flavorTitle, NULL, 0.0);
+        ImGui::SetWindowSize(flavorSize, 1);
+        ImGui::Text(spawner->flavorText);
+        ImGui::End();
+    }
 	
 	if (!player->isPaused) {
 		ImGuiStyle& idx = ImGui::GetStyle();
@@ -1128,6 +1149,7 @@ static void updateWorld()
             stepPlayer(timePassed);
             pSystem->step(timePassed);
         }
+        spawner->flavorTextDisplayTime -= thisFrameStartTime - lastFrameStartTime;
 	}
 }
 

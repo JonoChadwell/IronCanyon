@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <vector>
 #include <glm/vec3.hpp>
 
@@ -12,6 +13,8 @@ struct wave_spawn_info;
 class EnemySpawner {
 
 public:
+    const char* flavorText;
+    float flavorTextDisplayTime;
     int waveNumber;
     float nextWaveTimer;
     bool active;
