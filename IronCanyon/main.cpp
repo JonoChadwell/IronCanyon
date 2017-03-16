@@ -31,12 +31,12 @@
 #include "ParticleSystem.h"
 #include "VFC.h"
 #include "EnemySpawner.h"
+#include "GUI.h"
+#include "Sound.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_glfw_gl3.h"
-
-#define GUI
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -66,9 +66,11 @@ Grid* grid;
 Terrain* terrain;
 EnemySpawner* spawner;
 Rocket* rocket;
+GUI* gui;
 VFC* vfc;
+Sound* sound;
 #ifdef AUDIO
-sf::Sound* sound;
+sf::Sound* Lsound;
 sf::Sound* sound2;
 #endif
 
@@ -461,6 +463,7 @@ static void init()
 	crosshair = new Crosshair(g_height);
 	rocket = new Rocket(grid);
     spawner = new EnemySpawner(grid, player);
+	sound = new Sound();
 
     theta = MATH_PI;
     phi = 0;
@@ -492,6 +495,10 @@ static void init()
     Turret::objects = &objects;
     LaserTurret::setup();
 	Projectile::setup();
+	GUI::setup();
+#ifdef AUDIO
+	sound->setup(sound);
+#endif
     // Particles
     pSystem = new ParticleSystem(grid);
 
@@ -552,19 +559,9 @@ static void init()
 
 	ImGui_ImplGlfwGL3_Init(window, true);
 
-	
-
-	//ImGuiIO& io = ImGui::GetIO();
-	//io.DisplaySize.x = 1920.0f;
-	//io.DisplaySize.y = 1280.0f;
-	//io.IniFilename = "imgui.ini";
-	//io.RenderDrawListsFn = my_render_function;
-	//io.Fonts->AddFontDefault();
-
-	//unsigned char** pixels;
-	//int width, height;
-	//io.Fonts->GetTexDataAsRGBA32(pixels, &width, &height);
-	//io.Fonts->TexID
+#ifdef AUDIO
+	sound->theme.play();
+#endif
 }
 
 static void crosshairColor() {
@@ -604,7 +601,7 @@ static void missileFire() {
     pSystem->spawnFocusParticles(3, proj->pos, glm::vec4(0.2f, 1.0f, 0.2f, 1.0f),
       35.0f, proj->phi, proj->theta, 7.0f);
 #ifdef AUDIO
-	sound->play();
+	Lsound->play();
 #endif
 }
 
@@ -927,7 +924,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 	ImVec2 alert = ImVec2(g_width - 350, -30.0f);
 	ImVec2 upgrades = ImVec2(g_width - 350, g_height - 100);
 	ImVec2 text = ImVec2(g_width / 2, g_height / 2);
-	ImVec2 log = ImVec2(g_width - 500, g_height - 200);
+	ImVec2 log = ImVec2(g_width - 700, g_height - 170);
 
 	ImVec2 size = ImVec2(350,90);
 	ImVec2 alertSize = ImVec2(350, 80);
@@ -959,7 +956,7 @@ static void guiLoopSetup(GLFWwindow* window) {
         ImGui::End();
     }
 	
-	if (!player->isPaused) {
+	if (!player->isPaused && rocket->stage < 3) {
 		ImGuiStyle& idx = ImGui::GetStyle();
 		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
 		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
@@ -1065,7 +1062,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::End();
 	}
 
-	if (showActionLog) {
+	if (showActionLog && rocket->stage < 3) {
 		ImGuiStyle& idx = ImGui::GetStyle();
 		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
 		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 0.0);
@@ -1205,9 +1202,9 @@ int main(int argc, char **argv)
 	sf::SoundBuffer buffer;
 	sf::SoundBuffer buffer2;
 
-	sound = new sf::Sound();
+	Lsound = new sf::Sound();
 	buffer.loadFromFile("../resources/LaserShot.ogg");
-	sound->setBuffer(buffer);
+	Lsound->setBuffer(buffer);
 
 	sound2 = new sf::Sound();
 	buffer2.loadFromFile("../resources/ChargeLaser.ogg");
@@ -1270,17 +1267,13 @@ int main(int argc, char **argv)
         thisFrameStartTime = glfwGetTime();
 		
 		// Set up GUI
-#ifdef GUI
 		guiLoopSetup(window);
-#endif
         // Update game state
         updateWorld();
 		// Render scene.
 		render();
         // Update GUI
-#ifdef GUI
         renderGUI();
-#endif
 		// Swap front and back buffers.
 		glfwSwapBuffers(window);
 		// Poll for and process events.

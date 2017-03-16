@@ -132,6 +132,7 @@
     <ClCompile Include="GLSL.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="GridObject.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="image_DXT.c" />
     <ClCompile Include="image_helper.c" />
     <ClCompile Include="imgui.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SOIL.c" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="StaticTerrainObject.cpp" />
     <ClCompile Include="stb_image_aug.c" />
     <ClCompile Include="Terrain.cpp" />
@@ -174,6 +176,7 @@
     <ClInclude Include="GLSL.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridObject.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="Head.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_glfw_gl3.h" />
