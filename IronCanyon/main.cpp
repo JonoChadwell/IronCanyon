@@ -579,6 +579,9 @@ static void drawSkybox() {
 		camera->lookAtPt(), glm::vec3(0, 1, 0));
 
 	skybox->draw(P, lookAt, camera->eyeVector());
+
+	P->popMatrix();
+	delete P;
 }
 
 static void drawGameObjects() {
@@ -907,7 +910,16 @@ static void render()
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // update camera to track player
+	drawSkybox();
+
+   
+
+    // render things
+	drawGameObjects();
+	drawTerrain();
+    // draw particles
+
+	// update camera to track player
 	if (rocket->stage < 3) {
 		camera->trackToPlayer(player);
 		drawPlayer();
@@ -915,14 +927,8 @@ static void render()
 	else {
 		camera->trackToRocket(rocket->ypos);
 	}
-	drawSkybox();
-
-
-    // render things
-	drawGameObjects();
-	drawTerrain();
-    // draw particles
     drawParticles();
+
 }
 
 static void updateWorld()

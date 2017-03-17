@@ -10,7 +10,7 @@ out vec2 vTexCoord;
 
 void main()
 {
-    vec4 pos = P * M *  vec4(vertPos, 1.0);
+    vec4 pos = P * V * M *  vec4(vertPos, 1.0);
     gl_Position = pos;
     vTexCoord = vertTex;
 }

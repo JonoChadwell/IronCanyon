@@ -26,12 +26,13 @@ Skybox::Skybox() {
 Skybox::~Skybox() {}
 
 void Skybox::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
-	glDepthMask(GL_FALSE);
+	//glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
 	MatrixStack *M = new MatrixStack();
 	Skybox::shader->bind();
 	M->pushMatrix();
 	M->loadIdentity();
-	M->translate(vec3(0, 0, 0));
+	M->translate(eye);
 	M->scale(vec3(1, 1, 1));
 	glUniformMatrix4fv(Skybox::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniformMatrix4fv(Skybox::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
@@ -40,19 +41,20 @@ void Skybox::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	Skybox::shader->unbind();
 	M->popMatrix();
 	delete M;
-	glDepthMask(GL_TRUE);
+	//glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Skybox::setup() {
 	Skybox::cube = new Shape();
-	Skybox::cube->loadMesh(RESOURCE_DIR + "drive/cube.obj");
+	Skybox::cube->loadMesh(RESOURCE_DIR + "cube.obj");
 	Skybox::cube->resize();
 	Skybox::cube->init();
 
-	Skybox::texture = new Texture();
-	Skybox::texture->setFilename(RESOURCE_DIR + "crate.bmp");
-	Skybox::texture->setName("SkyboxTexture");
-	Skybox::texture->init();
+	Texture* text = new Texture();
+	text->setFilename(RESOURCE_DIR + "SkyboxTex.bmp");
+	text->setName("SkyboxTexture");
+	text->init();
 
 	Skybox::shader = new Program();
 	Skybox::shader->setVerbose(true);
@@ -64,5 +66,5 @@ void Skybox::setup() {
 	Skybox::shader->addUniform("P");
 	Skybox::shader->addUniform("M");
 	Skybox::shader->addUniform("V");
-	Skybox::shader->addTexture(Skybox::texture);
+	Skybox::shader->addTexture(text);
 }
