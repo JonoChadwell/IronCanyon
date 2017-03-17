@@ -15,6 +15,7 @@ class EnemySpawner {
 public:
     const char* flavorText;
     float flavorTextDisplayTime;
+    float spawnAmount;
     int waveNumber;
     float nextWaveTimer;
     bool active;

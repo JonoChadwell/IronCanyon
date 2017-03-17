@@ -169,7 +169,8 @@ EnemySpawner::EnemySpawner(Grid* grid, Player* player) :
     active(false),
     wave({}),
     flavorText("Welcome to Iron Canyon!"),
-    flavorTextDisplayTime(5.0)
+    flavorTextDisplayTime(5.0),
+    spawnAmount(1.0)
 {
 }
 
@@ -213,7 +214,7 @@ vector<GameObject*> EnemySpawner::update(float dt)
         enemy_spawn_info ei = wave[i];
         if (ei.spawnTime >= nextWaveTimer)
         {
-            for (int j = 0; j < ei.amount; j++)
+            for (int j = 0; j < (int) (ei.amount * spawnAmount) + 1; j++)
             {
                 if (ei.type == FLOATER)
                 {

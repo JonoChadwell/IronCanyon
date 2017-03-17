@@ -357,6 +357,8 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
 		rocketCost = 100;
+        spawner->spawnAmount = 0.15;
+        player->health = 10000000;
 	}
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		if (player->scrap >= rocketCost && rocket->stage < 3) {
