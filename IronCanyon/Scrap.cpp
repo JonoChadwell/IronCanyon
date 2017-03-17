@@ -18,6 +18,8 @@
 #define SPIN_SPEED 2.0
 
 #define NUM_OBJECTS 6
+// the lower this is the more scrap will spread out
+#define SPREAD_FACTOR 5.0
 
 float objectScales[] = { 1, 1, 0.3, 0.5, 1, 1 };
 
@@ -37,7 +39,7 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     heightOffset(RANDF - 0.5f)
 {
     float angle = RANDF * MATH_PI * 2;
-    float amt = RANDF * RANDF * 25 + 3;
+    float amt = pow(RANDF, SPREAD_FACTOR) * 25 + 3;
     vel = vec3(sin(angle) * amt, RAND_VEL_Y, cos(angle) * amt);
     object = rand() % NUM_OBJECTS;
     scale = 1.0f +  (rand() % 100) / 100.0f - 0.5f; 
