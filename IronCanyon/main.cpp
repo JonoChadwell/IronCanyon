@@ -17,6 +17,7 @@
 #include "Player.h"
 #include "Rocket.h"
 #include "Crosshair.h"
+#include "Skybox.h"
 #include "Constants.h"
 #include "Grid.h"
 #include "Enemy.h"
@@ -62,6 +63,7 @@ GLFWwindow *window; // Main application window
 Camera* camera;
 Player* player;
 Crosshair* crosshair;
+Skybox* skybox;
 Grid* grid;
 Terrain* terrain;
 EnemySpawner* spawner;
@@ -469,6 +471,8 @@ static void init()
     camera = new Camera(0, 3, 0, player->pos.x, player->pos.y, player->pos.z, grid, cameraDistance);
     terrain = new Terrain();
 	crosshair = new Crosshair(g_height);
+
+	skybox = new Skybox();
 	rocket = new Rocket(grid);
     spawner = new EnemySpawner(grid, player);
 
@@ -489,6 +493,7 @@ static void init()
     // initialize models and shaders
     Terrain::setup();
 	Crosshair::setup(g_height);
+	Skybox::setup();
 	Player::setup();
 	Rocket::setup();
 	Enemy::setup();
@@ -678,6 +683,28 @@ static void setupVfc(mat4 comp) {
     planes[5] = plane / length(normal);
 }
 
+	P->popMatrix();
+	delete P;
+}
+
+tic void drawSkybox() {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	float aspect = width / (float)height;
+	MatrixStack *P = new MatrixStack();
+	// Apply perspective projection.
+	P->pushMatrix();
+	P->perspective(45.0f, aspect, 0.01f, 500.0f);
+
+	glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
+		camera->lookAtPt(), glm::vec3(0, 1, 0));
+
+	skybox->draw(P, lookAt, camera->eyeVector());
+
+	P->popMatrix();
+	delete P;
+}
+
 static void drawGameObjects() {
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
@@ -689,9 +716,7 @@ static void drawGameObjects() {
 
    glm::mat4 lookAt = glm::lookAt( camera->eyeVector(),
      camera->lookAtPt(), glm::vec3(0, 1, 0));
-
    setupVfc(P->topMatrix() * lookAt);
-
     // draw and time based movement
     for (unsigned int i = 0; i < objects.size(); i++) {
         if (!shouldCull(objects[i])) {
@@ -1179,25 +1204,19 @@ static void render()
 
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	drawSkybox();
+	drawGameObjects();
+	drawTerrain();
     // update camera to track player
-	if (rocket->stage < 3 && player->health > 0) {
+	if (rocket->stage < 3) {
 		camera->trackToPlayer(player);
 		drawPlayer();
 	}
-	else if (rocket->stage >= 3) {
+	else {
 		camera->trackToRocket(rocket->ypos);
 	}
-    else {
-        player->pos = PURGATORY;
-    }
+	drawParticles();
 
-
-    // render things
-	drawGameObjects();
-	drawTerrain();
-    // draw particles
-    drawParticles();
 }
 
 static void updateWorld()
