@@ -37,7 +37,7 @@ Scrap::Scrap(glm::vec3 pos, float ph, float th, float rl,
     heightOffset(RANDF - 0.5f)
 {
     float angle = RANDF * MATH_PI * 2;
-    float amt = RANDF * 30 + 3;
+    float amt = RANDF * RANDF * 25 + 3;
     vel = vec3(sin(angle) * amt, RAND_VEL_Y, cos(angle) * amt);
     object = rand() % NUM_OBJECTS;
     scale = 1.0f +  (rand() % 100) / 100.0f - 0.5f; 
