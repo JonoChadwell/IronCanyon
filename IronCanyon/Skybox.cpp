@@ -52,7 +52,7 @@ void Skybox::setup() {
 	Skybox::cube->init();
 
 	Texture* text = new Texture();
-	text->setFilename(RESOURCE_DIR + "SkyboxTex.bmp");
+	text->setFilename(RESOURCE_DIR + "SkyboxNew.bmp");
 	text->setName("SkyboxTexture");
 	text->init();
 
