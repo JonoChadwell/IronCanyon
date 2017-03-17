@@ -34,14 +34,17 @@ void Turret::step(float dt) {
             for (unsigned int i = 0; i < objects->size(); i++) {
                 float objDist = dist(pos, objects->at(i)->pos);
                 /* lock */ 
-                if (dynamic_cast<Enemy*>(objects->at(i)) != NULL && objDist < this->bound + TURRET_LOCK_RAD) {
+                if (dynamic_cast<Enemy*>(objects->at(i)) != NULL && objDist < this->bound + TURRET_LOCK_RAD
+                  && !((Enemy*)(objects->at(i)))->targeted ) {
                     target = (Enemy*)(objects->at(i));
+                    ((Enemy*)(objects->at(i)))->targeted = true;
                     break;
                 }
             }
         }
         // 
         else if (!target->active) {
+            target->targeted = false;
             target = NULL;
         }
     }

@@ -13,7 +13,7 @@ class Grid;
 class Enemy : public GameObject {
 
 public:
-    bool active;
+    bool active, targeted;
 	// more particle effects if an enemy runs into a player
 	bool hitPlayer;
     float vel;
