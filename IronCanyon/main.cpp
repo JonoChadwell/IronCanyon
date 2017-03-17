@@ -695,7 +695,8 @@ static void drawSkybox() {
 	glm::mat4 lookAt = glm::lookAt(camera->eyeVector(),
 		camera->lookAtPt(), glm::vec3(0, 1, 0));
 
-	skybox->draw(P, lookAt, camera->eyeVector());
+	skybox->drawFinal(P, lookAt, camera->eyeVector(), rocket->ypos);
+	skybox->draw(P, lookAt, camera->eyeVector(), rocket->ypos);
 
 	P->popMatrix();
 	delete P;
