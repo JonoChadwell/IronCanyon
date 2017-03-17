@@ -23,6 +23,7 @@ Program* Walker::shader;
 std::vector<GameObject*> *Walker::newProjectiles;
 
 #define FIRING_RANGE 60.0
+#define HEIGHT_OFFSET 1.8
 
 Walker::Walker(glm::vec3 p, float ph, float th, float rl, float v, float b, Grid* grid) :
     Enemy(p, ph, th, rl, v, b, grid)
@@ -75,7 +76,7 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
     // for real and for shadows
     for (int i = 0; i < 2; i++) {
         if (i == 0) {
-            glUniform3f(Walker::shader->getUniform("MatAmb"), 0.7, 0.5, 0.7);
+            glUniform3f(Walker::shader->getUniform("MatAmb"), 0.9, 0.6, 0.9);
             glUniform3f(Walker::shader->getUniform("MatDif"), .5, .3, .7);
             glUniform3f(Walker::shader->getUniform("MatSpec"), .16, .31, .08);
             glUniform1f(Walker::shader->getUniform("shine"), 3.5);
@@ -88,7 +89,7 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
         M->pushMatrix();
             M->loadIdentity();
             if (i == 0) {
-                M->translate(vec3(pos.x, pos.y, pos.z));
+                M->translate(vec3(pos.x, pos.y + 2.0, pos.z));
             } else {
                 M->translate(vec3(pos.x, grid->height(pos.x, pos.z) + 0.1, pos.z));
                 M->scale(vec3(1, 0.01, 1));
@@ -116,6 +117,11 @@ void Walker::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
                     Walker::body->draw(Walker::shader);
                 M->popMatrix();
             M->popMatrix();
+            if (i == 0) {
+                glUniform3f(Walker::shader->getUniform("MatAmb"), 0.5, 0.5, 0.5);
+                glUniform3f(Walker::shader->getUniform("MatDif"), .3, .3, .4);
+                glUniform3f(Walker::shader->getUniform("MatSpec"), .16, .01, .08);
+            }
             // left upper leg
             M->pushMatrix();
                 M->translate(vec3(STANCE_WIDTH / 2, 0, 0));
@@ -210,7 +216,7 @@ void Walker::step(float dt) {
     }
 
 	// do walk animation
-    pos.y = grid->height(pos.x, pos.z) + HEIGHT;
+    pos.y = grid->height(pos.x, pos.z) + HEIGHT - HEIGHT_OFFSET;
 
 
     left_foot -= dt * vel;
@@ -228,8 +234,8 @@ void Walker::step(float dt) {
     float walk_anim_l = sin((walk_time / STEP_TIME) * MATH_PI * 2 + foot_raise_offset);
     float walk_anim_r = -sin((walk_time / STEP_TIME) * MATH_PI * 2 + foot_raise_offset);
 
-    left_height = grid->height(leftx, leftz) - pos.y + std::max(0.0f, (walk_anim_l * 2 - 1) * 0.5f);
-    right_height = grid->height(rightx, rightz) - pos.y + std::max(0.0f, (walk_anim_r * 2 - 1) * 0.5f);
+    left_height = grid->height(leftx, leftz) - pos.y - HEIGHT_OFFSET + std::max(0.0f, (walk_anim_l * 2 - 1) * 0.5f);
+    right_height = grid->height(rightx, rightz) - pos.y - HEIGHT_OFFSET + std::max(0.0f, (walk_anim_r * 2 - 1) * 0.5f);
 }
 
 void Walker::setup() {
