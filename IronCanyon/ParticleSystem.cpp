@@ -12,6 +12,7 @@
 #define RANDF_NEG (RANDF*2 - 1)
 #define DECEL_FACTOR 2.5f
 #define RGB_DIFF_FACTOR 0.15f
+#define PARTICLE_HEIGHT 0.4
 
 // constructor
 ParticleSystem::ParticleSystem(Grid *grid) :
@@ -162,7 +163,8 @@ void ParticleSystem::step(float dt) {
             particles[i]->pos += particles[i]->vel * dt;
             particles[i]->vel *= 1 - DECEL_FACTOR*dt;
             particles[i]->color.a *= 1 - DECEL_FACTOR*dt;
-            particles[i]->pos.y = particles[i]->pos.y < gridHeight ? gridHeight : particles[i]->pos.y;
+            particles[i]->pos.y = particles[i]->pos.y - PARTICLE_HEIGHT < gridHeight ?
+              gridHeight + PARTICLE_HEIGHT : particles[i]->pos.y;
         }
         // otherwise
         else if (particles[i]->pos.y > PARTICLE_PURGATORY) {
