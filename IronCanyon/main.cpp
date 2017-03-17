@@ -683,11 +683,7 @@ static void setupVfc(mat4 comp) {
     planes[5] = plane / length(normal);
 }
 
-	P->popMatrix();
-	delete P;
-}
-
-tic void drawSkybox() {
+static void drawSkybox() {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	float aspect = width / (float)height;
