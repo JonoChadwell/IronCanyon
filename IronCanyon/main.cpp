@@ -1261,6 +1261,7 @@ static void updateObjectVector() {
 static void updateProjectileVector() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		if (projectiles[i]->toDelete) {
+            pSystem->spawnBurstParticles(10, projectiles[i]->pos, glm::vec4(0.9f, 0.795f, 0.6f, 1.0f), 25.0f);
 			delete projectiles[i];
 			projectiles.erase(projectiles.begin() + i);
 			i--;
