@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #define ADDITIONAL_VEL_DRAG 0.5f
+#define TIME_CAP 10.0f
 
 Shape* Projectile::model;
 Program* Projectile::shader;
@@ -104,10 +105,12 @@ void Projectile::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 }
 
 void Projectile::step(float dt) {
-	//std::cout << animtime;
 	animtime += dt;
 
     if (grid->inBounds(pos.x, pos.z) && pos.y < grid->height(pos.x, pos.z)) {
+        toDelete = true;
+    }
+    if (animtime > TIME_CAP) {
         toDelete = true;
     }
 
