@@ -1,62 +1,102 @@
 #include "QuadTree.h"
 #include <iostream>
 
-QuadTree::QuadTree(float minx, float maxx, float minz, float maxz, int depth) :
+QuadTree::QuadTree(float minx, float maxx, float miny, float maxy, float minz, float maxz, int depth) :
 	minx(minx),
 	maxx(maxx),
+	miny(miny),
+	maxy(maxy),
 	minz(minz),
 	maxz(maxz),
 	depth(depth)
 {
 	size = 0;
-   topright = NULL;
-   topleft = NULL;
-   bottomright = NULL;
-   bottomleft = NULL;
+   bottomfrontright = NULL;
+   bottomfrontleft = NULL;
+   bottombackright = NULL;
+   bottombackleft = NULL;
+   topfrontright = NULL;
+   topfrontleft = NULL;
+   topbackright = NULL;
+   topbackleft = NULL;
 }
 
 //debug function
 int QuadTree::countNodes() {
 	int sum = 1;
-	if (topright) {
-		sum += topright->countNodes();
+	if (bottomfrontright) {
+		sum += bottomfrontright->countNodes();
 	}
-	if (topleft) {
-		sum += topleft->countNodes();
+	if (bottomfrontleft) {
+		sum += bottomfrontleft->countNodes();
 	}
-	if (bottomright) {
-		sum += bottomright->countNodes();
+	if (bottombackright) {
+		sum += bottombackright->countNodes();
 	}
-	if (bottomleft) {
-		sum += bottomleft->countNodes();
+	if (bottombackleft) {
+		sum += bottombackleft->countNodes();
+	}
+	if (topfrontright) {
+		sum += topfrontright->countNodes();
+	}
+	if (topfrontleft) {
+		sum += topfrontleft->countNodes();
+	}
+	if (topbackright) {
+		sum += topbackright->countNodes();
+	}
+	if (topbackleft) {
+		sum += topbackleft->countNodes();
 	}
 	return sum;
 }
 
-void QuadTree::getObjects(float xpos, float zpos, vector<GameObject*> *ret) {
+void QuadTree::getObjects(float xpos, float ypos, float zpos, vector<GameObject*> *ret) {
 	// either all subtrees exist or none of them
-	if (!topright) {
+	if (!bottomfrontright) {
 		*ret = objects;
 		return;
 	}
 
 	//cout << "HERE" << xpos << " " << zpos << '\n';
-	if (xpos > (maxx - minx) / 2 + minx) {
-		//topright
-		if (zpos > (maxz - minz) / 2 + minz)
-			topright->getObjects(xpos, zpos, ret);
-		//bottomright
-		else 
-			bottomright->getObjects(xpos, zpos, ret);
+	if (ypos < (maxy - miny) / 2 + miny) {
+		if (xpos > (maxx - minx) / 2 + minx) {
+			//frontright
+			if (zpos > (maxz - minz) / 2 + minz)
+				bottomfrontright->getObjects(xpos, ypos, zpos, ret);
+			//backright
+			else
+				bottombackright->getObjects(xpos, ypos, zpos, ret);
+		}
+		//left
+		else {
+			//frontleft
+			if (zpos > (maxz - minz) / 2 + minz)
+				bottomfrontleft->getObjects(xpos, ypos, zpos, ret);
+			//backleft
+			else
+				bottombackleft->getObjects(xpos, ypos, zpos, ret);
+		}
 	}
-	//left
+
 	else {
-		//topleft
-		if (zpos > (maxz - minz) / 2 + minz)
-			topleft->getObjects(xpos, zpos, ret);
-		//bottomleft
-		else 
-			bottomleft->getObjects(xpos,zpos, ret);
+		if (xpos > (maxx - minx) / 2 + minx) {
+			//frontright
+			if (zpos > (maxz - minz) / 2 + minz)
+				topfrontright->getObjects(xpos, ypos, zpos, ret);
+			//backright
+			else
+				topbackright->getObjects(xpos, ypos, zpos, ret);
+		}
+		//left
+		else {
+			//frontleft
+			if (zpos > (maxz - minz) / 2 + minz)
+				topfrontleft->getObjects(xpos, ypos, zpos, ret);
+			//backleft
+			else
+				topbackleft->getObjects(xpos, ypos, zpos, ret);
+		}
 	}
 }
 
@@ -74,10 +114,14 @@ void QuadTree::insert(GameObject * obj)
 	}
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
-		topleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		topright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		bottomleft = new QuadTree(minx, (maxx - minx) / 2 + minx, minz, (maxz - minz) / 2 + minz, depth + 1);
-		bottomright = new QuadTree((maxx - minx) / 2 + minx, maxx, minz, (maxz - minz) / 2 + minz, depth + 1);
+		bottomfrontleft = new QuadTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		bottomfrontright = new QuadTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		bottombackleft = new QuadTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
+		bottombackright = new QuadTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
+		topfrontleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		topfrontright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		topbackleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
+		topbackright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
 		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
 			GameObject* tempObj = objects[i];
 			insert(tempObj);
@@ -86,26 +130,53 @@ void QuadTree::insert(GameObject * obj)
 	}
 	//We might put the object into multiple different leaves if it is near the edge
 	else if (size > QUADTREE_CAPACITY) {
-		//right
-		if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound - MAGNET_RADIUS) {
-			//topright
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
-				topright->insert(obj);
+		//bottom
+		if (obj->pos.y < (maxy - miny) / 2 + miny + obj->bound + MAGNET_RADIUS) {
+			//right
+			if (obj->pos.x > (maxx - minx) / 2 + minx - obj->bound - MAGNET_RADIUS) {
+				//frontright
+				if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
+					bottomfrontright->insert(obj);
+				}
+				//backright
+				if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
+					bottombackright->insert(obj);
+				}
 			}
-			//bottomright
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
-				bottomright->insert(obj);
+			//left
+			if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound + MAGNET_RADIUS) {
+				//frontleft
+				if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
+					bottomfrontleft->insert(obj);
+				}
+				//backleft
+				if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
+					bottombackleft->insert(obj);
+				}
 			}
 		}
-		//left
-		if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound + MAGNET_RADIUS) {
-			//topleft
-			if (obj->pos.z > (maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
-				topleft->insert(obj);
+		if (obj->pos.y > (maxy - miny) / 2 + miny - obj->bound - MAGNET_RADIUS) {
+			//right
+			if (obj->pos.x >(maxx - minx) / 2 + minx - obj->bound - MAGNET_RADIUS) {
+				//frontright
+				if (obj->pos.z >(maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
+					topfrontright->insert(obj);
+				}
+				//backright
+				if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
+					topbackright->insert(obj);
+				}
 			}
-			//bottomleft
-			if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
-				bottomleft->insert(obj);
+			//left
+			if (obj->pos.x < (maxx - minx) / 2 + minx + obj->bound + MAGNET_RADIUS) {
+				//frontleft
+				if (obj->pos.z >(maxz - minz) / 2 + minz - obj->bound - MAGNET_RADIUS) {
+					topfrontleft->insert(obj);
+				}
+				//backleft
+				if (obj->pos.z < (maxz - minz) / 2 + minz + obj->bound + MAGNET_RADIUS) {
+					topbackleft->insert(obj);
+				}
 			}
 		}
 	}
@@ -117,10 +188,14 @@ void QuadTree::insert(GameObject * obj)
 //Once one(root) quadtree is freed, the children are also freed
 QuadTree::~QuadTree()
 {
-	if (topright) {
-		delete topright;
-		delete bottomright;
-		delete topleft;
-		delete bottomleft;
+	if (bottomfrontright) {
+		delete bottomfrontright;
+		delete bottombackright;
+		delete bottomfrontleft;
+		delete bottombackleft;
+		delete topfrontright;
+		delete topbackright;
+		delete topfrontleft;
+		delete topbackleft;
 	}
 }
