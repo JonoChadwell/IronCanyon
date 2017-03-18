@@ -6,22 +6,24 @@
 
 using namespace std;
 
-// Quadtree breakdown
-// tl  maxz tr
+// Octtree breakdown
+// top is bigger y
+// bottom is smaller y
+// fl  maxz fr
 // minx | maxx
 // bl minz br
 
 
-class QuadTree {
+class OctTree {
 public:
-	QuadTree* topfrontleft;
-	QuadTree* topfrontright;
-	QuadTree* topbackleft;
-	QuadTree* topbackright;
-	QuadTree* bottomfrontleft;
-	QuadTree* bottomfrontright;
-	QuadTree* bottombackleft;
-	QuadTree* bottombackright;
+	OctTree* topfrontleft;
+	OctTree* topfrontright;
+	OctTree* topbackleft;
+	OctTree* topbackright;
+	OctTree* bottomfrontleft;
+	OctTree* bottomfrontright;
+	OctTree* bottombackleft;
+	OctTree* bottombackright;
 
 	vector<GameObject*> objects;
 	float minx;
@@ -31,9 +33,9 @@ public:
 	float miny;
 	float maxy;
 
-	QuadTree(float minx, float maxx, float miny, float maxy, float minz, float maxz, int depth);
+	OctTree(float minx, float maxx, float miny, float maxy, float minz, float maxz, int depth);
 	void insert(GameObject* obj);
-	virtual ~QuadTree();
+	virtual ~OctTree();
 	void getObjects(float xpos, float ypos, float zpos, vector<GameObject*> *ret);
 	int countNodes();
 

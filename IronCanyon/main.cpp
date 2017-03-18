@@ -27,7 +27,7 @@
 #include "StaticTerrainObject.h"
 #include "Turret.h"
 #include "LaserTurret.h"
-#include "QuadTree.h"
+#include "OctTree.h"
 #include "Projectile.h"
 #include "ParticleSystem.h"
 #include "VFC.h"
@@ -82,7 +82,7 @@ Turret* curTurret = NULL;
 vector<GameObject*> objects;
 vector<GameObject*> projectiles;
 vector<GameObject*> newProjectiles;
-QuadTree* quadtree;
+OctTree* octtree;
 ParticleSystem *pSystem;
 
 vector<string> actionLog;
@@ -737,7 +737,7 @@ static void drawGameObjects() {
 static void projectileDetection() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		vector<GameObject *> qObjects;
-		quadtree->getObjects(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z, &qObjects);
+		octtree->getObjects(projectiles[i]->pos.x, projectiles[i]->pos.y, projectiles[i]->pos.z, &qObjects);
 		for (unsigned int j = 0; j < qObjects.size(); j++) {
 			vec3 objectPosition = vec3(qObjects[j]->pos.x, qObjects[j]->pos.y, qObjects[j]->pos.z);
 			vec3 projectilePosition = projectiles[i]->pos;
@@ -826,7 +826,7 @@ static void stepGameObjects(float dt) {
     }
 
 	vector<GameObject *> qObjects;
-	quadtree->getObjects(player->pos.x, player->pos.y, player->pos.z, &qObjects);
+	octtree->getObjects(player->pos.x, player->pos.y, player->pos.z, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
 		Enemy* enemy = dynamic_cast<Enemy*>(qObjects[i]);
 		if (enemy != NULL && distance(vec3(player->pos.x, player->pos.y, player->pos.z), enemy->pos)
@@ -1350,9 +1350,9 @@ int main(int argc, char **argv)
 
 	// Loop until the user closes the window.
 	while(!glfwWindowShouldClose(window)) {
-		quadtree = new QuadTree(-200, 200, -50, 50, -200, 200, 0);
+		octtree = new OctTree(-200, 200, -50, 50, -200, 200, 0);
 		for (int i = 0; i < (int) objects.size(); i++) {
-			quadtree->insert(objects[i]);
+			octtree->insert(objects[i]);
 		}
         lastFrameStartTime = thisFrameStartTime;
         thisFrameStartTime = glfwGetTime();
@@ -1371,8 +1371,8 @@ int main(int argc, char **argv)
 		glfwPollEvents();
 		// Poll joystick input
 		pollJoysticks();
-		// Remove the QuadTree
-		delete quadtree;
+		// Remove the OctTree
+		delete octtree;
 		// Update main object vector
 		updateObjectVector();
         updateProjectileVector();

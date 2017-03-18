@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GridObject.h"
-#include "QuadTree.h"
+#include "OctTree.h"
 #include "Turret.h"
 #include "Enemy.h"
 #include "Program.h"

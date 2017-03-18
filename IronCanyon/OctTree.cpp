@@ -1,7 +1,7 @@
-#include "QuadTree.h"
+#include "OctTree.h"
 #include <iostream>
 
-QuadTree::QuadTree(float minx, float maxx, float miny, float maxy, float minz, float maxz, int depth) :
+OctTree::OctTree(float minx, float maxx, float miny, float maxy, float minz, float maxz, int depth) :
 	minx(minx),
 	maxx(maxx),
 	miny(miny),
@@ -22,7 +22,7 @@ QuadTree::QuadTree(float minx, float maxx, float miny, float maxy, float minz, f
 }
 
 //debug function
-int QuadTree::countNodes() {
+int OctTree::countNodes() {
 	int sum = 1;
 	if (bottomfrontright) {
 		sum += bottomfrontright->countNodes();
@@ -51,7 +51,7 @@ int QuadTree::countNodes() {
 	return sum;
 }
 
-void QuadTree::getObjects(float xpos, float ypos, float zpos, vector<GameObject*> *ret) {
+void OctTree::getObjects(float xpos, float ypos, float zpos, vector<GameObject*> *ret) {
 	// either all subtrees exist or none of them
 	if (!bottomfrontright) {
 		*ret = objects;
@@ -100,7 +100,7 @@ void QuadTree::getObjects(float xpos, float ypos, float zpos, vector<GameObject*
 	}
 }
 
-void QuadTree::insert(GameObject * obj)
+void OctTree::insert(GameObject * obj)
 {
 	if (!obj) {
 		cout << "SOMEONE INSERTED A NULL OBJECT";
@@ -114,14 +114,14 @@ void QuadTree::insert(GameObject * obj)
 	}
 	if (size == QUADTREE_CAPACITY) {
 		// move the current object array into new sub quadtrees
-		bottomfrontleft = new QuadTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		bottomfrontright = new QuadTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		bottombackleft = new QuadTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
-		bottombackright = new QuadTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
-		topfrontleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		topfrontright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
-		topbackleft = new QuadTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
-		topbackright = new QuadTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
+		bottomfrontleft = new OctTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		bottomfrontright = new OctTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		bottombackleft = new OctTree(minx, (maxx - minx) / 2 + minx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
+		bottombackright = new OctTree((maxx - minx) / 2 + minx, maxx, miny, (maxy - miny) / 2, minz, (maxz - minz) / 2 + minz, depth + 1);
+		topfrontleft = new OctTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		topfrontright = new OctTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, (maxz - minz) / 2 + minz, maxz, depth + 1);
+		topbackleft = new OctTree(minx, (maxx - minx) / 2 + minx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
+		topbackright = new OctTree((maxx - minx) / 2 + minx, maxx, (maxy - miny) / 2 + miny, maxy, minz, (maxz - minz) / 2 + minz, depth + 1);
 		for (int i = 0; i < QUADTREE_CAPACITY - 1; i++) {
 			GameObject* tempObj = objects[i];
 			insert(tempObj);
@@ -186,7 +186,7 @@ void QuadTree::insert(GameObject * obj)
 }
 
 //Once one(root) quadtree is freed, the children are also freed
-QuadTree::~QuadTree()
+OctTree::~OctTree()
 {
 	if (bottomfrontright) {
 		delete bottomfrontright;
