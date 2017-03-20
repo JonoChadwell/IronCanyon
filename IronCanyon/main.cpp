@@ -123,6 +123,7 @@ int turretsBuilt = 0;
 float rifleCooldown = 0.0;
 float streamCooldown = 0.0;
 float rocketCooldown = 0.0;
+float smokeCooldown = 0.0;
 
 vec4 planes[6];
 int culled = 0;
@@ -902,6 +903,15 @@ static void stepPlayer(float dt) {
               playerStreamColor);
         }
         streamCooldown = 0.0;
+    }
+    // deal with smoke
+    if (player->health < 10) {
+        smokeCooldown += dt;
+        if (smokeCooldown >= player->health / 30.0f) {
+            smokeCooldown = 0.0f;
+            pSystem->spawnFocusParticles(4, player->pos, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+              5.0f, MATH_PI/2, 0, 10.0f);
+        }
     }
     // deal with current construction
     if (curTurret) {
