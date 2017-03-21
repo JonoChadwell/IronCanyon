@@ -53,5 +53,6 @@ private:
 	static Shape* hover;
 	static Program* shader;
 	static Texture* texture;
+    float damageIndicator, lastHealth;
 
 };

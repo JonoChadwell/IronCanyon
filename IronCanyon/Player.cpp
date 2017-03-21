@@ -54,6 +54,8 @@ Player::Player(float xp, float yp, float zp, float ph, float th, float rl, float
     firing = 0;
 	jumping = 0;
 	boosting = 0;
+    damageIndicator = 0.0f;
+    lastHealth = this->health;
 }
 
 // destructor
@@ -73,6 +75,13 @@ float Player::getZComp() {
 
 // step function
 void Player::step(float dt) {
+    // damage indicator starts at 1, then decreases over time quickly
+    damageIndicator -= damageIndicator > 0 ? dt*1.5 : 0;
+    damageIndicator = damageIndicator <= 0 ? 0 : damageIndicator;
+    // compare last health to see if just damaged; for damage indicator
+    if (health < lastHealth) {
+        damageIndicator = 1.0f;
+    }
     // reduce firing time
     if (firing > 0 && fireMode == 1) {
         firing += dt;
@@ -149,6 +158,7 @@ void Player::step(float dt) {
 		cRot = (cAngle - tAngle > MATH_PI) ? 2 : -2;
 	}
 	this->ctheta += cRot * dt;
+    lastHealth = health;
 }
 
 // draw function
@@ -162,9 +172,9 @@ void Player::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 	Player::shader->bind();
 	glUniform3f(Player::shader->getUniform("sunDir"), SUN_DIR);
 	glUniform3f(Player::shader->getUniform("eye"), eye.x, eye.y, eye.z);
-	glUniform3f(Player::shader->getUniform("MatAmb"), 1, 1, 1);
-	glUniform3f(Player::shader->getUniform("MatDif"), 1, 1, 1);
-	glUniform3f(Player::shader->getUniform("MatSpec"), 1, 1, 1);
+	glUniform3f(Player::shader->getUniform("MatAmb"), 1, 1 - damageIndicator, 1 - damageIndicator);
+	glUniform3f(Player::shader->getUniform("MatDif"), 1, 1 - damageIndicator, 1 - damageIndicator);
+	glUniform3f(Player::shader->getUniform("MatSpec"), 1, 1 - damageIndicator, 1 - damageIndicator);
 	glUniform1f(Player::shader->getUniform("shine"), 3.5);
 	glUniformMatrix4fv(Player::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 	glUniformMatrix4fv(Player::shader->getUniform("V"), 1, GL_FALSE, value_ptr(lookAt));
