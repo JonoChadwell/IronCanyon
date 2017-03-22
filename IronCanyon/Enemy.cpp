@@ -123,7 +123,7 @@ void Enemy::draw(MatrixStack *P, glm::mat4 lookAt, glm::vec3 eye) {
 		   M->rotate(-theta + MATH_PI / 2, vec3(0, 1, 0));
 		   M->rotate(phi, vec3(1, 0, 0));
 		   M->rotate(roll, vec3(0, 0, 1));
-		   M->scale(vec3(1.2, 1.2, 2.4));
+		   M->scale(vec3(1.5, 1.5, 3));
 		   glUniformMatrix4fv(Enemy::shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 		   Enemy::model->draw(Enemy::shader);
 	   }
