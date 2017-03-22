@@ -20,6 +20,7 @@ public:
 	~Grid();
 
 	bool inBounds(float x, float z);
+    bool inBounds(float x, float z, bool ignoreObstructions);
 	float height(float x, float z);
     std::vector<vec2> getPath(vec2 from, vec2 to);
 

@@ -625,6 +625,9 @@ static float distToPlane(vec4 plane, vec3 point) {
 }
 
 static bool shouldCull(GameObject* obj) {
+    if (rocket->stage >= 3) {
+        return false;
+    }
     float dist;
     for (int i = 0; i < 6; i++) {
         dist = distToPlane(planes[i], obj->pos);
