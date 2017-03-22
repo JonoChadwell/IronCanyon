@@ -180,6 +180,12 @@ void Grid::addToGrid(GridObject* obj) {
 }
 
 float Grid::height(float x, float z) {
+
+    if (x < minx || x > maxx || z < minz || z > maxz) {
+        cerr << "Height called on out of bounds location, returning 0\n";
+        return 0.0f;
+    }
+
     // convert to grid array coordinates
 	x = ((x - minx) * (GRID_SIZE - 1)) / (maxx - minx);
 	z = ((z - minz) * (GRID_SIZE - 1)) / (maxz - minz);
