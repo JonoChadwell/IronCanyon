@@ -15,7 +15,7 @@ public:
 	double groundTime;
 	double despawnTimer;
 	static Player* player;
-	Medkit(glm::vec3 pos, float ph, float th, float rl, float b, Grid* grid, int worth);
+	Medkit(glm::vec3 pos, float ph, float th, float rl, float b, Grid* grid);
 	virtual ~Medkit();
 
 	// functions
@@ -26,7 +26,6 @@ public:
 private:
 	Grid* grid;
 	float scale;
-	float heightOffset;
 	static Shape* object;
 	static Program* shader;
 };

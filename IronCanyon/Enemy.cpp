@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "Player.h"
 #include "Scrap.h"
+#include "Medkit.h"
 #include "Texture.h"
 #include <iostream>
 #include <cmath>
@@ -92,6 +93,9 @@ vector<GameObject*> Enemy::getRemains() {
     for (int i = 0; i < SCRAP_AMT; i++) {
         result.push_back(new Scrap(pos, randf() * 2 * MATH_PI, randf() * 2 * MATH_PI, 0, 1, grid, 1));
     }
+	if (randf() < .1) {
+		result.push_back(new Medkit(pos, randf() * 2 * MATH_PI, randf() * 2 * MATH_PI, 0, .5, grid));
+	}
     return result;
 }
 

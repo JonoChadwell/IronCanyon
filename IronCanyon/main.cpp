@@ -23,6 +23,7 @@
 #include "Enemy.h"
 #include "Walker.h"
 #include "Scrap.h"
+#include "Medkit.h"
 #include "GridObject.h"
 #include "StaticTerrainObject.h"
 #include "Turret.h"
@@ -502,6 +503,7 @@ static void init()
     Walker::newProjectiles = &newProjectiles;
     Walker::setup();
     Scrap::setup();
+	Medkit::setup();
     Scrap::player = player;
     StaticTerrainObject::setup();
     Turret::setup();
@@ -739,6 +741,7 @@ static void drawGameObjects() {
 }
 
 static void scrapDetection() {
+	//also medkit
 	vector<GameObject *> qObjects;
 	octtree->getObjects(player->pos.x, player->pos.y, player->pos.z, &qObjects);
 	for (unsigned int i = 0; i < qObjects.size(); i++) {
@@ -753,6 +756,16 @@ static void scrapDetection() {
 			if (distance < player->bound + scrap->bound) {
 				player->scrap += scrap->worth;
 				scrap->toDelete = true;
+			}
+		}
+		else if (dynamic_cast<Medkit*>(qObjects[i]) != NULL && player->health != PLAYER_HEALTH_CAP) {
+			vec3 objectPosition = vec3(qObjects[i]->pos.x, qObjects[i]->pos.y, qObjects[i]->pos.z);
+			vec3 playerPosition = player->pos;
+			float distance = dist(objectPosition, playerPosition);
+			Medkit *medkit = dynamic_cast<Medkit*>(qObjects[i]);
+			if (distance < player->bound + medkit->bound) {
+				player->health += 1;
+				medkit->toDelete = true;
 			}
 		}
 	}
