@@ -292,7 +292,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			str += std::to_string(player->scrap);
 			cout << str << endl;
 			actionLog.push_back(str);
-			beep->play();
+			//beep->play();
         }
 	}
     if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
@@ -378,13 +378,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			else {
 				//cout << "Too far away from rocket to build";
 				actionLog.push_back("Too far away from rocket to build");
-				beep->play();
+				//beep->play();
 			}
 		}
 		else if (rocket->stage != 3) {
 			string str = "Not enough scrap! You only have ";
 			//cout << str << player->scrap << endl;
-			beep->play();
+			//beep->play();
 			str += std::to_string(player->scrap);
 			cout << str << endl;
 			actionLog.push_back(str);
@@ -1310,7 +1310,8 @@ static void render()
 	drawTerrain();
     // update camera to track player
 	if (rocket->stage < 3) {
-		camera->trackToPlayer(player);
+        if (player->health > 0)
+		    camera->trackToPlayer(player);
 		drawPlayer();
 	}
 	else {
@@ -1323,7 +1324,7 @@ static void render()
 static void updateWorld()
 {
 	if (!gamePaused) {
-        if (rocket->stage >= 3) {
+        if (rocket->stage >= 3 || player->health <= 0) {
             player->pos = PURGATORY;
         }
         int physicsSteps = 0;
@@ -1331,13 +1332,15 @@ static void updateWorld()
         while (timePassed > maxPhysicsStepLength && physicsSteps++ < maxPhysicsSteps) {
             timePassed -= maxPhysicsStepLength;
             stepGameObjects(maxPhysicsStepLength);
-            stepPlayer(maxPhysicsStepLength);
+            if (player->health > 0)
+                stepPlayer(maxPhysicsStepLength);
             // particle steps
             pSystem->step(maxPhysicsStepLength);
         }
         if (physicsSteps < maxPhysicsSteps) {
             stepGameObjects(timePassed);
-            stepPlayer(timePassed);
+            if (player->health > 0)
+                stepPlayer(timePassed);
             pSystem->step(timePassed);
         }
         spawner->flavorTextDisplayTime -= thisFrameStartTime - lastFrameStartTime;
