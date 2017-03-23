@@ -1167,7 +1167,10 @@ static void guiLoopSetup(GLFWwindow* window) {
 		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 1.0);
 		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
 		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
-		idx.Colors[ImGuiCol_Text] = ImVec4(1 / player->health, 1, 0.0, 1.0);
+		int health = player->health;
+		if (health == 0)
+			health = 1;
+		idx.Colors[ImGuiCol_Text] = ImVec4(1 / health, 1, 0.0, 1.0);
 		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
 
 		ImGui::SetNextWindowPos(pos, 0);
