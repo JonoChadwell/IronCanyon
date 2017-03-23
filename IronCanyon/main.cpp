@@ -253,12 +253,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		else
 			joystickEnabled = false;
 	}
-	if (key == GLFW_KEY_H && action == GLFW_PRESS) {
-		if (player->scrap >= healthCost && player->health < PLAYER_HEALTH_CAP) {
-			player->health++;
-			player->scrap -= healthCost;
-		}
-	}
 	if (key == GLFW_KEY_U && action == GLFW_PRESS) {
 		if (!showUpgradeMenu && !gamePaused) {
 			showUpgradeMenu = true;
