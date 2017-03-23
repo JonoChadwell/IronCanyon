@@ -75,6 +75,7 @@ VFC* vfc;
 Sound* sound;
 sf::Sound* Lsound;
 sf::Sound* sound2;
+sf::Sound* beep;
 #endif
 
 Texture guiTexture;
@@ -284,6 +285,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			str += std::to_string(player->scrap);
 			cout << str << endl;
 			actionLog.push_back(str);
+			beep->play();
         }
 	}
     if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
@@ -369,11 +371,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 			else {
 				//cout << "Too far away from rocket to build";
 				actionLog.push_back("Too far away from rocket to build");
+				beep->play();
 			}
 		}
 		else if (rocket->stage != 3) {
 			string str = "Not enough scrap! You only have ";
 			//cout << str << player->scrap << endl;
+			beep->play();
 			str += std::to_string(player->scrap);
 			cout << str << endl;
 			actionLog.push_back(str);
@@ -1355,6 +1359,7 @@ int main(int argc, char **argv)
 #ifdef AUDIO
 	sf::SoundBuffer buffer;
 	sf::SoundBuffer buffer2;
+	sf::SoundBuffer buffer3;
 
 	Lsound = new sf::Sound();
 	buffer.loadFromFile("../resources/LaserShot.ogg");
@@ -1363,6 +1368,11 @@ int main(int argc, char **argv)
 	sound2 = new sf::Sound();
 	buffer2.loadFromFile("../resources/ChargeLaser.ogg");
 	sound2->setBuffer(buffer2);
+
+	beep = new sf::Sound();
+	buffer3.loadFromFile("../resources/beepbeep.ogg");
+	beep->setBuffer(buffer3);
+	beep->setVolume(40);
 #endif
 
 	// Create a windowed mode window and its OpenGL context.
