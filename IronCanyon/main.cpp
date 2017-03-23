@@ -114,6 +114,8 @@ bool showUpgradeMenu = false;
 bool showTextBox = true;
 bool showActionLog = true;
 
+bool preGameText = true;
+
 bool gameStarted = false;
 bool gamePaused = false;
 bool joystickEnabled = false;
@@ -247,8 +249,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-        gameStarted = true;
-        spawner->active = true;
+		if (preGameText) {
+			preGameText = false;
+		}
+		else {
+			gameStarted = true;
+			spawner->active = true;
+		}
 	}
 	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
 		if (joystickEnabled == false)
@@ -1102,6 +1109,34 @@ static void guiLoopSetup(GLFWwindow* window) {
 
 	//ImGui::Image((ImTextureID)guiTexture.getTid(), ImVec2(g_width, 200.0f), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(0, 0, 0, 0));
 	//ImGui::End();
+
+	if (preGameText) {
+		ImGuiStyle& idx = ImGui::GetStyle();
+		idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_CloseButton] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0, 0.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
+
+		ImVec2 preGameSize = ImVec2(480,280);
+		ImVec2 preGamePos = ImVec2(g_width/2 - 240, g_height/2 - 140);
+		ImGui::SetNextWindowPos(preGamePos, 0);
+		ImGui::SetNextWindowSize(preGameSize, 1);
+		ImGui::Begin("       ", NULL, 0.0);
+		ImGui::Text("HELLO ENGINEER");
+		ImGui::Text("WELCOME TO IRON CANYON");
+		ImGui::Text("SURVIVE WAVES OF ENEMIES AND BUILD YOUR ROCKET TO ESCAPE");
+		ImGui::Text("[WASD] TO MOVE");
+		ImGui::Text("[MOUSE] TO AIM AND FIRE");
+		ImGui::Text("[B] TO BUILD TURRETS");
+		ImGui::Text("[R] WHEN NEAR LAUNCHPAD TO BUILD ROCKET");
+		ImGui::Text("[Q] TO CLOSE THIS PROMPT, [Q] AGAIN TO START");
+		ImGui::End();
+
+	}
 
     if (spawner->flavorTextDisplayTime > 0.0 && rocket->stage < 3) {
         ImGuiStyle& idx = ImGui::GetStyle();
