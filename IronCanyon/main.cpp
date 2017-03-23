@@ -1131,8 +1131,8 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::Text("SURVIVE WAVES OF ENEMIES AND BUILD YOUR ROCKET TO ESCAPE");
 		ImGui::Text("[WASD] TO MOVE");
 		ImGui::Text("[MOUSE] TO AIM AND FIRE");
-		ImGui::Text("[B] TO BUILD TURRETS");
-		ImGui::Text("[R] WHEN NEAR LAUNCHPAD TO BUILD ROCKET");
+		ImGui::Text("[B] TO BUILD TURRETS FOR 1500 SCRAP");
+		ImGui::Text("[R] WHEN NEAR LAUNCHPAD TO BUILD ROCKET FOR 4000 SCRAP");
 		ImGui::Text("[Q] TO CLOSE THIS PROMPT, [Q] AGAIN TO START");
 		ImGui::End();
 
@@ -1167,7 +1167,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.2, 0.2, 0.2, 1.0);
 		idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2, 0.2, 0.2, 1.0);
 		idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
-		idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 1.0);
+		idx.Colors[ImGuiCol_Text] = ImVec4(1 / player->health, 1, 0.0, 1.0);
 		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
 
 		ImGui::SetNextWindowPos(pos, 0);
@@ -1237,8 +1237,10 @@ static void guiLoopSetup(GLFWwindow* window) {
 		idx.Colors[ImGuiCol_Border] = ImVec4(1.0, 1.0, 0.0, 1.0);
 
 		ImGui::SetNextWindowPos(upgrades, 0);
-		ImGui::Begin("SHIP UPGRADES", NULL, 0.0);
+		ImGui::Begin("BUILDING COSTS", NULL, 0.0);
 		ImGui::SetWindowSize(upgradeSize, 1);
+		ImGui::Text("TURRETS COST 1500 SCRAP");
+		ImGui::Text("ROCKETS COST 4000 SCRAP");
 		ImGui::End();
 	}
 
