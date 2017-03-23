@@ -738,6 +738,26 @@ static void drawGameObjects() {
     delete P;
 }
 
+static void scrapDetection() {
+	vector<GameObject *> qObjects;
+	octtree->getObjects(player->pos.x, player->pos.y, player->pos.z, &qObjects);
+	for (unsigned int i = 0; i < qObjects.size(); i++) {
+		if (dynamic_cast<Scrap*>(qObjects[i]) != NULL) {
+			vec3 objectPosition = vec3(qObjects[i]->pos.x, qObjects[i]->pos.y, qObjects[i]->pos.z);
+			vec3 playerPosition = player->pos;
+			float distance = dist(objectPosition, playerPosition);
+			Scrap *scrap = dynamic_cast<Scrap*>(qObjects[i]);
+			if (distance < player->bound + MAGNET_RADIUS) {
+				scrap->playerMagnet = true;
+			}
+			if (distance < player->bound + scrap->bound) {
+				player->scrap += scrap->worth;
+				scrap->toDelete = true;
+			}
+		}
+	}
+}
+
 static void projectileDetection() {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		vector<GameObject *> qObjects;
@@ -844,6 +864,7 @@ static void stepGameObjects(float dt) {
 		projectiles[i]->step(dt);
 	}
 	projectileDetection();
+	scrapDetection();
 
     vector<GameObject*> spawnedObjects = spawner->update(dt);
     for (int i = 0; i < spawnedObjects.size(); i++) {

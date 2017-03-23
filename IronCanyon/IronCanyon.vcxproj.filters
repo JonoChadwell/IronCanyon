@@ -123,6 +123,9 @@
     <ClCompile Include="OctTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Medkit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -240,6 +243,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OctTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Medkit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

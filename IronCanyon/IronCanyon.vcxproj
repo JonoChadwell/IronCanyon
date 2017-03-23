@@ -141,6 +141,7 @@
     <ClCompile Include="LaserTurret.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixStack.cpp" />
+    <ClCompile Include="Medkit.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Program.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="imgui_impl_glfw_gl3.h" />
     <ClInclude Include="LaserTurret.h" />
     <ClInclude Include="MatrixStack.h" />
+    <ClInclude Include="Medkit.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Program.h" />
