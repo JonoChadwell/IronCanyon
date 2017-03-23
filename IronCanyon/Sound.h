@@ -9,7 +9,7 @@
 
 class Sound {
 public:
-	std::vector<sf::SoundBuffer> soundBuffers;
+	std::vector<sf::SoundBuffer*> soundBuffers;
 	std::vector<sf::Sound*> laserShots;
 	
 	sf::Sound* goodBeep;

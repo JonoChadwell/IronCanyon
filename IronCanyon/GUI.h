@@ -12,6 +12,10 @@ class Program;
 class GUI {
 public:
 	bool displayGui = true;
+	vec2 position;
+	vec2 size;
+	vec3 color;
+	GLfloat rotate;
 
 	GUI();
 	void draw();

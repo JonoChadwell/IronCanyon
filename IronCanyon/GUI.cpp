@@ -14,6 +14,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+GLuint quadVAO;
+
 using namespace glm;
 using namespace std;
 
@@ -34,17 +36,22 @@ void GUI::draw() {
 	//render shit
 	GUI::shader->bind();
 
-	//we need to set up the vertex array
-	//glEnableVertexAttribArray(0);
-	//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	//key function to get up how many elements to pull out at a time (3)
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glm::mat4 model;
+	model = glm::translate(model, vec3(position, 0.0f));
 
+	model = translate(model, vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+	model = glm::rotate(model, rotate, vec3(0.0f, 0.0f, 1.0f));
+	model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
 
-	//actually draw from vertex 0, 3 vertices
-	//glPointSize(34.0);
-	//glDrawArrays(GL_POINTS, 0, 1);
-	//glDisableVertexAttribArray(0);
+	model = glm::scale(model, glm::vec3(size, 1.0f));
+	
+
+	glActiveTexture(GL_TEXTURE0);
+	//GUI::shader->getTexture()->bind();
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
 
 	glUniformMatrix4fv(GUI::shader->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 
@@ -59,10 +66,10 @@ void GUI::setup() {
 	GUI::object->resize();
 	GUI::object->init();
 
-	Texture* texture = new Texture();
-	texture->setFilename(RESOURCE_DIR + "Menu thing 1.png");
-	texture->setName("MenuTexture");
-	texture->init();
+	//Texture* texture = new Texture();
+	//texture->setFilename(RESOURCE_DIR + "Menu thing 1.png");
+	//texture->setName("MenuTexture");
+	//texture->init();
 
 	GUI::shader = new Program();
 	GUI::shader->setVerbose(true);
@@ -70,5 +77,29 @@ void GUI::setup() {
 	GUI::shader->init();
 	GUI::shader->addAttribute("vertTex");
 	GUI::shader->addUniform("P");
-	GUI::shader->addTexture(texture);
+	//GUI::shader->addTexture(texture);
+
+	GLuint VBO;
+	GLfloat vertices[] = {
+		// Pos      // Tex
+		0.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f,
+
+		0.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f, 0.0f
+	};
+
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(quadVAO);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }

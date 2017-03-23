@@ -77,6 +77,8 @@ sf::Sound* Lsound;
 sf::Sound* sound2;
 #endif
 
+Texture guiTexture;
+
 Turret* curTurret = NULL;
 
 // Vector holding all game objects
@@ -511,6 +513,11 @@ static void init()
 #endif
     // Particles
     pSystem = new ParticleSystem(grid);
+
+	guiTexture.setFilename(RESOURCE_DIR + "drive/as.bmp");
+	guiTexture.setName("playerTexture");
+	guiTexture.init();
+
 
 	forwards = 0;
 	sideways = 0;
@@ -1077,6 +1084,21 @@ static void guiLoopSetup(GLFWwindow* window) {
 
 	ImVec2 testImageSize = ImVec2(100.0, 100.0);
 
+	//ImGuiStyle& idx = ImGui::GetStyle();
+	//idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 0.0);
+	//idx.Colors[ImGuiCol_Text] = ImVec4(0.0, 1.0, 0.0, 0.0);
+	//idx.Colors[ImGuiCol_TitleBg] = ImVec4(0.0, 0.0, 0.0, 0.0);
+	//idx.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0, 0.0, 0.0, 0.0);
+	//idx.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0, 0.0, 0.0, 0.0);
+	//idx.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.0, 0.0, 0.0, 0.0);
+	//ImGui::SetNextWindowPos(ImVec2(0.0,0.0));
+
+	//ImGui::Begin("    ", NULL, 0.0);
+	//ImGui::SetWindowSize(ImVec2(g_width, 250.0f), 1);
+
+	//ImGui::Image((ImTextureID)guiTexture.getTid(), ImVec2(g_width, 200.0f), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(0, 0, 0, 0));
+	//ImGui::End();
+
     if (spawner->flavorTextDisplayTime > 0.0 && rocket->stage < 3) {
         ImGuiStyle& idx = ImGui::GetStyle();
         idx.Colors[ImGuiCol_WindowBg] = ImVec4(0.0, 0.0, 0.0, 1.0);
@@ -1156,7 +1178,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 		ImGui::SetNextWindowPos(alert, 0);
 		ImGui::Begin("", NULL, 0.0);
 		
-        ImGui::SetWindowSize(alertSizeNoComplete, 1);
+        ImGui::SetWindowSize(alertSize, 1);
 		
 		ImGui::Text("NEXT WAVE SPAWNING IN %.1f SECONDS", spawner->nextWaveTimer);
 		ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
@@ -1211,7 +1233,7 @@ static void guiLoopSetup(GLFWwindow* window) {
 
 		ImGui::SetNextWindowPos(log, 0);
 
-		ImGui::Begin("", NULL, 0.0);
+		ImGui::Begin("  ", NULL, 0.0);
 		ImGui::SetWindowSize(logSize, 1);
 		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)5).c_str());
 		ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), actionLog.at(actionLog.size() - (size_t)4).c_str());
